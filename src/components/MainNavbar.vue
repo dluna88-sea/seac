@@ -28,6 +28,9 @@ traerDatos();
                     <li class="nav-item">
                         <RouterLink class="nav-link" to="/boletines">Boletines</RouterLink>
                     </li>
+                    <li v-if="dataUser.datos.rol=='admin'" class="nav-item">
+                        <RouterLink class="nav-link" to="/usuarios">Usuarios</RouterLink>
+                    </li>
                 </ul>
                 <ul class="navbar-nav flex-wrap ms-md-auto">
                     <li class="nav-item dropdown">

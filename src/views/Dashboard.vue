@@ -19,6 +19,8 @@ traerDatos();
 
     <DefaultPage>
         
+        <div v-if="dataUser.isError" class="row"><Error>{{ dataUser.error }}</Error></div>
+
         <PageTitle>Bienvenido</PageTitle>
         <div class="row">
 
@@ -32,7 +34,7 @@ traerDatos();
                         <ul v-else v-for="mod in dataUser.modulos" class="list-group my-3">
                             <RouterLink :to="`/transparencia/${mod.id}`" class="list-group-item">{{ mod.titulo }}</RouterLink>
                         </ul>
-                        <button class="btn btn-outline-secondary" type="button"><Icon name="plus" />Ver más</button>
+                        <RouterLink class="btn btn-outline-secondary" to="/transparencia"><Icon name="plus" />Ver más</RouterLink>
                     </div>
                         
                 </BigCard> 
@@ -59,12 +61,12 @@ traerDatos();
                         <li class="list-group-item"><Icon name="person-vcard" /> Editar datos personales</li>
                         <li class="list-group-item"><Icon name="shield-lock-fill" /> Recuperar o cambiar la contraseña</li>
                     </ul>
-                    <button class="btn btn-outline-secondary" type="button"><Icon name="gear-fill" /> Administrar</button>
+                    <RouterLink class="btn btn-outline-secondary" to="/perfil"><Icon name="gear-fill" /> Administrar</RouterLink>
                 </BigCard>
             </div>
 
             <!-- ADMIN: CARD USUARIOS REGISTRADOS -->
-            <div class="col-md-6 col-xl-4 my-3">
+            <div v-if="dataUser.datos.rol == 'admin'" class="col-md-6 col-xl-4 my-3">
                 <BigCard>
                     <h2><Icon name="people-fill" /> Usuarios</h2>
                     <ul class="list-group list-group-flush my-3">
@@ -72,7 +74,7 @@ traerDatos();
                         <li class="list-group-item"><Icon name="person-fill-add" /> Registra nuevos usuarios</li>
                         <li class="list-group-item"><Icon name="person-fill-gear" /> Asigna o revoca nuevos roles</li>
                     </ul>
-                    <button class="btn btn-outline-secondary" type="button"><Icon name="gear-fill" /> Administrar</button>
+                    <RouterLink class="btn btn-outline-secondary" to="/usuarios"><Icon name="gear-fill" /> Administrar</RouterLink>
                 </BigCard>
             </div>
             

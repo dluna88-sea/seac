@@ -1,5 +1,9 @@
+<script setup>
+
+</script>
+
 <template>
-    <PageTitle>
-        Detalle de módulo de transparencia
-    </PageTitle>
+    <div>
+        
+    </div>
 </template>

@@ -6,7 +6,9 @@ const dataUser = useDataUserStore();
 async function salir(){
     try{
         await dataUser.logout();
-        router.push('/')
+        
+        setTimeout(() => { router.push('/') },2000)
+
     } catch(e){ console.log(e); }
 }
 
