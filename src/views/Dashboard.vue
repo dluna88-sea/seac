@@ -1,5 +1,18 @@
 <script setup>
+import { useDataUserStore } from '../stores/dataUser';
+const dataUser = useDataUserStore();
 
+async function traerDatos(){
+    if(dataUser.datos.length == 0){
+        await dataUser.getData();
+    }
+
+    if(dataUser.modulos.length == 0){
+        await dataUser.getModulos();
+    }
+}
+
+traerDatos();
 </script>
 
 <template>
@@ -12,13 +25,16 @@
             <!-- CARD MÓDULOS DE TRANSPARENCIA -->
             <div class="col-md-6 col-xl-4 my-3">
                 <BigCard>
-                    <h2><Icon name="boxes" /> Transparencia</h2>
-        
-                    <ul class="list-group my-3">
-                        <RouterLink to="/" class="list-group-item">An item</RouterLink>
-                    </ul>
-
-                    <button class="btn btn-outline-secondary" type="button"><Icon name="plus" />Ver más</button>
+                    <Loading v-if="dataUser.loading"></Loading>
+                    <div v-else>
+                        <h2><Icon name="boxes" /> Transparencia</h2>
+                        <Info v-if="dataUser.modulos.length == 0">No tienes módulos asignados</Info>
+                        <ul v-else v-for="mod in dataUser.modulos" class="list-group my-3">
+                            <RouterLink :to="`/transparencia/${mod.id}`" class="list-group-item">{{ mod.titulo }}</RouterLink>
+                        </ul>
+                        <button class="btn btn-outline-secondary" type="button"><Icon name="plus" />Ver más</button>
+                    </div>
+                        
                 </BigCard> 
             </div>
 

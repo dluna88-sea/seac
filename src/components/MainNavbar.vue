@@ -1,8 +1,17 @@
-
+<script setup>
+import { useDataUserStore } from '../stores/dataUser';
+const dataUser = useDataUserStore();
+async function traerDatos(){
+    if(dataUser.datos.length == 0){
+        await dataUser.getData();
+    }
+}
+traerDatos();
+</script>
 
 <template>
-
-    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3 shadow-sm">
+    <Loading v-if="dataUser.loading"></Loading>
+    <nav v-else class="navbar navbar-expand-lg bg-body-tertiary mb-3 shadow-sm">
         <div class="container-fluid">
             <RouterLink class="navbar-brand" to="/" >
                 <img src="/seac-icon.png" alt="SEAC" width="25" height="25" class="d-inline-block align-text-top">
@@ -23,11 +32,11 @@
                 <ul class="navbar-nav flex-wrap ms-md-auto">
                     <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <Icon name="person-circle" /> &nbsp;Nombre del usuario
+                                <Icon name="person-circle" /> &nbsp;{{ dataUser.datos.nombre }}
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Perfil de usuario</a></li>
-                                <li><a class="dropdown-item" href="#">Ayuda</a></li>
+                                <li><RouterLink class="dropdown-item" to="/perfil">Perfil de usuario</RouterLink></li>
+                                <li><RouterLink class="dropdown-item" to="/ayuda">Ayuda</RouterLink></li>
                             </ul>
                         </li>
                         <li class="nav-item">
