@@ -33,18 +33,13 @@ const updateEmail = async () => {
     }
 }
 
-let pwdErr = false;
-let pwdErrMsg = "";
 const updatePwd = async () => {
     const pwd = document.forms['updatePwd']['password'].value.trim();
-    const pwdConfirm = document.forms['pwdConfirm']['password2'].value.trim();
+    const pwdConfirm = document.forms['updatePwd']['password2'].value.trim();
     
-    if(pwd == pwdConfirm){
-        await dataUser.updatePwd({password:pwd});
-    }else{
-        pwdErr = true;
-        pwdErrMsg = "Las contraseñas no coinciden"
-    }
+    await dataUser.updatePwd(pwd, pwdConfirm)
+    document.forms['updatePwd']['password'].value = "";
+    document.forms['updatePwd']['password2'].value = "";
 }
 
 </script>
@@ -63,7 +58,7 @@ const updatePwd = async () => {
         <div v-else class="mb-5">
             
             <div class="row">
-                <div class="col">
+                <div class="col px-lg-5">
                     <BigCard>
                         <p>ID Único: {{ dataUser.datos.uid }}</p>
                         <p>Módulos asignados:</p>
@@ -82,13 +77,13 @@ const updatePwd = async () => {
             </div>
             <hr/>
             <div class="row">
-                <div class="col">
+                <div class="col text-center py-4">
                     <h3>Actualizar datos personales</h3>
                 </div>
             </div>
             <div class="row">
 
-                <div class="col-md-6 mt-3">
+                <div class="col-md-6 mt-3 px-lg-5">
                     <form @submit.prevent="updateNombre()" name="updateNombre" class="form-floating">
                         <input type="text" class="form-control shadow-sm" name="nombre" id="nombre" placeholder="Escribe tu nombre completo" :value="dataUser.datos.nombre">
                         <label for="nombre">Nombre</label>
@@ -97,7 +92,7 @@ const updatePwd = async () => {
                         </div>
                     </form>
                 </div>
-                <div class="col-md-6 mt-3">
+                <div class="col-md-6 mt-3 px-lg-5">
                     <form @submit.prevent="updateEmail()" name="updateEmail" class="form-floating">
                         <input name="email" type="email" class="form-control shadow-sm" id="email" placeholder="Escribe tu dirección correo electrónico" :value="dataUser.datos.email">
                         <label for="email">Correo electrónico</label>
@@ -106,7 +101,7 @@ const updatePwd = async () => {
                         </div>
                     </form>
                 </div>
-                <div class="col-md-6 mt-3">
+                <div class="col-md-6 mt-3 px-lg-5">
                     <form @submit.prevent="updateCargo()" name="updateCargo" class="form-floating">
                         <input type="text" class="form-control shadow-sm" name="cargo" id="cargo" placeholder="Escribe el nombre del cargo" :value="dataUser.datos.cargo">
                         <label for="cargo">Cargo</label>
@@ -115,21 +110,25 @@ const updatePwd = async () => {
                         </div>
                     </form>
                 </div>
-                <div class="col-md-12 mt-3">
+                <div class="col-md-12 mt-3 px-lg-5 mb-5">
                     <Card>
                         <CardHeader>Actualizar contraseña</CardHeader>
                         <CardBody>
-                            <Error v-if="pwdErr">{{ pwdErrMsg }}</Error>
+                            <Error v-if="dataUser.passwordError">{{ dataUser.passwordErrMsg }}</Error>
                             <ul>
                                 <li>La contraseña debe tener mínimo 6 caractéres y máximo 8</li>
                             </ul>
-                            <form name="updatePwd" class="form-floating my-3">
-                                <input required type="password" class="form-control shadow-sm" name="password" id="password" placeholder="Escribe una contraseña">
-                                <label for="password">Contraseña</label>
-                            </form>
-                            <form @submit.prevent="updatePwd()" name="pwdConfirm" class="form-floating">
-                                <input required type="password" class="form-control shadow-sm" name="password2" id="password2" placeholder="Escribe nuevamente la contraseña">
-                                <label for="password2">Confirmación de contraseña</label>
+                            <form @submit.prevent="updatePwd()" name="updatePwd" class="my-3">
+                                
+                                <div class="form-floating mb-3">
+                                    <input required type="password" class="form-control" id="password" name="password" placeholder="Escribe una contraseña">
+                                    <label for="password">Contraseña</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input required type="password" class="form-control" id="password2" name="password2" placeholder="Confirma la contraseña">
+                                    <label for="password2">Confirmación de contraseña</label>
+                                </div>
+
                                 <div class="d-grid mt-2">
                                     <button class="btn btn-secondary block">Actualizar</button>
                                 </div>

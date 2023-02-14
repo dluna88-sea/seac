@@ -12,20 +12,29 @@ export const useDataUserStore = defineStore('DataUser',{
         modulos:[],
         success: false,
         successMsg: null,
-        
+        passwordError: false,
+        passwordErrMsg: null,
+        currentMode: null
     }),
     actions:{
 
 
         //Actualizar datos de usuario:
-        //Recibe un objeto. ej:
-        // {password: 'nuevaContraseña123'}
-        async updatePwd(objVal){
-            await updatePassword(auth.currentUser,objVal.password).then(
-                () => {
-                    this.setSuccess("Contraseña actualizada correctamente.");
-                }
-            ).catch((e) => { this.setError(e.message); })
+        //Recibe dos strings
+        // pwd y pwdConfirm
+        async updatePwd(pwd, pwdConfirm){
+            if(pwd == pwdConfirm){
+                await updatePassword(auth.currentUser,pwd).then(
+                    () => {
+                        this.setSuccess("Contraseña actualizada correctamente.");
+                        return true;
+                    }
+                ).catch((e) => { this.setError(e.message); console.log(e.message); return false; })
+            }else{
+                this.passwordErrMsg = 'Las contraseñas no coinciden';
+                this.passwordError = true;
+                setTimeout(() => { this.passwordError = false; this.passwordErrMsg = ""; }, 6000)
+            }
         },
 
         //Actualizar datos de usuario:
