@@ -22,7 +22,7 @@ traerDatos();
         <div v-if="dataUser.isError" class="row"><Error>{{ dataUser.error }}</Error></div>
 
         <PageTitle>Bienvenido</PageTitle>
-        <div class="row">
+        <div class="row mb-5">
 
             <!-- CARD MÓDULOS DE TRANSPARENCIA -->
             <div class="col-md-6 col-xl-4 my-3">

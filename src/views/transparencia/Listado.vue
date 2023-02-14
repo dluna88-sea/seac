@@ -7,11 +7,11 @@ const dataUser = useDataUserStore();
 
 async function getDatos(){
     if(dataUser.datos.length == 0){ 
-        dataUser.getData();
+        await dataUser.getData();
     }
 
     if(dataUser.modulos.length == 0){
-        dataUser.getModulos();
+        await dataUser.getModulos();
     }
 }
 getDatos();

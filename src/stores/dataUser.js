@@ -14,10 +14,24 @@ export const useDataUserStore = defineStore('DataUser',{
         successMsg: null,
         passwordError: false,
         passwordErrMsg: null,
-        currentMode: null
+        currentMode: [],
     }),
     actions:{
 
+        //Obtener un modulo especifico de la lista de modulos:
+        async getModulo(id){
+            try {
+                this.loading = true;
+                
+                if(this.datos.length == 0){ await this.getData(); }
+                if(this.modulos.length == 0){ await this.getModulos(); }
+                if(this.currentMode.length != 0){ this.currentMode = []; }
+                this.currentMode = this.modulos.find(o => o.id === id)
+                
+            } catch (error) {
+                this.setError(error.message)
+            } finally { this.loading = false; }
+        },
 
         //Actualizar datos de usuario:
         //Recibe dos strings
@@ -112,17 +126,16 @@ export const useDataUserStore = defineStore('DataUser',{
                 
                 if(this.modulos.length != 0){ this.modulos = []; }
 
-                if(this.datos.modulos.length > 0){
-                    const modulos = await getDocs(
-                        query(
-                            collection(db, '/modulos'),
-                            where('id', 'in', this.datos.modulos)
-                        )
-                    );
-                    modulos.docs.forEach((mod) => {
-                        this.modulos.push(mod.data());
-                    });
-                }
+                const modulos = await getDocs(
+                    query(
+                        collection(db, '/modulos'),
+                        where('id', 'in', this.datos.modulos)
+                    )
+                );
+                modulos.docs.forEach((mod) => {
+                    this.modulos.push(mod.data());
+                });
+
             } catch (error){ this.setError(error.message); } 
             finally { this.loading = false; }
         },
