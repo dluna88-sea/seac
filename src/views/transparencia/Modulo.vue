@@ -1,26 +1,54 @@
 <script setup>
 import { useRoute } from 'vue-router';
 import { useDataUserStore } from '../../stores/dataUser';
+import { useModulosStore } from '../../stores/modulos';
 const route = useRoute();
 const dataUser = useDataUserStore();
+const modulos = useModulosStore();
 
-const updateDescripcion = () => {
+/**
+ * Acciones del módulo:
+ */
+const updateDescripcion = async() => {
+    modulos.message.place = 'descripcion';
+    const desc = document.forms['modDescripcion']['descripcion'].value.trim()
+    await modulos.update({descripcion:desc}, route.params.id);
+    // getMod();
+    setTimeout(() => { location.reload() }, 3500)
+}
+
+const updateNota = async() => {
+    modulos.message.place = 'nota';
+    const note = document.forms['modNota']['nota'].value.trim()
+    await modulos.update({nota:note}, route.params.id);
+    // getMod();
+    setTimeout(() => { location.reload() }, 3500)
+}
+
+
+/** 
+ * Acciones de cada sección
+*/
+const updSubtitulo = async(seccion) => {
+    console.log('actualizar el subtítulo de la sección '+seccion);
+}
+
+const updDescripcion = async(seccion) => {
+    console.log('actualizar la descripción de la sección '+seccion);
     
 }
 
-const deleteDoc = (seccion, documento) => {
-    console.log("Buscar en la sección "+seccion+" el documento "+documento);
+const deleteDoc = async(seccion, documento) => {
+    console.log('Eliminar el documento '+documento+' de la sección '+seccion);
 }
 
-const updateNota = () => {
-
+const uploadFile = async(seccion) => {
+    const documento = document.forms['uplFilepdf']['filepdf'].files[0];
 }
 
-async function getMod(){
-    
-    await dataUser.getModulo(route.params.id)
-}
+async function getMod(){ await dataUser.getModulo(route.params.id); }
 getMod();
+
 
 </script>
 
@@ -29,19 +57,26 @@ getMod();
     <div v-else>
         
         <DefaultPage>
+
+        <Error v-if="modulos.message.error && modulos.message.place == null">{{ modulos.message.text }}</Error>
+        <Success v-if="modulos.message.success && modulos.message.place == null">{{ modulos.message.text }}</Success>
+
         <PageTitle>{{ dataUser.currentMode.titulo }}</PageTitle>
         
         
             <div class="row">
                 <div class="col-12">
-                    <p>Última actualización el {{ dataUser.currentMode.actualizacion }}</p>
+                    <p>
+                        Última actualización el {{ dataUser.currentMode.actualizacion }}<br />
+                    </p>
                     <br>
-                    <!-- {{ dataUser.currentMode }} -->
                 </div>
 
                 <div class="col-12">
                     <form @submit.prevent="updateDescripcion()" name="modDescripcion">
                         <div class="mb-3">
+                            <Error v-if="modulos.message.error && modulos.message.place == 'descripcion'">{{ modulos.message.text }}</Error>
+                            <Success v-if="modulos.message.success && modulos.message.place == 'descripcion'">{{ modulos.message.text }}</Success>
                             <div class="form-floating">
                                 <textarea style="height:90px" class="form-control" placeholder="Escribe una descripción del módulo" name="descripcion" id="modDescripcion">{{ dataUser.currentMode.descripcion }}</textarea>
                                 <label for="floatingTextarea">Descripción (Opcional)</label>
@@ -59,7 +94,7 @@ getMod();
             <div class="row mb-5">
 
                 <div class="col-12 my-2">
-                    <nav class="navbar bg-body-tertiary px-3 mb-4">
+                    <nav class="navbar bg-body-tertiary px-3 mb-4 shadow-sm">
                         <span class="navbar-text">
                             SECCIONES
                         </span>
@@ -114,25 +149,37 @@ getMod();
                         <form>
                             
                             <div class="row mb-3">
+                                <Error v-if="modulos.message.error && modulos.message.place == 'seccion'" >{{ modulos.message.text }}</Error>
+                                <Success v-if="modulos.message.success && modulos.message.place == 'seccion'" >{{ modulos.message.text }}</Success>
+                            </div>
+                            
+                            <div class="row mb-3">
                                 <label for="subtitulo" class="col-sm-3 col-form-label text-sm-end">Subtítulo</label>
                                 <div class="col-sm-9">
-                                    <div class="input-group mb-3">
-                                        <input type="text" :value="seccion.subtitulo" name="subtitulo" class="form-control" placeholder="Opcional" aria-label="Subtítulo" aria-describedby="subtitulo">
-                                        <button class="btn btn-secondary" type="button" id="subtitulo">
-                                            <Icon name="pencil"/>
-                                        </button>
-                                    </div>
+                                    <form @submit.prevent="updSubtitulo(sIndex)">
+                                        <div class="mb-3">
+                                            <input type="text" :value="seccion.subtitulo" name="subtitulo" class="form-control" placeholder="Opcional" aria-label="Subtítulo" aria-describedby="subtitulo">
+                                            <button class="btn btn-secondary mt-2" type="submit">
+                                                Actualizar Subtítulo
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
                                 
                             </div>
 
+                            <hr />
                             <div class="row mb-3">
                                 <label for="descripcion" class="col-sm-3 col-form-label text-sm-end">Descripción</label>
                                 <div class="col-sm-9">
-                                    <textarea placeholder="Opcional" class="form-control" id="descripcion" name="descripcion">{{ seccion.descripcion }}</textarea>
+                                    <form @submit.prevent="updDescripcion(sIndex)">
+                                        <textarea placeholder="Opcional" class="form-control" id="descripcion" name="descripcion">{{ seccion.descripcion }}</textarea>
+                                        <button type="submit" class="btn btn-secondary mt-2">Actualizar descripción</button>
+                                    </form>
                                 </div>
                             </div>
 
+                            <hr />
                             <fieldset class="row mb-3">
                                 
                                 <legend class="col-form-label col-sm-3 pt-0  text-sm-end">
@@ -141,7 +188,10 @@ getMod();
 
                                 <div class="col-sm-9">
                                     <div class="mb-3">
-                                        <input class="form-control" type="file" id="formFile">
+                                        <form @submit.prevent="uploadFile(sIndex)" name="uplFilepdf">
+                                            <input class="form-control" type="file" accept="application/pdf" name="filepdf">
+                                            <button type="submit" class="btn btn-secondary mt-2">Subir archivo</button>
+                                        </form>
                                     </div>
                                     
                                     <Info v-if="seccion.documentos.length == 0">No hay documentos adjuntos</Info>
@@ -173,6 +223,10 @@ getMod();
                     <hr>
                     <form @submit.prevent="updateNota()" name="modNota">
                         <div class="mb-3">
+                            <Error v-if="modulos.message.error && modulos.message.place == 'nota'" >{{ modulos.message.text }}</Error>
+                            <Success v-if="modulos.message.success && modulos.message.place == 'nota'" >{{ modulos.message.text }}</Success>
+                        </div>
+                        <div class="mb-3">
                             <div>
                                 <label for="notaCierre">Nota de cierre</label>
                                 <textarea style="height:90px" class="form-control" placeholder="Escribe una descripción del módulo" name="nota" id="notaCierre">{{ dataUser.currentMode.nota }}</textarea>
@@ -182,6 +236,7 @@ getMod();
                     </form>
                 </div>
             </div>
+
 
         </DefaultPage> 
     </div>
