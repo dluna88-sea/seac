@@ -1,17 +1,14 @@
 import { defineStore } from "pinia";
 import { auth, db } from '../firebase.js'
-import { query, collection, where, getDocs, setDoc, doc } from "firebase/firestore/lite";
+import { query, collection, where, getDocs, setDoc, doc, getDoc } from "firebase/firestore/lite";
 
 export const useModulosStore = defineStore('ModulosStore',{
 
     state: () => ({
         loading: false,
-        isError: false,
-        error: '',
         datos: [],
         listado:[],
-        success: false,
-        successMsg: '',
+        currentModFBID:null,
 
         message: {
             error: false,
@@ -48,6 +45,74 @@ export const useModulosStore = defineStore('ModulosStore',{
                 this.loading = false;
             }
 
+        },
+
+        async dropFile(modID, sIndex, dIndex, dName){
+            try {
+                this.loading = true;
+                console.log(modID)
+                
+                const docRef = doc(db,'modulos',modID);
+                const modulo = await getDoc(docRef)
+
+                const docsNuevo = modulo.data().secciones[sIndex].documentos.filter( (x,index) => index != dIndex );
+                const secciones = [];
+                modulo.data().secciones.forEach((sec) => {
+                    secciones.push(sec)
+                })
+                console.log(secciones);
+
+                // const nuevoObjeto = {
+                //     titulo: modulo.data().titulo,
+                //     actualizacion: modulo.data().actualizacion,
+                //     encargado: modulo.data().encargado,
+                //     id: modulo.data().id,
+                //     nota: modulo.data().nota,
+                //     secciones:[
+                        
+                //     ]
+                // }
+
+
+            } catch (e) {
+                this.setError(e.message);
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async getModuloFBID(id = null){
+            try{
+                this.loading = true;
+
+                if(id == null){
+                    this.setError('No se recibió un id');
+                    return false;
+                }else{
+
+                    const modulo = await getDocs(
+                        query(
+                            collection(db, '/modulos'),
+                            where('id', '==', id)
+                        )
+                    );
+    
+                    if(modulo.docs.length == 1){
+
+                        this.currentModFBID = modulo.docs[0].id;
+                        return modulo.docs[0].id;
+
+                    }else{
+                        this.setError('No se encontró el módulo con el id: '+id);
+                    }
+
+                }
+
+            } catch (e){
+                this.setError(e.message);
+            } finally {
+                this.loading = false;
+            }
         },
 
         async update(values, modId = null){

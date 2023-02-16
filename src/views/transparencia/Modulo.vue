@@ -44,9 +44,8 @@ const uploadFile = async(seccion) => {
     console.log(documento)
 }
 
-async function getMod(){ await dataUser.getModulo(route.params.id); }
+async function getMod(){ await dataUser.getModulo(route.params.id); await modulos.getModuloFBID(dataUser.currentMode.id) }
 getMod();
-
 
 </script>
 
@@ -55,7 +54,6 @@ getMod();
     <div v-else>
         
         <DefaultPage>
-
         <Error v-if="modulos.message.error && modulos.message.place == null">{{ modulos.message.text }}</Error>
         <Success v-if="modulos.message.success && modulos.message.place == null">{{ modulos.message.text }}</Success>
 
@@ -201,7 +199,14 @@ getMod();
                                                 <span class="mx-2">{{ doc.nombre }}</span>
                                             </a>
                                             <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#deleteModal${sIndex}-${dIndex}`" style="color:red; cursor:pointer"><Icon name="x-circle-fill" /></a>
-                                            <ModalDeleteFile :id="`deleteModal${sIndex}-${dIndex}`" :archivo="{ documento:dIndex, seccion: sIndex, nombre: doc.nombre }"></ModalDeleteFile>
+                                            <ModalDeleteFile 
+                                                :id="`deleteModal${sIndex}-${dIndex}`" 
+                                                :archivo="{ 
+                                                    documento:dIndex, 
+                                                    seccion: sIndex, 
+                                                    nombre: doc.nombre, 
+                                                    modulo:null 
+                                                }"></ModalDeleteFile>
                                         </li>
                                     </ul>
                                 </div>

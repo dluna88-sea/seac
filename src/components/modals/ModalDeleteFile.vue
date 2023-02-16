@@ -1,4 +1,9 @@
 <script setup>
+import { useModulosStore } from '../../stores/modulos';
+import { useDataUserStore } from '../../stores/dataUser';
+const dataUser = useDataUserStore();
+const modulos = useModulosStore();
+
     const props = defineProps({
         archivo:{
             type:Object,
@@ -10,8 +15,14 @@
         }
     });
 
-    const eliminarArchivo = () => {
-        console.log(props.archivo.documento)
+    const eliminarArchivo = async() => {
+        
+        const sIndex = props.archivo.seccion;
+        const dIndex = props.archivo.documento;
+        const nombre = props.archivo.nombre;
+        const fbid = modulos.currentModFBID;
+        await modulos.dropFile(fbid,sIndex,dIndex,nombre);
+        
     }
 </script>
 
@@ -25,7 +36,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="my-5 py-5">
+                    <p class="py-1">
                         ¿Estás seguro que deseas eliminar el archivo {{ archivo.nombre }}
                     </p>
                 </div>
