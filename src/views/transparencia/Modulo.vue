@@ -5,6 +5,7 @@ import { useModulosStore } from '../../stores/modulos';
 const route = useRoute();
 const dataUser = useDataUserStore();
 const modulos = useModulosStore();
+let fileDeletion = {};
 
 /**
  * Acciones del módulo:
@@ -38,12 +39,9 @@ const updDescripcion = async(seccion) => {
     
 }
 
-const deleteDoc = async(seccion, documento) => {
-    console.log('Eliminar el documento '+documento+' de la sección '+seccion);
-}
-
 const uploadFile = async(seccion) => {
     const documento = document.forms['uplFilepdf']['filepdf'].files[0];
+    console.log(documento)
 }
 
 async function getMod(){ await dataUser.getModulo(route.params.id); }
@@ -77,9 +75,9 @@ getMod();
                         <div class="mb-3">
                             <Error v-if="modulos.message.error && modulos.message.place == 'descripcion'">{{ modulos.message.text }}</Error>
                             <Success v-if="modulos.message.success && modulos.message.place == 'descripcion'">{{ modulos.message.text }}</Success>
-                            <div class="form-floating">
-                                <textarea style="height:90px" class="form-control" placeholder="Escribe una descripción del módulo" name="descripcion" id="modDescripcion">{{ dataUser.currentMode.descripcion }}</textarea>
+                            <div>
                                 <label for="floatingTextarea">Descripción (Opcional)</label>
+                                <textarea style="height:90px" class="form-control" placeholder="Escribe una descripción del módulo" name="descripcion" id="modDescripcion">{{ dataUser.currentMode.descripcion }}</textarea>
                             </div>
                             <button class="btn btn-secondary mt-3" type="submit">Actualizar descripción</button>
                         </div>
@@ -202,7 +200,8 @@ getMod();
                                                 <Icon name="file-pdf" />
                                                 <span class="mx-2">{{ doc.nombre }}</span>
                                             </a>
-                                            <a class="float-end" @click="deleteDoc(sIndex,dIndex)" style="color:red; cursor:pointer"><Icon name="x-circle-fill" /></a>
+                                            <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#deleteModal${sIndex}-${dIndex}`" style="color:red; cursor:pointer"><Icon name="x-circle-fill" /></a>
+                                            <ModalDeleteFile :id="`deleteModal${sIndex}-${dIndex}`" :archivo="{ documento:dIndex, seccion: sIndex, nombre: doc.nombre }"></ModalDeleteFile>
                                         </li>
                                     </ul>
                                 </div>
@@ -240,4 +239,5 @@ getMod();
 
         </DefaultPage> 
     </div>
+
 </template>

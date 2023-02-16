@@ -14,7 +14,7 @@ const password = ref('')
 
 const handleSubmit = async () => {
     try {
-        
+        dataUser.message.place = 'login';
         await dataUser.login(email.value, password.value);
         router.push('/')
 
@@ -48,9 +48,7 @@ const handleSubmit = async () => {
 
                 <Loading v-if="dataUser.loading" />
 
-                <Error v-if="dataUser.isError">
-                    {{ dataUser.error }}
-                </Error>
+                <Error v-if="dataUser.message.error && dataUser.message.place == 'login'" >{{  dataUser.message.text }}</Error>
 
             </form>
         </main>

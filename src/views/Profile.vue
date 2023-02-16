@@ -13,6 +13,7 @@ async function getDatos(){
 getDatos();
 
 const updateNombre = async () => {
+    dataUser.message.place = 'nombre';
     const name = document.forms['updateNombre']['nombre'].value.trim();
     if(name != dataUser.datos.nombre){
         await dataUser.update({nombre:name})
@@ -20,6 +21,7 @@ const updateNombre = async () => {
 }
 
 const updateCargo = async () => {
+    dataUser.message.place = 'cargo'
     const cargo = document.forms['updateCargo']['cargo'].value.trim();
     if(cargo != dataUser.datos.cargo){
         await dataUser.update({cargo:cargo})
@@ -27,6 +29,7 @@ const updateCargo = async () => {
 }
 
 const updateEmail = async () => {
+    dataUser.message.place = 'email'
     const mail = document.forms['updateEmail']['email'].value.trim();
     if(mail != dataUser.datos.email){
         await dataUser.updateEmail({email:mail})
@@ -34,6 +37,8 @@ const updateEmail = async () => {
 }
 
 const updatePwd = async () => {
+    dataUser.message.place = 'password'
+
     const pwd = document.forms['updatePwd']['password'].value.trim();
     const pwdConfirm = document.forms['updatePwd']['password2'].value.trim();
     
@@ -47,8 +52,16 @@ const updatePwd = async () => {
 <template>
     <DefaultPage>
 
-        <div class="row"><Error v-if="dataUser.isError">{{ dataUser.error }}</Error></div>
-        <div class="row"><Success v-if="dataUser.success">{{ dataUser.successMsg }}</Success></div>
+        <div class="row">
+            <Error v-if="dataUser.message.error && dataUser.message.place == null">
+                {{ dataUser.error }}
+            </Error>
+        </div>
+        <div class="row">
+            <Success v-if="dataUser.message.success && dataUser.message.place == null">
+                {{ dataUser.message.text }}
+            </Success>
+        </div>
 
         <PageTitle>
             <Icon name="person-fill" /> &nbsp;Perfil de usuario
@@ -58,25 +71,6 @@ const updatePwd = async () => {
         <div v-else class="mb-5">
             
             <div class="row">
-                <div class="col px-lg-5">
-                    <BigCard>
-                        <p>ID Único: {{ dataUser.datos.uid }}</p>
-                        <p>Módulos asignados:</p>
-                        <Info v-if="dataUser.modulos.length == 0">
-                            No tienes módulos de transparencia asignados
-                        </Info>
-                        <div v-else class="continer">
-                            <ul class="list-group">
-                                <li class="list-group-item" v-for="mod in dataUser.modulos">
-                                    {{ mod.titulo }}
-                                </li>
-                            </ul>
-                        </div>
-                    </BigCard>
-                </div>
-            </div>
-            <hr/>
-            <div class="row">
                 <div class="col text-center py-4">
                     <h3>Actualizar datos personales</h3>
                 </div>
@@ -84,7 +78,18 @@ const updatePwd = async () => {
             <div class="row">
 
                 <div class="col-md-6 mt-3 px-lg-5">
+                    <div class="my-3">
+                        <Error v-if="dataUser.message.error && dataUser.message.place == 'nombre'">
+                            {{ dataUser.message.text }}
+                        </Error>
+
+                        <Success v-if="dataUser.message.success && dataUser.message.place == 'nombre'">
+                            {{ dataUser.message.text }}
+                        </Success>
+                    </div>
                     <form @submit.prevent="updateNombre()" name="updateNombre" class="form-floating">
+
+
                         <input type="text" class="form-control shadow-sm" name="nombre" id="nombre" placeholder="Escribe tu nombre completo" :value="dataUser.datos.nombre">
                         <label for="nombre">Nombre</label>
                         <div class="d-grid mt-2">
@@ -93,7 +98,18 @@ const updatePwd = async () => {
                     </form>
                 </div>
                 <div class="col-md-6 mt-3 px-lg-5">
+                    <div class="my-3">
+                        <Error v-if="dataUser.message.error && dataUser.message.place == 'email'">
+                            {{ dataUser.message.text }}
+                        </Error>
+
+                        <Success v-if="dataUser.message.success && dataUser.message.place == 'email'">
+                            {{ dataUser.message.text }}
+                        </Success>
+                    </div>
                     <form @submit.prevent="updateEmail()" name="updateEmail" class="form-floating">
+
+
                         <input name="email" type="email" class="form-control shadow-sm" id="email" placeholder="Escribe tu dirección correo electrónico" :value="dataUser.datos.email">
                         <label for="email">Correo electrónico</label>
                         <div class="d-grid mt-2">
@@ -102,7 +118,18 @@ const updatePwd = async () => {
                     </form>
                 </div>
                 <div class="col-md-6 mt-3 px-lg-5">
+                    <div class="my-3">
+                        <Error v-if="dataUser.message.error && dataUser.message.place == 'cargo'">
+                            {{ dataUser.message.text }}
+                        </Error>
+
+                        <Success v-if="dataUser.message.success && dataUser.message.place == 'cargo'">
+                            {{ dataUser.message.text }}
+                        </Success>
+                    </div>
                     <form @submit.prevent="updateCargo()" name="updateCargo" class="form-floating">
+                        
+
                         <input type="text" class="form-control shadow-sm" name="cargo" id="cargo" placeholder="Escribe el nombre del cargo" :value="dataUser.datos.cargo">
                         <label for="cargo">Cargo</label>
                         <div class="d-grid mt-2">
@@ -110,11 +137,21 @@ const updatePwd = async () => {
                         </div>
                     </form>
                 </div>
-                <div class="col-md-12 mt-3 px-lg-5 mb-5">
+                <div class="col-md-12 mt-5 px-lg-5 mb-5">
                     <Card>
                         <CardHeader>Actualizar contraseña</CardHeader>
                         <CardBody>
-                            <Error v-if="dataUser.passwordError">{{ dataUser.passwordErrMsg }}</Error>
+                            
+                            <div class="my-3">
+                                <Error v-if="dataUser.message.error && dataUser.message.place == 'password'">
+                                    {{ dataUser.message.text }}
+                                </Error>
+
+                                <Success v-if="dataUser.message.success && dataUser.message.place == 'password'">
+                                    {{ dataUser.message.text }}
+                                </Success>
+                            </div>
+                            
                             <ul>
                                 <li>La contraseña debe tener mínimo 6 caractéres y máximo 8</li>
                             </ul>
@@ -137,6 +174,32 @@ const updatePwd = async () => {
                     </Card>
                 </div>
 
+            </div>
+            
+            
+            
+            <div class="row">
+                <div class="col text-center py-4">
+                    <h3>Módulos de transparencia asignados:</h3>
+                </div>
+            </div>
+            <div class="row mb-5">
+                <div class="col px-lg-5">
+                    <BigCard>
+                        <p>ID Único: {{ dataUser.datos.uid }}</p>
+                        <p>Módulos asignados:</p>
+                        <Info v-if="dataUser.modulos.length == 0">
+                            No tienes módulos de transparencia asignados
+                        </Info>
+                        <div v-else class="continer">
+                            <ul class="list-group">
+                                <li class="list-group-item" v-for="mod in dataUser.modulos">
+                                    {{ mod.titulo }}
+                                </li>
+                            </ul>
+                        </div>
+                    </BigCard>
+                </div>
             </div>
 
         </div>

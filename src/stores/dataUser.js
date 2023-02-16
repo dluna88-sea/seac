@@ -15,6 +15,12 @@ export const useDataUserStore = defineStore('DataUser',{
         passwordError: false,
         passwordErrMsg: null,
         currentMode: [],
+        message:{
+            error: false,
+            success: false,
+            text: '',
+            place: null
+        }
     }),
     actions:{
 
@@ -45,9 +51,7 @@ export const useDataUserStore = defineStore('DataUser',{
                     }
                 ).catch((e) => { this.setError(e.message); console.log(e.message); return false; })
             }else{
-                this.passwordErrMsg = 'Las contraseñas no coinciden';
-                this.passwordError = true;
-                setTimeout(() => { this.passwordError = false; this.passwordErrMsg = ""; }, 6000)
+                this.setError('Las contraseñas no coinciden')
             }
         },
 
@@ -170,13 +174,17 @@ export const useDataUserStore = defineStore('DataUser',{
         },
 
         setSuccess(msg = "Realizado correctamente."){
-            this.success = true; this.successMsg = msg;
-            setTimeout(() => { this.success = false; this.successMsg = ""; }, 6000);
+            this.message.error = false;
+            this.message.success = true;
+            this.message.text = msg;
+            setTimeout(() => { this.message.success = false; this.message.text = ''; }, 5000)
         },
 
         setError(msg = 'Ha ocurrido un error.'){
-            this.error = msg; this.isError = true;
-            setTimeout(() => { this.isError = false; this.error = ""; }, 6000);
+            this.message.success = false;
+            this.message.error = true;
+            this.message.text = msg;
+            setTimeout(() => { this.message.error = false; this.message.text = ''; }, 5000)
         }
     }
 });

@@ -19,7 +19,17 @@ traerDatos();
 
     <DefaultPage>
         
-        <div v-if="dataUser.isError" class="row"><Error>{{ dataUser.error }}</Error></div>
+        <div v-if="dataUser.message.error && dataUser.message.place == null" class="row">
+            <Error>
+                {{ dataUser.message.text }}
+            </Error>
+        </div>
+
+        <div v-if="dataUser.message.success && dataUser.message.place == null" class="row">
+            <Success>
+                {{ dataUser.message.text }}
+            </Success>
+        </div>
 
         <PageTitle>Bienvenido</PageTitle>
         <div class="row mb-5">

@@ -17,6 +17,7 @@ import MainNavbar from './components/MainNavbar.vue';
 import BigCard from './components/Cards/BigCard.vue';
 import Icon from './components/Icon.vue';
 import DefaultPage from './components/DefaultPage.vue';
+import ModalDeleteFile from './components/modals/ModalDeleteFile.vue';
 
 
 const app = createApp(App);
@@ -39,6 +40,7 @@ app.component("MainNavbar", MainNavbar);
 app.component("BigCard", BigCard);
 app.component("Icon", Icon);
 app.component("DefaultPage", DefaultPage);
+app.component("ModalDeleteFile", ModalDeleteFile);
 
 app.mount("#app");
 
