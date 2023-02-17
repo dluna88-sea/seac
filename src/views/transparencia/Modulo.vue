@@ -1,60 +1,73 @@
 <script setup>
 import { useRoute } from 'vue-router';
 import { useDataUserStore } from '../../stores/dataUser';
+
+import { useCurrentUserStore } from '../../stores/currentUser';
+
 import { useModulosStore } from '../../stores/modulos';
 const route = useRoute();
-const dataUser = useDataUserStore();
+const currentUser = useCurrentUserStore();
 const modulos = useModulosStore();
-let fileDeletion = {};
-
-/**
- * Acciones del módulo:
- */
-const updateDescripcion = async() => {
-    modulos.message.place = 'descripcion';
-    const desc = document.forms['modDescripcion']['descripcion'].value.trim()
-    await modulos.update({descripcion:desc}, route.params.id);
-    // getMod();
-    setTimeout(() => { location.reload() }, 3500)
-}
-
-const updateNota = async() => {
-    modulos.message.place = 'nota';
-    const note = document.forms['modNota']['nota'].value.trim()
-    await modulos.update({nota:note}, route.params.id);
-    // getMod();
-    setTimeout(() => { location.reload() }, 3500)
-}
 
 
-/** 
- * Acciones de cada sección
-*/
-const updSubtitulo = async(seccion) => {
-    console.log('actualizar el subtítulo de la sección '+seccion);
-}
+async function getMod(){ 
+    if(currentUser.id == null){ await currentUser.getDatos(); }
+    if(currentUser.modulos.length == 0){ await currentUser.getModulos(); }
 
-const updDescripcion = async(seccion) => {
-    console.log('actualizar la descripción de la sección '+seccion);
+    console.log(route.params.id);
+
+    console.log()
     
 }
-
-const uploadFile = async(seccion) => {
-    const documento = document.forms['uplFilepdf']['filepdf'].files[0];
-    console.log(documento)
-}
-
-async function getMod(){ await dataUser.getModulo(route.params.id); await modulos.getModuloFBID(dataUser.currentMode.id) }
 getMod();
+
+
+// /**
+//  * Acciones del módulo:
+//  */
+// const updateDescripcion = async() => {
+//     modulos.message.place = 'descripcion';
+//     const desc = document.forms['modDescripcion']['descripcion'].value.trim()
+//     await modulos.update({descripcion:desc}, route.params.id);
+//     // getMod();
+//     setTimeout(() => { location.reload() }, 3500)
+// }
+
+// const updateNota = async() => {
+//     modulos.message.place = 'nota';
+//     const note = document.forms['modNota']['nota'].value.trim()
+//     await modulos.update({nota:note}, route.params.id);
+//     // getMod();
+//     setTimeout(() => { location.reload() }, 3500)
+// }
+
+
+// /** 
+//  * Acciones de cada sección
+// */
+// const updSubtitulo = async(seccion) => {
+//     console.log('actualizar el subtítulo de la sección '+seccion);
+// }
+
+// const updDescripcion = async(seccion) => {
+//     console.log('actualizar la descripción de la sección '+seccion);
+    
+// }
+
+// const uploadFile = async(seccion) => {
+//     const documento = document.forms['uplFilepdf']['filepdf'].files[0];
+//     console.log(documento)
+// }
+
 
 </script>
 
 <template>
-    <Loading v-if="dataUser.loading"></Loading>
+    <Loading v-if="currentUser.loading"></Loading>
     <div v-else>
         
         <DefaultPage>
-        <Error v-if="modulos.message.error && modulos.message.place == null">{{ modulos.message.text }}</Error>
+        <!-- <Error v-if="modulos.message.error && modulos.message.place == null">{{ modulos.message.text }}</Error>
         <Success v-if="modulos.message.success && modulos.message.place == null">{{ modulos.message.text }}</Success>
 
         <PageTitle>{{ dataUser.currentMode.titulo }}</PageTitle>
@@ -240,7 +253,7 @@ getMod();
                     </form>
                 </div>
             </div>
-
+ -->
 
         </DefaultPage> 
     </div>

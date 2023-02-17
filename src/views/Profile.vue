@@ -1,7 +1,10 @@
 <script setup>
 import { useDataUserStore } from '../stores/dataUser';
+import { useCurrentUserStore } from '../stores/currentUser';
 
+const currentUser = useCurrentUserStore();
 const dataUser = useDataUserStore();
+
 async function getDatos(){
     if(dataUser.datos.length == 0){ 
         await dataUser.getData();
@@ -9,42 +12,49 @@ async function getDatos(){
     if(dataUser.modulos.length == 0){
         await dataUser.getModulos();
     }
+    //nuevo:
+    if(currentUser.id == null){ await currentUser.getDatos(); }
+    if(currentUser.modulos.length == 0){ await currentUser.getModulos(); }
 }
 getDatos();
 
 const updateNombre = async () => {
-    dataUser.message.place = 'nombre';
+    currentUser.message.place = 'nombre';
     const name = document.forms['updateNombre']['nombre'].value.trim();
-    if(name != dataUser.datos.nombre){
-        await dataUser.update({nombre:name})
+    if(name != currentUser.nombre){
+        await currentUser.update({nombre:name})
+        location.reload()
     }
 }
 
 const updateCargo = async () => {
-    dataUser.message.place = 'cargo'
+    currentUser.message.place = 'cargo'
     const cargo = document.forms['updateCargo']['cargo'].value.trim();
-    if(cargo != dataUser.datos.cargo){
-        await dataUser.update({cargo:cargo})
+    if(cargo != currentUser.cargo){
+        await currentUser.update({cargo:cargo})
+        location.reload()
     }
 }
 
 const updateEmail = async () => {
-    dataUser.message.place = 'email'
+    currentUser.message.place = 'email'
     const mail = document.forms['updateEmail']['email'].value.trim();
-    if(mail != dataUser.datos.email){
-        await dataUser.updateEmail({email:mail})
+    if(mail != currentUser.email){
+        await currentUser.updateEmail({email:mail})
+        location.reload()
     }
 }
 
 const updatePwd = async () => {
-    dataUser.message.place = 'password'
+    currentUser.message.place = 'password'
 
     const pwd = document.forms['updatePwd']['password'].value.trim();
     const pwdConfirm = document.forms['updatePwd']['password2'].value.trim();
     
-    await dataUser.updatePwd(pwd, pwdConfirm)
+    await currentUser.updatePwd(pwd, pwdConfirm)
     document.forms['updatePwd']['password'].value = "";
     document.forms['updatePwd']['password2'].value = "";
+    location.reload()
 }
 
 </script>
@@ -53,13 +63,13 @@ const updatePwd = async () => {
     <DefaultPage>
 
         <div class="row">
-            <Error v-if="dataUser.message.error && dataUser.message.place == null">
-                {{ dataUser.error }}
+            <Error v-if="currentUser.message.error && currentUser.message.place == null">
+                {{ currentUser.message.text }}
             </Error>
         </div>
         <div class="row">
-            <Success v-if="dataUser.message.success && dataUser.message.place == null">
-                {{ dataUser.message.text }}
+            <Success v-if="currentUser.message.success && currentUser.message.place == null">
+                {{ currentUser.message.text }}
             </Success>
         </div>
 
@@ -67,7 +77,7 @@ const updatePwd = async () => {
             <Icon name="person-fill" /> &nbsp;Perfil de usuario
         </PageTitle>
 
-        <Loading v-if="dataUser.loading" />
+        <Loading v-if="currentUser.loading" />
         <div v-else class="mb-5">
             
             <div class="row">
@@ -79,38 +89,38 @@ const updatePwd = async () => {
 
                 <div class="col-md-6 mt-3 px-lg-5">
                     <div class="my-3">
-                        <Error v-if="dataUser.message.error && dataUser.message.place == 'nombre'">
-                            {{ dataUser.message.text }}
+                        <Error v-if="currentUser.message.error && currentUser.message.place == 'nombre'">
+                            {{ currentUser.message.text }}
                         </Error>
 
-                        <Success v-if="dataUser.message.success && dataUser.message.place == 'nombre'">
-                            {{ dataUser.message.text }}
+                        <Success v-if="currentUser.message.success && currentUser.message.place == 'nombre'">
+                            {{ currentUser.message.text }}
                         </Success>
                     </div>
                     <form @submit.prevent="updateNombre()" name="updateNombre" class="form-floating">
 
-
-                        <input type="text" class="form-control shadow-sm" name="nombre" id="nombre" placeholder="Escribe tu nombre completo" :value="dataUser.datos.nombre">
+                        <input type="text" class="form-control shadow-sm" name="nombre" id="nombre" placeholder="Escribe tu nombre completo" :value="currentUser.nombre">
                         <label for="nombre">Nombre</label>
                         <div class="d-grid mt-2">
                             <button class="btn btn-secondary block">Actualizar</button>
                         </div>
+
                     </form>
                 </div>
                 <div class="col-md-6 mt-3 px-lg-5">
                     <div class="my-3">
-                        <Error v-if="dataUser.message.error && dataUser.message.place == 'email'">
-                            {{ dataUser.message.text }}
+                        <Error v-if="currentUser.message.error && currentUser.message.place == 'email'">
+                            {{ currentUser.message.text }}
                         </Error>
 
-                        <Success v-if="dataUser.message.success && dataUser.message.place == 'email'">
-                            {{ dataUser.message.text }}
+                        <Success v-if="currentUser.message.success && currentUser.message.place == 'email'">
+                            {{ currentUser.message.text }}
                         </Success>
                     </div>
                     <form @submit.prevent="updateEmail()" name="updateEmail" class="form-floating">
 
 
-                        <input name="email" type="email" class="form-control shadow-sm" id="email" placeholder="Escribe tu dirección correo electrónico" :value="dataUser.datos.email">
+                        <input name="email" type="email" class="form-control shadow-sm" id="email" placeholder="Escribe tu dirección correo electrónico" :value="currentUser.email">
                         <label for="email">Correo electrónico</label>
                         <div class="d-grid mt-2">
                             <button class="btn btn-secondary block">Actualizar</button>
@@ -119,18 +129,18 @@ const updatePwd = async () => {
                 </div>
                 <div class="col-md-6 mt-3 px-lg-5">
                     <div class="my-3">
-                        <Error v-if="dataUser.message.error && dataUser.message.place == 'cargo'">
-                            {{ dataUser.message.text }}
+                        <Error v-if="currentUser.message.error && currentUser.message.place == 'cargo'">
+                            {{ currentUser.message.text }}
                         </Error>
 
-                        <Success v-if="dataUser.message.success && dataUser.message.place == 'cargo'">
-                            {{ dataUser.message.text }}
+                        <Success v-if="currentUser.message.success && currentUser.message.place == 'cargo'">
+                            {{ currentUser.message.text }}
                         </Success>
                     </div>
                     <form @submit.prevent="updateCargo()" name="updateCargo" class="form-floating">
                         
 
-                        <input type="text" class="form-control shadow-sm" name="cargo" id="cargo" placeholder="Escribe el nombre del cargo" :value="dataUser.datos.cargo">
+                        <input type="text" class="form-control shadow-sm" name="cargo" id="cargo" placeholder="Escribe el nombre del cargo" :value="currentUser.cargo">
                         <label for="cargo">Cargo</label>
                         <div class="d-grid mt-2">
                             <button class="btn btn-secondary block">Actualizar</button>
@@ -143,12 +153,12 @@ const updatePwd = async () => {
                         <CardBody>
                             
                             <div class="my-3">
-                                <Error v-if="dataUser.message.error && dataUser.message.place == 'password'">
-                                    {{ dataUser.message.text }}
+                                <Error v-if="currentUser.message.error && currentUser.message.place == 'password'">
+                                    {{ currentUser.message.text }}
                                 </Error>
 
-                                <Success v-if="dataUser.message.success && dataUser.message.place == 'password'">
-                                    {{ dataUser.message.text }}
+                                <Success v-if="currentUser.message.success && currentUser.message.place == 'password'">
+                                    {{ currentUser.message.text }}
                                 </Success>
                             </div>
                             
@@ -186,14 +196,14 @@ const updatePwd = async () => {
             <div class="row mb-5">
                 <div class="col px-lg-5">
                     <BigCard>
-                        <p>ID Único: {{ dataUser.datos.uid }}</p>
+                        <p>ID Único: {{ currentUser.uid }}</p>
                         <p>Módulos asignados:</p>
-                        <Info v-if="dataUser.modulos.length == 0">
+                        <Info v-if="currentUser.modulos.length == 0">
                             No tienes módulos de transparencia asignados
                         </Info>
                         <div v-else class="continer">
                             <ul class="list-group">
-                                <li class="list-group-item" v-for="mod in dataUser.modulos">
+                                <li class="list-group-item" v-for="mod in currentUser.modulos">
                                     {{ mod.titulo }}
                                 </li>
                             </ul>

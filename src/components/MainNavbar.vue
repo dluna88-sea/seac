@@ -1,16 +1,16 @@
 <script setup>
-import { useDataUserStore } from '../stores/dataUser';
-const dataUser = useDataUserStore();
+import { useCurrentUserStore } from '../stores/currentUser';
+const currentUser = useCurrentUserStore();
 async function traerDatos(){
-    if(dataUser.datos.length == 0){
-        await dataUser.getData();
+    if(currentUser.id == null){
+        await currentUser.getDatos();
     }
 }
 traerDatos();
 </script>
 
 <template>
-    <Loading v-if="dataUser.loading"></Loading>
+    <Loading v-if="currentUser.loading"></Loading>
     <nav v-else class="navbar navbar-expand-lg bg-body-tertiary mb-3 shadow-sm">
         <div class="container-fluid">
             <RouterLink class="navbar-brand" to="/" >
@@ -28,14 +28,14 @@ traerDatos();
                     <li class="nav-item">
                         <RouterLink class="nav-link" to="/boletines">Boletines</RouterLink>
                     </li>
-                    <li v-if="dataUser.datos.rol=='admin'" class="nav-item">
+                    <li v-if="currentUser.rol=='admin'" class="nav-item">
                         <RouterLink class="nav-link" to="/usuarios">Usuarios</RouterLink>
                     </li>
                 </ul>
                 <ul class="navbar-nav flex-wrap ms-md-auto">
                     <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <Icon name="person-circle" /> &nbsp;{{ dataUser.datos.nombre }}
+                                <Icon name="person-circle" /> &nbsp;{{ currentUser.nombre }}
                             </a>
                             <ul class="dropdown-menu">
                                 <li><RouterLink class="dropdown-item" to="/perfil">Perfil de usuario</RouterLink></li>

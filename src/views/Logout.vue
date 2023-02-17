@@ -1,11 +1,11 @@
 <script setup>
 import router from '../router'
-import { useDataUserStore } from '../stores/dataUser'
-const dataUser = useDataUserStore();
+import { useCurrentUserStore } from '../stores/currentUser';
+const currentUser = useCurrentUserStore();
 
 async function salir(){
     try{
-        await dataUser.logout();
+        await currentUser.logout();
         
         setTimeout(() => { router.push('/') },2000)
 

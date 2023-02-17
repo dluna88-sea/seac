@@ -1,18 +1,13 @@
 <script setup>
-import { useDataUserStore } from '../../stores/dataUser';
+import { useCurrentUserStore } from '../../stores/currentUser';
 import { useModulosStore } from '../../stores/modulos';
 
+const currentUser = useCurrentUserStore();
 const modulos = useModulosStore();
-const dataUser = useDataUserStore();
 
 async function getDatos(){
-    if(dataUser.datos.length == 0){ 
-        await dataUser.getData();
-    }
-
-    if(dataUser.modulos.length == 0){
-        await dataUser.getModulos();
-    }
+    if(currentUser.id == null){ await currentUser.getDatos(); }
+    currentUser.getModulos();
 }
 getDatos();
 
@@ -23,7 +18,7 @@ getDatos();
             <Icon name="boxes" /> &nbsp;Módulos de transparencia
         </PageTitle>
         
-        <div v-if="dataUser.datos.rol == 'admin'" class="row mb-3">
+        <div v-if="currentUser.rol == 'admin'" class="row mb-3">
             <nav class="navbar bg-body-tertiary px-3">
                 <span class="navbar-text">
                     Herramientas de administrador:
@@ -40,7 +35,8 @@ getDatos();
             <div class="col">
                 <BigCard>
                     <p>Estos son los módulos en los que te han designado como encargado:</p>
-                    <ul class="list-group list-group-flush shadow-sm" v-for="mod in dataUser.modulos">
+                    <Info v-if="currentUser.modulos == 0">No tienes asignados módulos de transparencia.</Info>
+                    <ul v-else class="list-group list-group-flush shadow-sm" v-for="mod in currentUser.modulos">
                         <router-link style="text-decoration:none" :to="`/transparencia/${mod.id}`">
                             <li class="list-group-item">{{ mod.titulo }}</li>
                         </router-link>

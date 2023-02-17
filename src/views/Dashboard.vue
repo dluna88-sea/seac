@@ -1,15 +1,10 @@
 <script setup>
-import { useDataUserStore } from '../stores/dataUser';
-const dataUser = useDataUserStore();
-
+import { useCurrentUserStore } from '../stores/currentUser';
+const currentUser = useCurrentUserStore();
 async function traerDatos(){
-    if(dataUser.datos.length == 0){
-        await dataUser.getData();
-    }
-
-    if(dataUser.modulos.length == 0){
-        await dataUser.getModulos();
-    }
+    if(currentUser.id == null){ await currentUser.getDatos(); }
+    if(currentUser.modulos.length == 0){ await currentUser.getModulos(); }
+    
 }
 
 traerDatos();
@@ -19,15 +14,15 @@ traerDatos();
 
     <DefaultPage>
         
-        <div v-if="dataUser.message.error && dataUser.message.place == null" class="row">
+        <div v-if="currentUser.message.error && currentUser.message.place == null" class="row">
             <Error>
-                {{ dataUser.message.text }}
+                {{ currentUser.message.text }}
             </Error>
         </div>
 
-        <div v-if="dataUser.message.success && dataUser.message.place == null" class="row">
+        <div v-if="currentUser.message.success && currentUser.message.place == null" class="row">
             <Success>
-                {{ dataUser.message.text }}
+                {{ currentUser.message.text }}
             </Success>
         </div>
 
@@ -37,13 +32,16 @@ traerDatos();
             <!-- CARD MÓDULOS DE TRANSPARENCIA -->
             <div class="col-md-6 col-xl-4 my-3">
                 <BigCard>
-                    <Loading v-if="dataUser.loading"></Loading>
+                    <Loading v-if="currentUser.loading"></Loading>
                     <div v-else>
                         <h2><Icon name="boxes" /> Transparencia</h2>
-                        <Info v-if="dataUser.modulos.length == 0">No tienes módulos asignados</Info>
-                        <ul v-else v-for="mod in dataUser.modulos" class="list-group my-3">
-                            <RouterLink :to="`/transparencia/${mod.id}`" class="list-group-item">{{ mod.titulo }}</RouterLink>
+                        <Info v-if="currentUser.modulos.length == 0">No tienes módulos asignados</Info>
+                        
+                        <!-- Mostrar solo 5 módulos de transparencia -->
+                        <ul v-else class="list-group my-3">
+                            <RouterLink v-for="mod in currentUser.modulos.slice(0,4)" :to="`/transparencia/${mod.id}`" class="list-group-item">{{ mod.titulo }}</RouterLink>
                         </ul>
+
                         <RouterLink class="btn btn-outline-secondary" to="/transparencia"><Icon name="plus" />Ver más</RouterLink>
                     </div>
                         
@@ -76,7 +74,7 @@ traerDatos();
             </div>
 
             <!-- ADMIN: CARD USUARIOS REGISTRADOS -->
-            <div v-if="dataUser.datos.rol == 'admin'" class="col-md-6 col-xl-4 my-3">
+            <div v-if="currentUser.rol == 'admin'" class="col-md-6 col-xl-4 my-3">
                 <BigCard>
                     <h2><Icon name="people-fill" /> Usuarios</h2>
                     <ul class="list-group list-group-flush my-3">

@@ -1,7 +1,5 @@
 <script setup>
 import { useModulosStore } from '../../stores/modulos';
-import { useDataUserStore } from '../../stores/dataUser';
-const dataUser = useDataUserStore();
 const modulos = useModulosStore();
 
     const props = defineProps({

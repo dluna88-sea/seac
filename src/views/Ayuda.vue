@@ -6,7 +6,7 @@
 
 <DefaultPage>
     
-    <PageTitle>Ayuda</PageTitle>
+    <PageTitle><Icon name="info-circle-fill"/> Ayuda</PageTitle>
     <div class="row">
         <BigCard>
             <h3>Preguntas Frecuentes</h3>

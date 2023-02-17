@@ -1,11 +1,11 @@
 <script setup>
 import { ref } from 'vue';
 import router from '../router';
-import { useDataUserStore } from '../stores/dataUser';
+import { useCurrentUserStore } from '../stores/currentUser';
 
-const dataUser = useDataUserStore();
+const currentUser = useCurrentUserStore();
 
-if(dataUser.isAuth()){
+if(currentUser.isAuth()){
     router.push('/')
 }
 
@@ -14,8 +14,8 @@ const password = ref('')
 
 const handleSubmit = async () => {
     try {
-        dataUser.message.place = 'login';
-        await dataUser.login(email.value, password.value);
+        currentUser.message.place = 'login';
+        await currentUser.login(email.value, password.value);
         router.push('/')
 
     } catch (error) {
@@ -26,7 +26,7 @@ const handleSubmit = async () => {
 </script>
 <template>
 
-    <Loading v-if="dataUser.loading"></Loading>
+    <Loading v-if="currentUser.loading"></Loading>
     <div v-else class="container text-center mainwrapper">
         <main class="form-signin w-100 m-auto">
             <form @submit.prevent="handleSubmit">
@@ -46,9 +46,9 @@ const handleSubmit = async () => {
                     <Icon name="unlock-fill"/> Acceder
                 </button>
 
-                <Loading v-if="dataUser.loading" />
+                <Loading v-if="currentUser.loading" />
 
-                <Error v-if="dataUser.message.error && dataUser.message.place == 'login'" >{{  dataUser.message.text }}</Error>
+                <Error v-if="currentUser.message.error && currentUser.message.place == 'login'" >{{  currentUser.message.text }}</Error>
 
             </form>
         </main>
