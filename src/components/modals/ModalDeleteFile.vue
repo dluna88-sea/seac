@@ -15,11 +15,11 @@ const modulos = useModulosStore();
 
     const eliminarArchivo = async() => {
         
-        const sIndex = props.archivo.seccion;
-        const dIndex = props.archivo.documento;
+        const seccionId = props.archivo.seccion;
+        const documentId = props.archivo.documento;
         const nombre = props.archivo.nombre;
-        const fbid = modulos.currentModFBID;
-        await modulos.dropFile(fbid,sIndex,dIndex,nombre);
+        const fbid = props.archivo.modulo;
+        console.log(fbid+" "+seccionId+" "+documentId+" "+nombre);
         
     }
 </script>
@@ -27,7 +27,7 @@ const modulos = useModulosStore();
 <template>
     <!-- Modal -->
     <div class="modal fade" :id="id" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="deleteModalLabel">Modal title</h1>
@@ -35,7 +35,8 @@ const modulos = useModulosStore();
                 </div>
                 <div class="modal-body">
                     <p class="py-1">
-                        ¿Estás seguro que deseas eliminar el archivo {{ archivo.nombre }}
+                        ¿Estás seguro que deseas eliminar el archivo:<br> 
+                        <a target="_blank" :href="archivo.url">{{ archivo.nombre }}</a>
                     </p>
                 </div>
                 <div class="modal-footer">

@@ -37,7 +37,7 @@ getDatos();
                     <p>Estos son los módulos en los que te han designado como encargado:</p>
                     <Info v-if="currentUser.modulos == 0">No tienes asignados módulos de transparencia.</Info>
                     <ul v-else class="list-group list-group-flush shadow-sm" v-for="mod in currentUser.modulos">
-                        <router-link style="text-decoration:none" :to="`/transparencia/${mod.id}`">
+                        <router-link style="text-decoration:none" :to="`/transparencia/${mod.fbid}`">
                             <li class="list-group-item">{{ mod.titulo }}</li>
                         </router-link>
                     </ul>

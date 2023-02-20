@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { updateEmail, updatePassword, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
 import { auth, db } from '../firebase.js'
-import { query, collection, where, getDocs, setDoc, doc } from "firebase/firestore/lite";
+import { query, collection, where, getDocs, getDoc, setDoc, doc } from "firebase/firestore/lite";
 
 export const useModuloStore = defineStore('SingleModulo',{
     state: () => ({
@@ -26,13 +26,26 @@ export const useModuloStore = defineStore('SingleModulo',{
     }),
     actions:{
 
-
         //Consultar detalles de un módulo especifico
-        async get(id){
+        async get(fbid){
             try {
                 this.loading = true;
 
+                const docSnap = await getDoc( 
+                    doc(db, '/modulos', fbid) 
+                )
+
+                this.fbid = docSnap.id;
+                this.id = docSnap.data().id;
+                this.titulo = docSnap.data().titulo;
+                this.actualizacion = docSnap.data().actualizacion;
+                this.encargado.nombre = docSnap.data().encargado.nombre;
+                this.encargado.cargo = docSnap.data().encargado.cargo;
+                this.nota = docSnap.data().nota;
+                this.descripcion = docSnap.data().descripcion;
+
             } catch (e) {
+                console.log(e.message)
                 this.setError(e.message)
             } finally {
                 this.loading = false;
@@ -52,7 +65,14 @@ export const useModuloStore = defineStore('SingleModulo',{
                         collection(db, path)
                     )
                 );
-                console.log(querySnapshot.docs)
+                querySnapshot.docs.forEach(async(doc) => {
+                    const o_documentos = await this.getDocuments(modID, doc.id)
+                    let documentos = [];
+                    o_documentos.forEach((documento) => {
+                        documentos.push({id:documento.id, ...documento.data()})
+                    })
+                    this.secciones.push({id:doc.id, ...doc.data(), documentos})
+                });
 
             } catch (e) {
                 console.log(e);
@@ -70,12 +90,12 @@ export const useModuloStore = defineStore('SingleModulo',{
 
                 const path = '/modulos/'+modID+'/secciones/'+secID+'/documentos';
 
-                const querySnapshot = await getDocs(
+                const geDocuments = await getDocs(
                     query(
                         collection(db, path)
                     )
                 );
-                console.log(querySnapshot.docs)
+                return geDocuments.docs;
 
             } catch (e) {
                 console.log(e);
