@@ -1,6 +1,5 @@
 <script setup>
-import { useModulosStore } from '../../stores/modulos';
-const modulos = useModulosStore();
+import { useModuloStore } from '../../stores/modulo';
 
     const props = defineProps({
         archivo:{
@@ -10,17 +9,12 @@ const modulos = useModulosStore();
         id:{
             type:String,
             required:true
-        }
+        },
     });
 
     const eliminarArchivo = async() => {
-        
-        const seccionId = props.archivo.seccion;
-        const documentId = props.archivo.documento;
-        const nombre = props.archivo.nombre;
-        const fbid = props.archivo.modulo;
-        console.log(fbid+" "+seccionId+" "+documentId+" "+nombre);
-        
+        const modulo = useModuloStore();
+        await modulo.deleteFile( props.archivo )
     }
 </script>
 
@@ -30,7 +24,9 @@ const modulos = useModulosStore();
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="deleteModalLabel">Modal title</h1>
+                    <h1 class="modal-title fs-5" id="deleteModalLabel">
+                        <Icon name="trash-fill" /> &nbsp;Eliminar Archivo
+                    </h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">

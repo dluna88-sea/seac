@@ -1,5 +1,6 @@
 <script setup>
 import { useRoute } from 'vue-router';
+import ModalNuevaSeccion from '../../components/modals/ModalNuevaSeccion.vue';
 import { useCurrentUserStore } from '../../stores/currentUser';
 import { useModuloStore } from '../../stores/modulo';
 const route = useRoute();
@@ -8,52 +9,59 @@ const modulo = useModuloStore();
 
 
 async function getMod(){ 
+    
     if(currentUser.id == null){ await currentUser.getDatos(); }
-    
-    if(modulo.id == null){ await modulo.get(route.params.id) }
-    if(modulo.secciones.length == 0){ await modulo.getSecciones(modulo.fbid); }
-    
+    await modulo.get(route.params.id);
 
 }
 getMod();
 
 
-// /**
-//  * Acciones del módulo:
-//  */
-// const updateDescripcion = async() => {
-//     modulos.message.place = 'descripcion';
-//     const desc = document.forms['modDescripcion']['descripcion'].value.trim()
-//     await modulos.update({descripcion:desc}, route.params.id);
-//     // getMod();
-//     setTimeout(() => { location.reload() }, 3500)
-// }
+/**
+ * Acciones del módulo:
+ */
+const updateDescripcion = async() => {
+    modulo.message.place = 'descripcion';
+    const desc = document.forms['modDescripcion']['descripcion'].value.trim()
+    await modulo.update({descripcion:desc}, modulo.fbid);
+    //getMod();
+    location.reload()
+}
 
-// const updateNota = async() => {
-//     modulos.message.place = 'nota';
-//     const note = document.forms['modNota']['nota'].value.trim()
-//     await modulos.update({nota:note}, route.params.id);
-//     // getMod();
-//     setTimeout(() => { location.reload() }, 3500)
-// }
+const updateNota = async() => {
+    modulo.message.place = 'nota';
+    const note = document.forms['modNota']['nota'].value.trim()
+    await modulo.update({nota:note}, modulo.fbid);
+    // getMod();
+    location.reload()
+}
 
 
-// /** 
-//  * Acciones de cada sección
-// */
-// const updSubtitulo = async(seccion) => {
-//     console.log('actualizar el subtítulo de la sección '+seccion);
-// }
+/** 
+ * Acciones de cada sección
+*/
+const updSubtitulo = async(secID, subt) => {
+    const subtNuevo = document.forms['secSubtitulo_'+secID]['subtitulo'].value.trim();
+    if(subtNuevo != subt){
+        await modulo.updateSeccion({subtitulo:subtNuevo},modulo.fbid,secID);
+        location.reload();
+    }
+}
 
-// const updDescripcion = async(seccion) => {
-//     console.log('actualizar la descripción de la sección '+seccion);
-    
-// }
+const updDescripcion = async(secID, desc) => {
+    const descNueva = document.forms['secDescripcion_'+secID]['descripcion'].value.trim();
+    if(descNueva != desc){
+        await modulo.updateSeccion({descripcion:descNueva},modulo.fbid,secID);
+        location.reload();
+    }
+}
 
-// const uploadFile = async(seccion) => {
-//     const documento = document.forms['uplFilepdf']['filepdf'].files[0];
-//     console.log(documento)
-// }
+const uploadFile = async(secId) => {
+    const documento = document.forms['uplFilepdf_'+secId]['filepdf'].files[0];
+    if(documento != undefined){
+        await modulo.uploadFile(documento,{modID:modulo.fbid, secID:secId});
+    }
+}
 
 
 </script>
@@ -105,18 +113,20 @@ getMod();
                             SECCIONES
                         </span>
                         <div class="btn-group" role="group" aria-label="Basic example">
-                            <button data-bs-toggle="collapse" data-bs-target="#nuevaSeccion" aria-expanded="false" aria-controls="collapseExample" type="button" class="btn btn-secondary" style="font-size:14px">
-                                <Icon name="plus-circle" />&nbsp; Agregar nueva sección
-                            </button>
+                            <a class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#nuevaSeccionModal" style="cursor:pointer">
+                                <Icon name="plus-circle" /> Agregar Sección
+                            </a>
                         </div>
                     </nav>
                 </div>
             </div>
 
             <!-- Modal para agregar una nueva sección -->
-            <div class="row">
-
-            </div>
+            <ModalNuevaSeccion
+                :modID="route.params.id"
+                id="nuevaSeccionModal"
+            >
+            </ModalNuevaSeccion>
 
             <!-- Secciones-->
             <div class="row">
@@ -125,12 +135,12 @@ getMod();
                 </Info>
                 <div v-else>
 
-                    <Card Class="mb-4" v-for="seccion in modulo.secciones">
+                    <Card Class="mb-5" v-for="seccion in modulo.secciones">
                         <CardHeader>
                             <div class="row">
                                 <label for="subtitulo" class="col-sm-3 col-form-label text-sm-end">Subtítulo</label>
                                 <div class="col-sm-9">
-                                    <form  class="row row-cols-auto g-3">
+                                    <form :name="`secSubtitulo_${seccion.id}`" @submit.prevent="updSubtitulo(seccion.id,seccion.subtitulo)" class="row row-cols-auto g-3">
                                         <div class="col-xl-10 col-lg-8 col-md-7 col-sm-7 col-xs-12">
                                             <input type="hidden" name="idSeccion" :value="seccion.id">
                                             <input type="text" class="form-control" name="subtitulo" :value="seccion.subtitulo">
@@ -142,12 +152,12 @@ getMod();
                                 </div>
                             </div>
                         </CardHeader>
-                        <CardBody>
+                        <CardBody Class="p-4">
 
                             <div class="row mb-3">
                                 <label for="descripcion" class="col-sm-3 col-form-label text-sm-end">Descripción</label>
                                 <div class="col-sm-9">
-                                    <form>
+                                    <form :name="`secDescripcion_${seccion.id}`" @submit.prevent="updDescripcion(seccion.id,seccion.descripcion)">
                                         <textarea placeholder="Opcional" class="form-control" id="descripcion" name="descripcion">{{ seccion.descripcion }}</textarea>
                                         <button type="submit" class="btn btn-secondary mt-2">Actualizar descripción</button>
                                     </form>
@@ -164,7 +174,7 @@ getMod();
 
                                 <div class="col-sm-9">
                                     <div class="mb-3">
-                                        <form name="uplFilepdf">
+                                        <form :name="`uplFilepdf_${seccion.id}`" @submit.prevent="uploadFile(seccion.id)">
                                             <input class="form-control" type="file" accept="application/pdf" name="filepdf">
                                             <button type="submit" class="btn btn-secondary mt-2">Subir archivo</button>
                                         </form>
@@ -180,9 +190,9 @@ getMod();
                                             </a>
                                             <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#deleteModal${seccion.id}-${doc.id}`" style="color:red; cursor:pointer"><Icon name="x-circle-fill" /></a>
                                             <ModalDeleteFile 
-                                                :id="`deleteModal${seccion.id}-${doc.id}`" 
-                                                :archivo="{ 
-                                                    documento:doc.id, 
+                                                :id="`deleteModal${seccion.id}-${doc.id}`"
+                                                :archivo="{  
+                                                    docID: doc.id,
                                                     seccion: seccion.id, 
                                                     nombre: doc.nombre, 
                                                     modulo:modulo.fbid,
