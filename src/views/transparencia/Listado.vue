@@ -1,9 +1,10 @@
 <script setup>
 import { useCurrentUserStore } from '../../stores/currentUser';
-import { useModulosStore } from '../../stores/modulos';
+import { useModuloStore } from '../../stores/modulo';
+import ModalNuevoModulo from '../../components/modals/ModalNuevoModulo.vue';
 
 const currentUser = useCurrentUserStore();
-const modulos = useModulosStore();
+const modulo = useModuloStore();
 
 async function getDatos(){
     if(currentUser.id == null){ await currentUser.getDatos(); }
@@ -24,9 +25,11 @@ getDatos();
                     Herramientas de administrador:
                 </span>
                 <div class="btn-group" role="group" aria-label="Basic example">
-                    <button type="button" class="btn btn-primary">Left</button>
-                    <button type="button" class="btn btn-primary">Middle</button>
-                    <button type="button" class="btn btn-primary">Right</button>
+                    
+                    <button type="button" class="btn btn-primary"><Icon name="list" />&nbsp; Ver todos</button>
+                    <button data-bs-toggle="modal" data-bs-target="#ModalNuevoModulo" type="button" class="btn btn-secondary">
+                        <Icon name="plus-circle" />&nbsp; Crear
+                    </button>
                 </div>
             </nav>
         </div>
@@ -44,6 +47,8 @@ getDatos();
                 </BigCard>
             </div>
         </div>
+
+        <ModalNuevoModulo :currentUser="currentUser" />
 
     </DefaultPage>
 </template>

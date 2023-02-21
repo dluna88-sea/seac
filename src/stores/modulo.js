@@ -26,6 +26,33 @@ export const useModuloStore = defineStore('SingleModulo',{
     }),
     actions:{
 
+        async nuevoModulo(datos){
+            try {
+                this.loading = true;
+
+                //obtener datos del usuario:
+                const encargado = await getDoc(doc(db,'/usuarios',datos.encargado))
+
+                console.log(encargado.data())
+
+                const objData = {
+                    titulo:datos.titulo,
+                    actualizacion:datos.actualizacion,
+                    descripcion:datos.descripcion,
+                    nota:datos.nota,
+                    encargado:{
+                        nombre:'John Doe',
+                        cargo:'CEO'
+                    }
+                }
+
+            } catch (e) {
+                this.setError(e.message)
+            } finally {
+                this.loading = false;
+            }
+        },
+
         //Consultar detalles de un módulo especifico
         async get(fbid){
             try {
@@ -235,6 +262,28 @@ export const useModuloStore = defineStore('SingleModulo',{
             this.encargado.cargo = null
             this.nota = null
             this.secciones = []
+        },
+
+        fecha(){
+            const d = new Date(Date.now());
+            const mes = getMes();
+            function getMes(){
+                switch(d.getMonth()+1){
+                    case 1: return "enero"; break;
+                    case 2: return "febrero"; break;
+                    case 3: return "marzo"; break;
+                    case 4: return "abril"; break;
+                    case 5: return "mayo"; break;
+                    case 6: return "junio"; break;
+                    case 7: return "julio"; break;
+                    case 8: return "agosto"; break;
+                    case 9: return "septiembre"; break;
+                    case 10: return "octubre"; break;
+                    case 11: return "noviembre"; break;
+                    case 12: return "diciembre"; break;
+                }
+            }
+            return d.getDate()+' de '+mes+' de '+d.getFullYear();
         }
 
     }

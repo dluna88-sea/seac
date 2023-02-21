@@ -12,7 +12,7 @@ traerDatos();
 <template>
     <Loading v-if="currentUser.loading"></Loading>
     <nav v-else class="navbar navbar-expand-lg bg-body-tertiary mb-3 shadow-sm">
-        <div class="container-fluid">
+        <div class="container">
             <RouterLink class="navbar-brand" to="/" >
                 <img src="/seac-icon.png" alt="SEAC" width="25" height="25" class="d-inline-block align-text-top">
                 SEAC
