@@ -5,10 +5,11 @@ import ModalNuevoModulo from '../../components/modals/ModalNuevoModulo.vue';
 
 const currentUser = useCurrentUserStore();
 const modulo = useModuloStore();
-
+let modulos = [];
 async function getDatos(){
     if(currentUser.id == null){ await currentUser.getDatos(); }
     currentUser.getModulos();
+    if(modulo.todos.length == 0 && currentUser.rol == 'admin'){ await modulo.getAll(); }
 }
 getDatos();
 
@@ -25,8 +26,6 @@ getDatos();
                     Herramientas de administrador:
                 </span>
                 <div class="btn-group" role="group" aria-label="Basic example">
-                    
-                    <button type="button" class="btn btn-primary"><Icon name="list" />&nbsp; Ver todos</button>
                     <button data-bs-toggle="modal" data-bs-target="#ModalNuevoModulo" type="button" class="btn btn-secondary">
                         <Icon name="plus-circle" />&nbsp; Crear
                     </button>
@@ -36,15 +35,39 @@ getDatos();
 
         <div class="row">
             <div class="col">
-                <BigCard>
-                    <p>Estos son los módulos en los que te han designado como encargado:</p>
-                    <Info v-if="currentUser.modulos == 0">No tienes asignados módulos de transparencia.</Info>
-                    <ul v-else class="list-group list-group-flush shadow-sm" v-for="mod in currentUser.modulos">
-                        <router-link style="text-decoration:none" :to="`/transparencia/${mod.fbid}`">
-                            <li class="list-group-item">{{ mod.titulo }}</li>
-                        </router-link>
-                    </ul>
-                </BigCard>
+
+                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pills-mods-tab" data-bs-toggle="pill" data-bs-target="#pills-mods" type="button" role="tab" aria-controls="pills-mods" aria-selected="true">
+                            Tus módulos
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-todos-tab" data-bs-toggle="pill" data-bs-target="#pills-todos" type="button" role="tab" aria-controls="pills-todos" aria-selected="false">
+                            Todos los módulos
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content container bg-light shadow p-4 mb-4" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-mods" role="tabpanel" aria-labelledby="pills-mods-tab" tabindex="0">
+                        <p>Estos son los módulos en los que te han designado como encargado:</p>
+                        <Info v-if="currentUser.modulos == 0">No tienes asignados módulos de transparencia.</Info>
+                        <div v-else class="list-group shadow-sm" v-for="mod in currentUser.modulos">
+                            <router-link style="text-decoration:none" :to="`/transparencia/${mod.fbid}`" class="list-group-item">
+                                {{ mod.id }} - {{ mod.titulo }}
+                            </router-link>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-todos" role="tabpanel" aria-labelledby="pills-todos-tab" tabindex="0">
+                        <p>Estos son todos los módulos registrados:</p>
+                        <div  class="list-group shadow-sm">
+                            <router-link v-for="mod in modulo.todos" class="list-group-item" :to="`/transparencia/${mod.fbid}`">
+                                {{ mod.id }} - {{ mod.titulo }}
+                            </router-link>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 

@@ -15,9 +15,12 @@ const crearModulo = async() => {
     const datos = {
         titulo: document.forms['nuevoModulo']['titulo'].value.trim(),
         descripcion: document.forms['nuevoModulo']['descripcion'].value.trim(),
-        encargado: document.forms['nuevoModulo']['encargado'].value.trim(),
+        encargado: 
+            {
+                nombre: document.forms['nuevoModulo']['encargado'].value.trim(),
+                cargo: document.forms['nuevoModulo']['cargo'].value.trim(),
+            },
         nota: document.forms['nuevoModulo']['nota'].value.trim(),
-        actualizacion: props.currentUser.fecha()
     }
     
     await modulo.nuevoModulo(datos)
@@ -50,14 +53,20 @@ const crearModulo = async() => {
                                 <label for="descripcion" class="form-label">Descripción (opcional)</label>
                                 <textarea class="form-control" name="descripcion" placeholder="Escribe una descripción"></textarea>
                             </div>
-    
-                            <div class="col-12 mb-3">
-                                <label for="encargado" class="form-label">Encargado</label>
-                                <select name="encargado" class="form-select">
-                                    <option selected :value="currentUser.uid">{{ currentUser.nombre }} - {{ currentUser.cargo }}</option>
-                                </select>
+                            
+                            <hr>
+                            <label class="mb-3">ENCARGADO</label>
+                            <div class="col-md-6 mb-3">
+                                <label for="encargado" class="form-label">Nombre:</label>
+                                <input type="text" class="form-control" name="encargado" placeholder="Nombre">
                             </div>
                             
+                            <div class="col-md-6 mb-3">
+                                <label for="cargo" class="form-label">Cargo</label>
+                                <input type="text" class="form-control" name="cargo" placeholder="Escribe el cargo">
+                            </div>
+                            
+                            <hr class="mt-3">
                             
                             <div class="col-12 mb-3">
                                 <label for="nota" class="form-label">Nota de cierre (opcional)</label>

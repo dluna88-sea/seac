@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { useDataUserStore } from './stores/dataUser';
+import { useCurrentUserStore } from './stores/currentUser'
 
 const isAuth = async(to, from, next) => {
-    const dataUser = useDataUserStore();
-    const user = await dataUser.isAuth();
+    const currentUser = useCurrentUserStore();
+    const user = await currentUser.isAuth();
     if(user){
         next();
     }else{

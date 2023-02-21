@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { auth, db } from '../firebase.js'
-import { query, collection, where, getDocs, getDoc, addDoc, setDoc, doc, deleteDoc } from "firebase/firestore/lite";
+import { query, collection, where, getDocs, getDoc, addDoc, setDoc, doc, deleteDoc, orderBy } from "firebase/firestore/lite";
 import { getDownloadURL, getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
 
 export const useModuloStore = defineStore('SingleModulo',{
@@ -22,7 +22,7 @@ export const useModuloStore = defineStore('SingleModulo',{
         },
         nota:null,
         secciones:[],
-
+        todos:[],
     }),
     actions:{
 
@@ -30,22 +30,53 @@ export const useModuloStore = defineStore('SingleModulo',{
             try {
                 this.loading = true;
 
-                //obtener datos del usuario:
-                const encargado = await getDoc(doc(db,'/usuarios',datos.encargado))
-
-                console.log(encargado.data())
-
                 const objData = {
                     titulo:datos.titulo,
-                    actualizacion:datos.actualizacion,
+                    actualizacion:this.fecha(),
                     descripcion:datos.descripcion,
                     nota:datos.nota,
                     encargado:{
-                        nombre:'John Doe',
-                        cargo:'CEO'
-                    }
+                        nombre:datos.encargado.nombre,
+                        cargo:datos.encargado.cargo,
+                    },
+                    id: await this.newModId()
                 }
+                
+                const docRef = await addDoc(collection(db, "modulos"), objData);
+                
+                location.reload();  
 
+            } catch (e) {
+                this.setError(e.message)
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async newModId(){
+            const documents = await getDocs(
+                query(
+                    collection(db, '/modulos')
+                )
+            );
+            return documents.docs.length;
+        },
+
+        async getAll(){
+            try {
+                this.loading = true;
+
+                const mods = await getDocs(
+                    query(
+                        collection(db,'modulos'),
+                        orderBy("id","asc")
+                        ),
+                )
+                
+                mods.docs.forEach((doc) => {
+                    this.todos.push({fbid:doc.id, ...doc.data()})
+                })
+                
             } catch (e) {
                 this.setError(e.message)
             } finally {
@@ -92,7 +123,8 @@ export const useModuloStore = defineStore('SingleModulo',{
 
                 const sec = await getDocs(
                     query(
-                        collection(db, path)
+                        collection(db, path),
+                        orderBy("orden", "asc")
                     )
                 );
                 sec.docs.forEach(async(doc) => {
@@ -103,6 +135,21 @@ export const useModuloStore = defineStore('SingleModulo',{
                     })
                     this.secciones.push({id:doc.id, ...doc.data(), documentos})
                 });
+
+            } catch (e) {
+                this.setError(e.message)
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async deleteSeccion(id, modID){
+            try {
+                this.loading = true;
+                const path = "/modulos/"+modID+"/secciones";
+                await deleteDoc(doc(db, path, id)).then(() =>{
+                    location.reload();
+                }).catch((e) => { this.setError(e.message) });
 
             } catch (e) {
                 this.setError(e.message)
@@ -149,8 +196,16 @@ export const useModuloStore = defineStore('SingleModulo',{
 
         async crearSeccion(datos){
             try {
+                
                 this.loading = true;
-                const dataObj = { subtitulo:datos.subtitulo, descripcion:datos.descripcion }
+                const orden = await this.getLastSeccionOrder(datos.modulo)
+                
+                const dataObj = { 
+                    subtitulo:datos.subtitulo, 
+                    descripcion:datos.descripcion, 
+                    orden:orden
+                }
+
                 const path = '/modulos/'+datos.modulo+'/secciones/';
 
                 await addDoc( collection(db,path), dataObj ).then((data) => {
@@ -284,7 +339,27 @@ export const useModuloStore = defineStore('SingleModulo',{
                 }
             }
             return d.getDate()+' de '+mes+' de '+d.getFullYear();
-        }
+        },
+
+        async getLastSeccionOrder(modID){
+
+            try {
+                this.loading = true;
+                const documento = await getDocs(query(
+                    collection(db, 'modulos/'+modID+'/secciones')
+                ))
+                if(documento.docs.length == 0){
+                    return 1;
+                }
+                return eval(documento.docs[(documento.docs.length-1)].data().orden)+1
+
+            } catch (e) {
+                this.setError(e.message);
+            } finally {
+                this.loading = false;
+            }
+
+        },
 
     }
 });

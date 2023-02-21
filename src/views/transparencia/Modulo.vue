@@ -1,6 +1,7 @@
 <script setup>
 import { useRoute } from 'vue-router';
 import ModalNuevaSeccion from '../../components/modals/ModalNuevaSeccion.vue';
+import DeleteSeccionModal from '../../components/modals/DeleteSeccionModal.vue';
 import { useCurrentUserStore } from '../../stores/currentUser';
 import { useModuloStore } from '../../stores/modulo';
 const route = useRoute();
@@ -80,7 +81,7 @@ const uploadFile = async(secId) => {
             <div class="row">
                 <div class="col-12">
                     <p>
-                        Última actualización el {{ modulo.actualizacion }}<br />
+                        <Icon name="calendar" />&nbsp; Última actualización el {{ modulo.actualizacion }}<br />
                     </p>
                     <br>
                 </div>
@@ -140,15 +141,23 @@ const uploadFile = async(secId) => {
                             <div class="row">
                                 <label for="subtitulo" class="col-sm-3 col-form-label text-sm-end">Subtítulo</label>
                                 <div class="col-sm-9">
+                                    
                                     <form :name="`secSubtitulo_${seccion.id}`" @submit.prevent="updSubtitulo(seccion.id,seccion.subtitulo)" class="row row-cols-auto g-3">
+                                        <input type="hidden" name="orden" :value="seccion.orden">
                                         <div class="col-xl-10 col-lg-8 col-md-7 col-sm-7 col-xs-12">
                                             <input type="hidden" name="idSeccion" :value="seccion.id">
                                             <input type="text" class="form-control" name="subtitulo" :value="seccion.subtitulo">
                                         </div>
                                         <div class="col-xl-2 col-lg-4 col-md-5 col-sm-5 col-xs-12">
                                             <button class="btn btn-secondary" type="submit">Editar</button>
+                                            <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${seccion.id}`" style="color:red; cursor:pointer"><Icon name="x-circle-fill" /></a>
                                         </div>
                                     </form>
+                                    <DeleteSeccionModal
+                                        :id="seccion.id"
+                                        :modID="route.params.id"
+                                        :subtitulo="seccion.subtitulo"
+                                    ></DeleteSeccionModal> 
                                 </div>
                             </div>
                         </CardHeader>
@@ -171,21 +180,24 @@ const uploadFile = async(secId) => {
                                 <legend class="col-form-label col-sm-3 pt-0  text-sm-end">
                                     <Icon name="paperclip" /> Documentos adjuntos:
                                 </legend>
-
+                                
                                 <div class="col-sm-9">
                                     <div class="mb-3">
                                         <form :name="`uplFilepdf_${seccion.id}`" @submit.prevent="uploadFile(seccion.id)">
-                                            <input class="form-control" type="file" accept="application/pdf" name="filepdf">
-                                            <button type="submit" class="btn btn-secondary mt-2">Subir archivo</button>
+                                            <div class="input-group">
+                                                <input type="file" class="form-control" accept="application/pdf" id="uploadFile" name="filepdf" aria-describedby="uploadFileAddon" aria-label="Upload">
+                                                <button class="btn btn-secondary" type="submit" id="uploadFileAddon">Subir</button>
+                                            </div>
                                         </form>
                                     </div>
+                                    
                                     
                                     <Info v-if="seccion.documentos.length == 0">No hay documentos adjuntos</Info>
                                     
                                     <ul v-else class="list-group shadow-sm" >
                                         <li v-for="(doc) in seccion.documentos" class="list-group-item ">
+                                            <Icon name="file-pdf" />
                                             <a style="text-decoration: none;" :href="doc.url" target="_blank" >
-                                                <Icon name="file-pdf" />
                                                 <span class="mx-2">{{ doc.nombre }}</span>
                                             </a>
                                             <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#deleteModal${seccion.id}-${doc.id}`" style="color:red; cursor:pointer"><Icon name="x-circle-fill" /></a>
