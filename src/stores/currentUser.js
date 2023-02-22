@@ -60,7 +60,6 @@ export const useCurrentUserStore = defineStore('CurrentUser',{
         async getModulos(){
             try {
                 this.loading = true;
-                
                 //restablecer datos de los modulos:
                 this.modulos = [];
 

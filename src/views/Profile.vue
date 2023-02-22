@@ -1,18 +1,9 @@
 <script setup>
-import { useDataUserStore } from '../stores/dataUser';
 import { useCurrentUserStore } from '../stores/currentUser';
 
 const currentUser = useCurrentUserStore();
-const dataUser = useDataUserStore();
 
 async function getDatos(){
-    if(dataUser.datos.length == 0){ 
-        await dataUser.getData();
-    }
-    if(dataUser.modulos.length == 0){
-        await dataUser.getModulos();
-    }
-    //nuevo:
     if(currentUser.id == null){ await currentUser.getDatos(); }
     if(currentUser.modulos.length == 0){ await currentUser.getModulos(); }
 }

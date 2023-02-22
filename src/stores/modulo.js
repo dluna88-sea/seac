@@ -30,6 +30,8 @@ export const useModuloStore = defineStore('SingleModulo',{
             try {
                 this.loading = true;
 
+                const newID = await this.newModId();
+                console.log(newID);
                 const objData = {
                     titulo:datos.titulo,
                     actualizacion:this.fecha(),
@@ -39,10 +41,10 @@ export const useModuloStore = defineStore('SingleModulo',{
                         nombre:datos.encargado.nombre,
                         cargo:datos.encargado.cargo,
                     },
-                    id: await this.newModId()
+                    id: newID
                 }
-                
-                const docRef = await addDoc(collection(db, "modulos"), objData);
+                console.log(objData)
+                const docRef = await addDoc(collection(db, "modulos"), objData).catch((e) => { console.log(e) });
                 
                 location.reload();  
 
@@ -59,7 +61,13 @@ export const useModuloStore = defineStore('SingleModulo',{
                     collection(db, '/modulos')
                 )
             );
-            return documents.docs.length;
+            let greatest = 0;
+            documents.forEach((doc) => {
+                if(parseInt(doc.data().id) > greatest){
+                    greatest = parseInt(doc.data().id)+1
+                }
+            })
+            return greatest.toString();
         },
 
         async getAll(){

@@ -49,7 +49,7 @@ traerDatos();
             </div>
 
             <!-- CARD BOLETINES DE PRENSA -->
-            <div class="col-md-6 col-xl-4 my-3">
+            <!-- <div class="col-md-6 col-xl-4 my-3">
                 <BigCard>
                     <h2><Icon name="file-text" /> Boletines</h2>
                     <p>Publica un nuevo boletín o administra los existentes.</p>
@@ -58,7 +58,7 @@ traerDatos();
                         <button class="btn btn-outline-secondary" type="button"><Icon name="files" /> Ver todos</button>
                     </div>
                 </BigCard>
-            </div>
+            </div> -->
 
             <!-- CARD PERFIL DE USUARIO -->
             <div class="col-md-6 col-xl-4 my-3">
@@ -74,7 +74,7 @@ traerDatos();
             </div>
 
             <!-- ADMIN: CARD USUARIOS REGISTRADOS -->
-            <div v-if="currentUser.rol == 'admin'" class="col-md-6 col-xl-4 my-3">
+            <!-- <div v-if="currentUser.rol == 'admin'" class="col-md-6 col-xl-4 my-3">
                 <BigCard>
                     <h2><Icon name="people-fill" /> Usuarios</h2>
                     <ul class="list-group list-group-flush my-3">
@@ -84,7 +84,7 @@ traerDatos();
                     </ul>
                     <RouterLink class="btn btn-outline-secondary" to="/usuarios"><Icon name="gear-fill" /> Administrar</RouterLink>
                 </BigCard>
-            </div>
+            </div> -->
             
         </div>
 
