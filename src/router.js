@@ -19,6 +19,7 @@ const router = createRouter({
         { path:'/logout', name: 'Logout', component: () => import('./views/Logout.vue')},
         { path:'/transparencia', name: 'Transparencia', component: () => import('./views/transparencia/Listado.vue'), beforeEnter:isAuth },
         { path:'/transparencia/:id', name: 'Modulo', component: () => import('./views/transparencia/Modulo.vue'), beforeEnter:isAuth },
+        { path:'/transparencia/:modID/:secID', name: 'Seccion', component: () => import('./views/transparencia/Seccion.vue'), beforeEnter:isAuth },
         { path:'/perfil/', name: 'Perfil', component: () => import('./views/Profile.vue'), beforeEnter:isAuth },
         { path:'/ayuda', name: 'Ayuda', component: () => import('./views/Ayuda.vue'), beforeEnter:isAuth },
         { path:'/usuarios', name: 'Usuarios', component: () => import('./views/usuarios/Listado.vue'), beforeEnter:isAuth },

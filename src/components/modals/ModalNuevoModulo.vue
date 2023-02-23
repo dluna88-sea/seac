@@ -21,6 +21,8 @@ const crearModulo = async() => {
                 cargo: document.forms['nuevoModulo']['cargo'].value.trim(),
             },
         nota: document.forms['nuevoModulo']['nota'].value.trim(),
+        articulo: document.forms['nuevoModulo']['articulo'].value.trim(),
+        fraccion: document.forms['nuevoModulo']['fraccion'].value.trim(),
     }
     
     await modulo.nuevoModulo(datos)
@@ -47,6 +49,16 @@ const crearModulo = async() => {
                             <div class="col-12 mb-3">
                                 <label for="titulo" class="form-label">Título</label>
                                 <input required type="text" class="form-control" placeholder="Escribe el título del módulo" name="titulo">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="articulo" class="form-label">Título</label>
+                                <input required type="number" class="form-control" value="21" placeholder="Escribe el título del módulo" name="articulo">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="fraccion" class="form-label">Título</label>
+                                <input required type="number" class="form-control" placeholder="Escribe el número de fracción" name="fraccion">
                             </div>
                             
                             <div class="col-12 mb-3">

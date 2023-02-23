@@ -14,6 +14,7 @@ import { useModuloStore } from '../../stores/modulo';
 
     const eliminarArchivo = async() => {
         const modulo = useModuloStore();
+        console.log(props.archivo.nombre)
         await modulo.deleteFile( props.archivo )
     }
 </script>

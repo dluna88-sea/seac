@@ -8,7 +8,7 @@ const modulo = useModuloStore();
 let modulos = [];
 async function getDatos(){
     if(currentUser.id == null){ await currentUser.getDatos(); }
-    currentUser.getModulos();
+    await currentUser.getModulos();
     if(modulo.todos.length == 0 && currentUser.rol == 'admin'){ await modulo.getAll(); }
 }
 getDatos();
@@ -34,9 +34,9 @@ getDatos();
         </div>
 
         <div class="row">
-            <div class="col">
+            <div class="col" v-if="currentUser.rol == 'admin'">
 
-                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                <ul  class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="pills-mods-tab" data-bs-toggle="pill" data-bs-target="#pills-mods" type="button" role="tab" aria-controls="pills-mods" aria-selected="true">
                             Tus módulos
@@ -54,7 +54,7 @@ getDatos();
                         <Info v-if="currentUser.modulos == 0">No tienes asignados módulos de transparencia.</Info>
                         <div v-else class="list-group shadow-sm" v-for="mod in currentUser.modulos">
                             <router-link style="text-decoration:none" :to="`/transparencia/${mod.fbid}`" class="list-group-item">
-                                {{ mod.id }} - {{ mod.titulo }}
+                                {{ mod.fraccion }} - {{ mod.titulo }}
                             </router-link>
                         </div>
                     </div>
@@ -62,12 +62,26 @@ getDatos();
                         <p>Estos son todos los módulos registrados:</p>
                         <div  class="list-group shadow-sm">
                             <router-link v-for="mod in modulo.todos" class="list-group-item" :to="`/transparencia/${mod.fbid}`">
-                                {{ mod.id }} - {{ mod.titulo }}
+                                {{ mod.fraccion }} - {{ mod.titulo }}
                             </router-link>
                         </div>
                     </div>
                 </div>
 
+            </div>
+
+            <div class="col" v-else>
+                <div class="bg-light p-4">
+                    <p>Estos son los módulos en los que te han designado como encargado:</p>
+                    
+                    <Info v-if="currentUser.modIds.length == 0">No tienes asignados módulos de transparencia.</Info>
+                    
+                    <div v-else class="list-group shadow-sm" v-for="mod in currentUser.modulos">
+                        <router-link style="text-decoration:none" :to="`/transparencia/${mod.fbid}`" class="list-group-item">
+                            {{ mod.fraccion }} - {{ mod.titulo }}
+                        </router-link>
+                    </div>
+                </div>
             </div>
         </div>
 

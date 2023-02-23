@@ -59,11 +59,16 @@ const updDescripcion = async(secID, desc) => {
 
 const uploadFile = async(secId) => {
     const documento = document.forms['uplFilepdf_'+secId]['filepdf'].files[0];
+    const nombre = document.forms['uplFilepdf_'+secId]['nombre'].value.trim();
+    
     if(documento != undefined){
-        await modulo.uploadFile(documento,{modID:modulo.fbid, secID:secId});
+        await modulo.uploadFile(documento,{modID:route.params.id, secID:secId}, nombre);
     }
 }
 
+const updateFecha = async() => {
+    await modulo.update(null, modulo.fbid)
+}
 
 </script>
 
@@ -79,12 +84,16 @@ const uploadFile = async(secId) => {
             
             
             <div class="row">
-                <div class="col-12">
+                <div class="col-12 mb-3">
                     <p>
-                        <Icon name="calendar" />&nbsp; Última actualización el {{ modulo.actualizacion }}<br />
+                        <Icon name="person" />&nbsp; Encargado: {{ modulo.encargado.nombre }} - {{ modulo.encargado.cargo }}<br>
                     </p>
-                    <br>
+                    <p>
+                        <Icon name='calendar' />&nbsp; Última actualización: {{ modulo.actualizacion }} <button @click="updateFecha()" class="btn btn-secondary btn-sm mb-2"> <Icon name="clock" />&nbsp; Marcar actualización</button>
+                    </p>
                 </div>
+
+                <hr>
             </div>
 
 
@@ -136,7 +145,7 @@ const uploadFile = async(secId) => {
                 </Info>
                 <div v-else>
 
-                    <Card Class="mb-5" v-for="seccion in modulo.secciones">
+                    <Card v-if="modulo.secciones.length < 4" Class="mb-5" v-for="seccion in modulo.secciones">
                         <CardHeader>
                             <div class="row">
                                 <label for="subtitulo" class="col-sm-3 col-form-label text-sm-end">Subtítulo</label>
@@ -184,10 +193,13 @@ const uploadFile = async(secId) => {
                                 <div class="col-sm-9">
                                     <div class="mb-3">
                                         <form :name="`uplFilepdf_${seccion.id}`" @submit.prevent="uploadFile(seccion.id)">
-                                            <div class="input-group">
-                                                <input type="file" class="form-control" accept="application/pdf" id="uploadFile" name="filepdf" aria-describedby="uploadFileAddon" aria-label="Upload">
-                                                <button class="btn btn-secondary" type="submit" id="uploadFileAddon">Subir</button>
-                                            </div>
+                                            
+                                            <input type="file" class="form-control" accept="application/pdf" id="uploadFile" name="filepdf" aria-describedby="uploadFileAddon" aria-label="Upload">
+                                            <label for="nombre">Nombre del archivo:</label>
+                                            <input type="text" required class="form-control mb-3" name="nombre" >
+                                            <button class="btn btn-secondary" type="submit" id="uploadFileAddon">Subir</button>
+
+                                            
                                         </form>
                                     </div>
                                     
@@ -206,7 +218,8 @@ const uploadFile = async(secId) => {
                                                 :archivo="{  
                                                     docID: doc.id,
                                                     seccion: seccion.id, 
-                                                    nombre: doc.nombre, 
+                                                    nombre: doc.nombre,
+                                                    filename: doc.filename, 
                                                     modulo:modulo.fbid,
                                                     url: doc.url 
                                                 }"></ModalDeleteFile>
@@ -219,6 +232,38 @@ const uploadFile = async(secId) => {
                         </CardBody>    
                         
                     </Card>
+
+                    <div v-else class="list-group">
+                        <div v-for="seccion in modulo.secciones" class="list-group-item d-flex justify-content-between align-items-center">
+                            <router-link :to="`/transparencia/${modulo.fbid}/${seccion.id}`" style="text-decoration:none; color:black" class="col-11">
+                                {{ seccion.subtitulo }}
+                            </router-link>
+                            <div class="col-1">
+                                <a href="#" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${seccion.id}`" class="badge bg-danger rounded-pill float-end"><Icon name='trash-fill' /></a>
+                                <DeleteSeccionModal
+                                    :id="seccion.id"
+                                    :modID="route.params.id"
+                                    :subtitulo="seccion.subtitulo"
+                                ></DeleteSeccionModal>
+                            </div>
+                        </div>
+                        <!-- <router-link 
+                            v-for="seccion in modulo.secciones" 
+                            :to="`/transparencia/${modulo.fbid}/${seccion.id}`" 
+                            class="list-group-item"
+                            >
+                                {{ seccion.subtitulo }} 
+                                
+                                <span class="badge bg-primary rounded-pill">14</span>
+                                 <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${seccion.id}`" style="color:red; z-index:100; cursor:pointer"><Icon name="x-circle-fill" /></a>
+                                <DeleteSeccionModal
+                                    :id="seccion.id"
+                                    :modID="route.params.id"
+                                    :subtitulo="seccion.subtitulo"
+                                ></DeleteSeccionModal>
+                        </router-link> -->
+                        
+                    </div>
 
                 </div>
             </div>

@@ -62,11 +62,11 @@ export const useCurrentUserStore = defineStore('CurrentUser',{
                 this.loading = true;
                 //restablecer datos de los modulos:
                 this.modulos = [];
-
+                
                 const modulos = await getDocs(
                     query(
                         collection(db, '/modulos'),
-                        where('id', 'in', this.modIds)
+                        where('fraccion', 'in', this.modIds)
                     )
                 );
                 
