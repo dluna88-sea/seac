@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { auth, db } from '../firebase.js'
-import { query, collection, where, getDocs, getDoc, addDoc, setDoc, doc, deleteDoc, orderBy } from "firebase/firestore/lite";
+import { query, collection, where, getDocs, getDoc, addDoc, setDoc, doc, deleteDoc, orderBy, limit, FieldPath, serverTimestamp } from "firebase/firestore/lite";
 import { getDownloadURL, getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
 
 export const useModuloStore = defineStore('SingleModulo',{
@@ -121,7 +121,7 @@ export const useModuloStore = defineStore('SingleModulo',{
 
                 const sec = await getDocs(
                     query( collection(db, path) ),
-                    orderBy('uid','asc')
+                    orderBy('orden','desc')
                 );
                 sec.docs.forEach(async(doc) => {
                     const o_documentos = await this.getDocuments(modID, doc.id)
@@ -222,17 +222,26 @@ export const useModuloStore = defineStore('SingleModulo',{
                 
                 this.loading = true;
                 
-                const dataObj = {
-                    subtitulo:datos.subtitulo, 
-                    descripcion:datos.descripcion,
-                    uid:this.julDatePlusSecs(),
-                }
+                
 
                 const path = '/modulos/'+datos.modulo+'/secciones/';
                 
+                const id = await this.getLastID(datos.modulo);
+                
+                const dataObj = {
+                    subtitulo:datos.subtitulo, 
+                    descripcion:datos.descripcion,
+                    orden:id,
+                }
+
                 await addDoc(
                     collection(db,path),
-                    dataObj
+                    {
+                        subtitulo:datos.subtitulo, 
+                        descripcion:datos.descripcion,
+                        createdAt:serverTimestamp(),
+                        updatedAt:serverTimestamp()
+                    }
                 ).then(async() => {
                     this.update(null, datos.modulo)
                 }).catch((e) => { console.log(e); })
@@ -277,7 +286,14 @@ export const useModuloStore = defineStore('SingleModulo',{
                         //const docIDfile = snapshot.metadata.generation;
                         await addDoc(
                             collection(db, '/modulos/'+datos.modID+'/secciones/'+datos.secID+'/documentos/'),
-                            { nombre: datos.nombre, url: url, filename: file.name, uid: this.julDatePlusSecs(), descripcion:datos.descripcion },
+                            { 
+                                nombre: datos.nombre, 
+                                url: url, 
+                                filename: file.name, 
+                                descripcion:datos.descripcion,
+                                uploadedAt:serverTimestamp(),
+                                updatedAt: serverTimestamp() 
+                            },
                             { merge:true }
                         ).then(async () => {
                             await this.update(null, datos.modID);
@@ -369,13 +385,28 @@ export const useModuloStore = defineStore('SingleModulo',{
             return d.getDate()+' de '+mes+' de '+d.getFullYear();
         },
 
+        async getLastID(modID){
+            const id = await getDocs(
+                query(
+                    collection(db, 'modulos/'+modID+'/secciones'),
+                    orderBy('orden'),
+                    limit(1)
+                ),
+            )
+            if(id.docs.length == 0){
+                return "0001";
+            }else{
+                return "000"+eval(id.docs[0].data.orden + 1);
+            }
+        },
+
         julDatePlusSecs(){
             var d = new Date();
             var j=parseInt((d.getTime()-new Date('Dec 30,'+(d.getFullYear()-1)+' 23:00:00').getTime())/86400000).toString(),
             i=3-j.length;
             while(i-->0)j=0+j;
             var secs = d.getSeconds() + (60 * (d.getMinutes() + (60 * d.getHours())));
-            j = d.getFullYear().toString()+j+secs;
+            j = j+secs;
             return j
         },
 
