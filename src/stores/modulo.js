@@ -120,7 +120,8 @@ export const useModuloStore = defineStore('SingleModulo',{
                 const path = '/modulos/'+modID+'/secciones';
 
                 const sec = await getDocs(
-                    query( collection(db, path) )
+                    query( collection(db, path) ),
+                    orderBy('uid','asc')
                 );
                 sec.docs.forEach(async(doc) => {
                     const o_documentos = await this.getDocuments(modID, doc.id)
@@ -224,14 +225,17 @@ export const useModuloStore = defineStore('SingleModulo',{
                 const dataObj = {
                     subtitulo:datos.subtitulo, 
                     descripcion:datos.descripcion,
+                    uid:this.julDatePlusSecs(),
                 }
 
                 const path = '/modulos/'+datos.modulo+'/secciones/';
                 
-                await setDoc( doc(db, path, this.julDatePlusSecs()), dataObj ).then(async() => {
-                    await this.update(null, datos.modulo);
+                await addDoc(
+                    collection(db,path),
+                    dataObj
+                ).then(async() => {
+                    this.update(null, datos.modulo)
                 }).catch((e) => { console.log(e); })
-
 
             } catch (e) {
                 this.setError(e.message)
@@ -260,7 +264,7 @@ export const useModuloStore = defineStore('SingleModulo',{
             }
         },
 
-        async uploadFile(file, datos, nombre){
+        async uploadFile(file, datos){
             try {
                 this.loading = true;
                 
@@ -273,11 +277,11 @@ export const useModuloStore = defineStore('SingleModulo',{
                         //const docIDfile = snapshot.metadata.generation;
                         await addDoc(
                             collection(db, '/modulos/'+datos.modID+'/secciones/'+datos.secID+'/documentos/'),
-                            { nombre: nombre, url: url, filename: file.name, uid: this.julDatePlusSecs() },
+                            { nombre: datos.nombre, url: url, filename: file.name, uid: this.julDatePlusSecs(), descripcion:datos.descripcion },
                             { merge:true }
                         ).then(async () => {
                             await this.update(null, datos.modID);
-                            location.reload()
+                            //location.reload()
                         }).catch((e) => { this.setError(e.message); })
                         
                     }

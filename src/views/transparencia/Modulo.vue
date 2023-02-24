@@ -2,6 +2,7 @@
 import { useRoute } from 'vue-router';
 import ModalNuevaSeccion from '../../components/modals/ModalNuevaSeccion.vue';
 import DeleteSeccionModal from '../../components/modals/DeleteSeccionModal.vue';
+import UploadFileModal from '../../components/modals/UploadFileModal.vue';
 import { useCurrentUserStore } from '../../stores/currentUser';
 import { useModuloStore } from '../../stores/modulo';
 const route = useRoute();
@@ -188,20 +189,29 @@ const updateFecha = async() => {
                                 
                                 <legend class="col-form-label col-sm-3 pt-0  text-sm-end">
                                     <Icon name="paperclip" /> Documentos adjuntos:
+                                    <br>
+                                    <button :data-bs-target="`#uploadFileTo_${seccion.id}`" data-bs-toggle="modal" class="btn btn-secondary my-3"><Icon name="upload" /> &nbsp; Subir</button>
+
+                                    
                                 </legend>
-                                
+                                    <UploadFileModal
+                                        :seccion="{ modID: route.params.id, secID: seccion.id }"
+                                        :id="`uploadFileTo_${seccion.id}`"
+                                    ></UploadFileModal>
                                 <div class="col-sm-9">
-                                    <div class="mb-3">
+                                    <!-- <div class="mb-3">
                                         <form :name="`uplFilepdf_${seccion.id}`" @submit.prevent="uploadFile(seccion.id)">
                                             
                                             <input type="file" class="form-control" accept="application/pdf" id="uploadFile" name="filepdf" aria-describedby="uploadFileAddon" aria-label="Upload">
                                             <label for="nombre">Nombre del archivo:</label>
                                             <input type="text" required class="form-control mb-3" name="nombre" >
+                                            <label for="desripcion">Descripción:</label>
+                                            <textarea name="descripcion" class="form-control" placeholder="(Opcional)"></textarea>
                                             <button class="btn btn-secondary" type="submit" id="uploadFileAddon">Subir</button>
 
                                             
                                         </form>
-                                    </div>
+                                    </div> -->
                                     
                                     
                                     <Info v-if="seccion.documentos.length == 0">No hay documentos adjuntos</Info>
