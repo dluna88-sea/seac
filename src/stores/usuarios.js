@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
-import { updateEmail, updatePassword, createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth, db } from '../firebase.js'
-import { query, collection, where, getDocs, setDoc, doc } from "firebase/firestore/lite";
+import { query, collection, where, getDocs, setDoc, doc, getDoc } from "firebase/firestore/lite";
 
 export const useUsuariosStore = defineStore('UsuariosStore',{
     state: () => ({
@@ -13,7 +12,7 @@ export const useUsuariosStore = defineStore('UsuariosStore',{
             place:null
         },
         listado:[],
-        
+        datos:{},
     }),
     actions:{
         
@@ -47,6 +46,19 @@ export const useUsuariosStore = defineStore('UsuariosStore',{
         async get(uid){
             try {
                 this.loading = true;
+
+                this.datos = {};
+
+                const usuario = await getDoc(
+                    doc(db, '/usuarios', uid)
+                )
+
+                if(usuario.exists()){
+                    this.datos = { id:usuario.id, ...usuario.data() }
+                }else{
+                    this.setError('El usuario no existe')
+                }
+
             } catch (error) {
                 this.setError(error.message);
             } finally {

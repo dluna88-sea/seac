@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { auth, db } from '../firebase.js'
 import { query, collection, where, getDocs, getDoc, addDoc, setDoc, doc, deleteDoc, orderBy, limit, FieldPath, serverTimestamp } from "firebase/firestore/lite";
+import { orderByChild } from 'firebase/database'
 import { getDownloadURL, getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
 
 export const useModuloStore = defineStore('SingleModulo',{
@@ -66,7 +67,7 @@ export const useModuloStore = defineStore('SingleModulo',{
                     query(
                         collection(db,'modulos'),
                         orderBy("fraccion","asc")
-                        ),
+                    ),
                 )
                 
                 mods.docs.forEach((doc) => {
@@ -120,16 +121,10 @@ export const useModuloStore = defineStore('SingleModulo',{
                 const path = '/modulos/'+modID+'/secciones';
 
                 const sec = await getDocs(
-                    query( collection(db, path) ),
-                    orderBy('orden','desc')
+                    query( collection(db, path), orderBy('uid', 'asc') )
                 );
                 sec.docs.forEach(async(doc) => {
-                    const o_documentos = await this.getDocuments(modID, doc.id)
-                    let documentos = [];
-                    o_documentos.forEach((documento) => {
-                        documentos.push({id:documento.id, ...documento.data()})
-                    })
-                    this.secciones.push({id:doc.id, ...doc.data(), documentos})
+                    this.secciones.push({id:doc.id, ...doc.data()})
                 });
 
             } catch (e) {
@@ -181,7 +176,7 @@ export const useModuloStore = defineStore('SingleModulo',{
 
                 const docmns = await getDocs(
                     query(
-                        collection(db, path)
+                        collection(db, path), orderBy('uid', 'asc')
                     )
                 );
                 docmns.docs.forEach((doc) => {
@@ -221,24 +216,17 @@ export const useModuloStore = defineStore('SingleModulo',{
             try {
                 
                 this.loading = true;
-                
-                
 
                 const path = '/modulos/'+datos.modulo+'/secciones/';
                 
                 const id = await this.getLastID(datos.modulo);
-                
-                const dataObj = {
-                    subtitulo:datos.subtitulo, 
-                    descripcion:datos.descripcion,
-                    orden:id,
-                }
 
                 await addDoc(
                     collection(db,path),
                     {
                         subtitulo:datos.subtitulo, 
                         descripcion:datos.descripcion,
+                        uid:id,
                         createdAt:serverTimestamp(),
                         updatedAt:serverTimestamp()
                     }
@@ -257,6 +245,8 @@ export const useModuloStore = defineStore('SingleModulo',{
         async updateSeccion(values, idModulo, idSeccion){
             try {
                 this.loading = true;
+
+                values = { ...values, updatedAt:serverTimestamp() }
 
                 await setDoc(
                     doc(db,'/modulos/'+idModulo+'/secciones/'+idSeccion+'/'), 
@@ -282,6 +272,7 @@ export const useModuloStore = defineStore('SingleModulo',{
                 await uploadBytes( docRef, file ).then( 
                     async (snapshot) => {
                         const url = await getDownloadURL(docRef)
+                        const id = await this.getLastFileID(datos.modID,datos.secID)
                         //console.log('Archivo: '+nombre+' - Enlace: '+url)
                         //const docIDfile = snapshot.metadata.generation;
                         await addDoc(
@@ -292,7 +283,7 @@ export const useModuloStore = defineStore('SingleModulo',{
                                 filename: file.name, 
                                 descripcion:datos.descripcion,
                                 uploadedAt:serverTimestamp(),
-                                updatedAt: serverTimestamp() 
+                                uid:id
                             },
                             { merge:true }
                         ).then(async () => {
@@ -301,7 +292,7 @@ export const useModuloStore = defineStore('SingleModulo',{
                         }).catch((e) => { this.setError(e.message); })
                         
                     }
-                ).catch((e) => { this.setError(e.message) })
+                ).catch((e) => {  console.log(e); this.setError(e.message) })
 
 
             } catch (error) {
@@ -386,18 +377,37 @@ export const useModuloStore = defineStore('SingleModulo',{
         },
 
         async getLastID(modID){
-            const id = await getDocs(
+            const defaultFirst = (new Date(Date.now()).getFullYear())+"00001";
+            
+            let seccion = await getDocs(
                 query(
-                    collection(db, 'modulos/'+modID+'/secciones'),
-                    orderBy('orden'),
+                    collection(db,'modulos/'+modID+'/secciones'),
+                    orderBy('uid','desc'),
                     limit(1)
-                ),
+                )
             )
-            if(id.docs.length == 0){
-                return "0001";
-            }else{
-                return "000"+eval(id.docs[0].data.orden + 1);
+            if(seccion.docs.length < 0){
+                let seccionID = parseInt(seccion.docs[0].data().uid,10)+1;
+                return seccionID.toString();
             }
+            return defaultFirst;
+        },       
+
+        async getLastFileID(modID, secID){
+            const defaultFirst = (new Date(Date.now()).getFullYear())+"00001";
+            
+            let documento = await getDocs(
+                query(
+                    collection(db,'modulos/'+modID+'/secciones/'+secID+'/documentos'),
+                    orderBy('uid','desc'),
+                    limit(1)
+                )
+            )
+            if(documento.docs.length > 0){
+                let documentID = parseInt(documento.docs[0].data().uid,10)+1;
+                return documentID.toString();
+            }
+            return defaultFirst;
         },
 
         julDatePlusSecs(){

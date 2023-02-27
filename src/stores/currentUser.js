@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { updateEmail, updatePassword, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
 import { auth, db } from '../firebase.js'
-import { query, collection, where, getDocs, setDoc, doc } from "firebase/firestore/lite";
+import { query, collection, where, getDocs, setDoc, doc, orderBy } from "firebase/firestore/lite";
 
 export const useCurrentUserStore = defineStore('CurrentUser',{
     state: () => ({
@@ -66,12 +66,14 @@ export const useCurrentUserStore = defineStore('CurrentUser',{
                 const modulos = await getDocs(
                     query(
                         collection(db, '/modulos'),
-                        where('fraccion', 'in', this.modIds)
-                    )
+                        orderBy('fraccion','asc'),
+                    ), 
                 );
                 
                 modulos.forEach((doc) => {
-                  this.modulos.push({fbid: doc.id, ...doc.data()})  
+                    if( this.modIds.includes(doc.data().fraccion)){
+                        this.modulos.push({fbid: doc.id, ...doc.data()})  
+                    }
                 })
 
             } catch(e) {

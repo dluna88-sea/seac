@@ -1,30 +1,34 @@
-<script>
-import { useDataUserStore } from '../../stores/dataUser';
+<script setup>
+import { useUsuariosStore } from '../../stores/usuarios';
+import { useCurrentUserStore } from '../../stores/currentUser';
 import router from '../../router';
-const dataUser = useDataUserStore();
-async function cargarDatos(){
-    if(dataUser.datos.length == 0){
-        await dataUser.getData();
-    }
+import { useRoute } from 'vue-router';
+const route = useRoute();
+const user = useUsuariosStore();
+const currentUser = useCurrentUserStore();
+async function getUsuario(){
 
-    if(dataUser.datos.rol != "admin"){
-        dataUser.setError('No tienes permisos para acceder a la página solicitada')
+    if(currentUser.id == null){ await currentUser.getDatos(); }
+    if(currentUser.rol != 'admin'){
+        currentUser.setError('No tienes permiso para acceder a esta página')
         router.push('/');
-    }else{
-
-        
-
     }
+    
+    if(user.datos.valueOf.length == 0){ await user.get(route.params.id); }
+
 }
-cargarDatos();
+
+getUsuario();
 </script>
 <template>
     
     <DefaultPage>
 
-        <PageTitle><Icon name="people-fill"/> &nbsp;Usuario: {{ usuario.nombre }}</PageTitle>
+        <PageTitle><Icon name="people-fill"/> &nbsp;{{ user.datos.nombre }}</PageTitle>
         <div class="row">
-
+            <div class="col">
+                Correo electrónico: {{ user.datos.email }}
+            </div>
         </div>
 
     </DefaultPage>

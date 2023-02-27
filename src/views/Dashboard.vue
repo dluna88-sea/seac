@@ -7,6 +7,7 @@ async function traerDatos(){
     
 }
 
+
 traerDatos();
 </script>
 

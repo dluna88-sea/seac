@@ -10,6 +10,7 @@ async function getDatos(){
     if(currentUser.id == null){ await currentUser.getDatos(); }
     await currentUser.getModulos();
     if(modulo.todos.length == 0 && currentUser.rol == 'admin'){ await modulo.getAll(); }
+
 }
 getDatos();
 
@@ -52,10 +53,12 @@ getDatos();
                     <div class="tab-pane fade show active" id="pills-mods" role="tabpanel" aria-labelledby="pills-mods-tab" tabindex="0">
                         <p>Estos son los módulos en los que te han designado como encargado:</p>
                         <Info v-if="currentUser.modulos == 0">No tienes asignados módulos de transparencia.</Info>
-                        <div v-else class="list-group shadow-sm" v-for="mod in currentUser.modulos">
-                            <router-link style="text-decoration:none" :to="`/transparencia/${mod.fbid}`" class="list-group-item">
-                                {{ mod.fraccion }} - {{ mod.titulo }}
-                            </router-link>
+                        <div v-else >
+                            <div class="list-group shadow-sm">
+                                <router-link class="list-group-item" v-for="mod in currentUser.modulos" :to="'transparencia/'+mod.fbid">
+                                    {{ mod.fraccion }} - {{ mod.titulo }}
+                                </router-link>
+                            </div>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="pills-todos" role="tabpanel" aria-labelledby="pills-todos-tab" tabindex="0">
@@ -76,10 +79,12 @@ getDatos();
                     
                     <Info v-if="currentUser.modIds.length == 0">No tienes asignados módulos de transparencia.</Info>
                     
-                    <div v-else class="list-group shadow-sm" v-for="mod in currentUser.modulos">
-                        <router-link style="text-decoration:none" :to="`/transparencia/${mod.fbid}`" class="list-group-item">
-                            {{ mod.fraccion }} - {{ mod.titulo }}
-                        </router-link>
+                    <div v-else >
+                        <div class="list-group shadow-sm">
+                            <router-link class="list-group-item" v-for="mod in currentUser.modulos" :to="'transparencia/'+mod.fbid">
+                                {{ mod.fraccion }} - {{ mod.titulo }}
+                            </router-link>
+                        </div>
                     </div>
                 </div>
             </div>

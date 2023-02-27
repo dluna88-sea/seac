@@ -15,6 +15,7 @@ async function getMod(){
     if(currentUser.id == null){ await currentUser.getDatos(); }
     await modulo.get(route.params.id);
 
+    modulo.getLastID(route.params.id)
 }
 getMod();
 
@@ -146,104 +147,7 @@ const updateFecha = async() => {
                 </Info>
                 <div v-else>
 
-                    <Card v-if="modulo.secciones.length < 4" Class="mb-5" v-for="seccion in modulo.secciones">
-                        <CardHeader>
-                            <div class="row">
-                                <label for="subtitulo" class="col-sm-3 col-form-label text-sm-end">Subtítulo</label>
-                                <div class="col-sm-9">
-                                    
-                                    <form :name="`secSubtitulo_${seccion.id}`" @submit.prevent="updSubtitulo(seccion.id,seccion.subtitulo)" class="row row-cols-auto g-3">
-                                        <input type="hidden" name="orden" :value="seccion.orden">
-                                        <div class="col-xl-10 col-lg-8 col-md-7 col-sm-7 col-xs-12">
-                                            <input type="hidden" name="idSeccion" :value="seccion.id">
-                                            <input type="text" class="form-control" name="subtitulo" :value="seccion.subtitulo">
-                                        </div>
-                                        <div class="col-xl-2 col-lg-4 col-md-5 col-sm-5 col-xs-12">
-                                            <button class="btn btn-secondary" type="submit">Editar</button>
-                                            <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${seccion.id}`" style="color:red; cursor:pointer"><Icon name="x-circle-fill" /></a>
-                                        </div>
-                                    </form>
-                                    <DeleteSeccionModal
-                                        :id="seccion.id"
-                                        :modID="route.params.id"
-                                        :subtitulo="seccion.subtitulo"
-                                    ></DeleteSeccionModal> 
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardBody Class="p-4">
-
-                            <div class="row mb-3">
-                                <label for="descripcion" class="col-sm-3 col-form-label text-sm-end">Descripción</label>
-                                <div class="col-sm-9">
-                                    <form :name="`secDescripcion_${seccion.id}`" @submit.prevent="updDescripcion(seccion.id,seccion.descripcion)">
-                                        <textarea placeholder="Opcional" class="form-control" id="descripcion" name="descripcion">{{ seccion.descripcion }}</textarea>
-                                        <button type="submit" class="btn btn-secondary mt-2">Actualizar descripción</button>
-                                    </form>
-                                </div>
-                            </div>
-
-                            <hr>
-
-                            <fieldset class="row mb-3">
-                                
-                                <legend class="col-form-label col-sm-3 pt-0  text-sm-end">
-                                    <Icon name="paperclip" /> Documentos adjuntos:
-                                    <br>
-                                    <button :data-bs-target="`#uploadFileTo_${seccion.id}`" data-bs-toggle="modal" class="btn btn-secondary my-3"><Icon name="upload" /> &nbsp; Subir</button>
-
-                                    
-                                </legend>
-                                    <UploadFileModal
-                                        :seccion="{ modID: route.params.id, secID: seccion.id }"
-                                        :id="`uploadFileTo_${seccion.id}`"
-                                    ></UploadFileModal>
-                                <div class="col-sm-9">
-                                    <!-- <div class="mb-3">
-                                        <form :name="`uplFilepdf_${seccion.id}`" @submit.prevent="uploadFile(seccion.id)">
-                                            
-                                            <input type="file" class="form-control" accept="application/pdf" id="uploadFile" name="filepdf" aria-describedby="uploadFileAddon" aria-label="Upload">
-                                            <label for="nombre">Nombre del archivo:</label>
-                                            <input type="text" required class="form-control mb-3" name="nombre" >
-                                            <label for="desripcion">Descripción:</label>
-                                            <textarea name="descripcion" class="form-control" placeholder="(Opcional)"></textarea>
-                                            <button class="btn btn-secondary" type="submit" id="uploadFileAddon">Subir</button>
-
-                                            
-                                        </form>
-                                    </div> -->
-                                    
-                                    
-                                    <Info v-if="seccion.documentos.length == 0">No hay documentos adjuntos</Info>
-                                    
-                                    <ul v-else class="list-group shadow-sm" >
-                                        <li v-for="(doc) in seccion.documentos" class="list-group-item ">
-                                            <Icon name="file-pdf" />
-                                            <a style="text-decoration: none;" :href="doc.url" target="_blank" >
-                                                <span class="mx-2">{{ doc.nombre }}</span>
-                                            </a>
-                                            <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#deleteModal${seccion.id}-${doc.id}`" style="color:red; cursor:pointer"><Icon name="x-circle-fill" /></a>
-                                            <ModalDeleteFile 
-                                                :id="`deleteModal${seccion.id}-${doc.id}`"
-                                                :archivo="{  
-                                                    docID: doc.id,
-                                                    seccion: seccion.id, 
-                                                    nombre: doc.nombre,
-                                                    filename: doc.filename, 
-                                                    modulo:modulo.fbid,
-                                                    url: doc.url 
-                                                }"></ModalDeleteFile>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                            </fieldset>
-
-                        </CardBody>    
-                        
-                    </Card>
-
-                    <div v-else class="list-group">
+                    <div class="list-group shadow">
                         <div v-for="seccion in modulo.secciones" class="list-group-item d-flex justify-content-between align-items-center">
                             <router-link :to="`/transparencia/${modulo.fbid}/${seccion.id}`" style="text-decoration:none; color:black" class="col-11">
                                 {{ seccion.subtitulo }}

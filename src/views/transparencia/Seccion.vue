@@ -2,6 +2,7 @@
 import { useRoute } from 'vue-router';
 import { useModuloStore } from '../../stores/modulo';
 import DeleteSeccionModal from '../../components/modals/DeleteSeccionModal.vue';
+import UploadFileModal from '../../components/modals/UploadFileModal.vue';
 
 const modulo = useModuloStore();
 const route = useRoute();
@@ -29,21 +30,6 @@ const updDescripcion = async() => {
     if(descNueva != modulo.seccion.descripcion){
         await modulo.updateSeccion({descripcion:descNueva},route.params.modID,modulo.seccion.id);
         location.reload();
-    }
-}
-
-const uploadFile = async() => {
-    const documento = document.forms['uplFilepdf']['filepdf'].files[0];
-    const nombre = document.forms['uplFilepdf']['nombre'].value.trim();
-    const descripcion = document.forms['uplFilepdf']['descripcion'].value.trim();
-    const datos = {
-        modID:route.params.modID, 
-        secID:route.params.secID, 
-        descripcion:descripcion, 
-        nombre:nombre 
-    }
-    if(documento != undefined){
-        await modulo.uploadFile(documento,datos);
     }
 }
 
@@ -98,24 +84,17 @@ const uploadFile = async() => {
             
             <legend class="col-form-label col-sm-3 pt-0  text-sm-end">
                 <Icon name="paperclip" /> Documentos adjuntos:
+                <br />
+                <a class="btn btn-secondary mt-3" data-bs-toggle="modal" :data-bs-target="`#uploadModal_${modulo.seccion.id}`" ><Icon name="upload" /> Subir archivo</a>
+                    
             </legend>
+            <UploadFileModal
+                :id="`uploadModal_${modulo.seccion.id}`"
+                :seccion="{ modID:route.params.modID, secID:route.params.secID }"
+            ></UploadFileModal>
             
             <div class="col-sm-9">
-                <div class="mb-3">
-                    <form name="uplFilepdf" class="g-3" @submit.prevent="uploadFile()">
-                        
-                        <input type="file" class="form-control mb-3" accept="application/pdf" id="uploadFile" name="filepdf" aria-describedby="uploadFileAddon" aria-label="Upload">
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre: </label>
-                            <input type="text" required class="form-control" name="nombre" placeholder="Escribe el nombre del archivo">
-                        </div>
-                        <div class="mb-3">
-                            <label for="descripcion" class="form-label">Descripción: </label>
-                            <textarea type="text" class="form-control" name="descripcion" placeholder="(Opcional)"></textarea>
-                        </div>
-                        <button class="btn btn-secondary" type="submit">Subir archivo</button>
-                    </form>
-                </div>
+                
                 <Loading v-if="modulo.loading"></Loading>
                 
                 <Info v-else-if="modulo.documentos.length == 0">No hay documentos adjuntos</Info>
