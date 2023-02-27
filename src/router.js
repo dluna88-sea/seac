@@ -11,6 +11,25 @@ const isAuth = async(to, from, next) => {
     }
 }
 
+const isAdmin = async(to, from, next) => {
+    const currentUser = useCurrentUserStore();
+    await currentUser.getDatos();
+    
+    const user = await currentUser.isAuth();
+    if(user){
+        console.log(currentUser.rol)
+        if(currentUser.rol == 'admin'){
+            next();
+        }else{
+            currentUser.setError('No tienes permiso de acceder a esta página')
+            next('/')
+        }
+
+    }else{
+        next('/login')
+    }
+}
+
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -22,8 +41,9 @@ const router = createRouter({
         { path:'/transparencia/:modID/:secID', name: 'Seccion', component: () => import('./views/transparencia/Seccion.vue'), beforeEnter:isAuth },
         { path:'/perfil/', name: 'Perfil', component: () => import('./views/Profile.vue'), beforeEnter:isAuth },
         { path:'/ayuda', name: 'Ayuda', component: () => import('./views/Ayuda.vue'), beforeEnter:isAuth },
-        { path:'/usuarios', name: 'Usuarios', component: () => import('./views/usuarios/Listado.vue'), beforeEnter:isAuth },
-        { path:'/usuario/:id', name: 'DetalleUsuario', component: () => import('./views/usuarios/Detalle.vue'), beforeEnter:isAuth },
+        { path:'/usuarios', name: 'Usuarios', component: () => import('./views/usuarios/Listado.vue'), beforeEnter:isAdmin },
+        { path:'/usuario/:id', name: 'DetalleUsuario', component: () => import('./views/usuarios/Detalle.vue'), beforeEnter:isAdmin },
+        { path:'/usuario/nuevo', name: 'NuevoUsuario', component: () => import('./views/usuarios/NuevoUsuario.vue'), beforeEnter:isAdmin },
         
         //Error 404
         {

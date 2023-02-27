@@ -3,15 +3,9 @@ import { useUsuariosStore } from '../../stores/usuarios';
 import { useCurrentUserStore } from '../../stores/currentUser';
 import router from '../../router';
 const usuarios = useUsuariosStore();
-const currentUser = useCurrentUserStore();
 
 async function getUsuarios(){
 
-    if(currentUser.id == null){ await currentUser.getDatos(); }
-    if(currentUser.rol != 'admin'){
-        currentUser.setError('No tienes permiso para acceder a esta página')
-        router.push('/');
-    }
     if(usuarios.listado.length == 0){ await usuarios.getAll(); }
 
 }
@@ -45,9 +39,9 @@ getUsuarios();
                         Herramientas de administrador:
                     </span>
                     <div class="btn-group" role="group" aria-label="Basic example">
-                        <button data-bs-toggle="modal" data-bs-target="#ModalNuevoModulo" type="button" class="btn btn-secondary">
+                        <RouterLink class="btn btn-secondary" to="/usuario/nuevo">
                             <Icon name="person-plus-fill" />&nbsp; Registrar
-                        </button>
+                        </RouterLink>
                     </div>
                 </nav>
             </div>
