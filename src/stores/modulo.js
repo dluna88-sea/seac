@@ -386,11 +386,11 @@ export const useModuloStore = defineStore('SingleModulo',{
                     limit(1)
                 )
             )
-            if(seccion.docs.length < 0){
+            
+            if(seccion.docs.length > 0){
                 let seccionID = parseInt(seccion.docs[0].data().uid,10)+1;
                 return seccionID.toString();
-            }
-            return defaultFirst;
+            }else return defaultFirst;
         },       
 
         async getLastFileID(modID, secID){
@@ -406,8 +406,7 @@ export const useModuloStore = defineStore('SingleModulo',{
             if(documento.docs.length > 0){
                 let documentID = parseInt(documento.docs[0].data().uid,10)+1;
                 return documentID.toString();
-            }
-            return defaultFirst;
+            }else return defaultFirst;
         },
 
         julDatePlusSecs(){

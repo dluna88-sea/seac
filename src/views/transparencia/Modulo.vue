@@ -2,6 +2,7 @@
 import { useRoute } from 'vue-router';
 import ModalNuevaSeccion from '../../components/modals/ModalNuevaSeccion.vue';
 import DeleteSeccionModal from '../../components/modals/DeleteSeccionModal.vue';
+import UpdateModTituloModal from '../../components/modals/secciones/UpdateModTituloModal.vue';
 import UploadFileModal from '../../components/modals/UploadFileModal.vue';
 import { useCurrentUserStore } from '../../stores/currentUser';
 import { useModuloStore } from '../../stores/modulo';
@@ -9,13 +10,11 @@ const route = useRoute();
 const currentUser = useCurrentUserStore();
 const modulo = useModuloStore();
 
-
 async function getMod(){ 
     
     if(currentUser.id == null){ await currentUser.getDatos(); }
     await modulo.get(route.params.id);
 
-    modulo.getLastID(route.params.id)
 }
 getMod();
 
@@ -79,10 +78,36 @@ const updateFecha = async() => {
     <div v-else>
         
         <DefaultPage>
+
+            <ul class="nav nav-pills mb-2 mt-3">
+                <li class="nav-item">
+                    <routerLink to="/transparencia" class="nav-link active" aria-current="page">
+                        <Icon name="arrow-left" /> Regresar
+                    </routerLink>
+                </li>
+            </ul>
+
             <Error v-if="modulo.message.error && modulo.message.place == null">{{ modulo.message.text }}</Error>
             <Success v-if="modulo.message.success && modulo.message.place == null">{{ modulo.message.text }}</Success>
 
-            <PageTitle>{{ modulo.titulo }}</PageTitle>
+            <PageTitle>
+                {{ modulo.titulo }}
+                <button 
+                    v-if="currentUser.rol == 'admin'" 
+                    class="btn btn-secondary"
+                    data-bs-target="#updateTitleModal"
+                    data-bs-toggle="modal"
+                    >
+                    <Icon name="pencil-fill" />
+                </button>
+
+                <UpdateModTituloModal
+                    :tituloActual="modulo.titulo"
+                    :modID="route.params.id"
+                ></UpdateModTituloModal>
+
+            </PageTitle>
+            
             
             
             <div class="row">

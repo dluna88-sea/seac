@@ -2,6 +2,7 @@
 import { useRoute } from 'vue-router';
 import { useModuloStore } from '../../stores/modulo';
 import DeleteSeccionModal from '../../components/modals/DeleteSeccionModal.vue';
+import EditarDocumentoModal from '../../components/modals/documentos/EditarDocumentoModal.vue';
 import UploadFileModal from '../../components/modals/UploadFileModal.vue';
 
 const modulo = useModuloStore();
@@ -37,6 +38,17 @@ const updDescripcion = async() => {
 <template>
 
 <DefaultPage>
+
+    <ul class="nav nav-pills mb-2 mt-3">
+                <li class="nav-item">
+                    <routerLink :to="`/transparencia/${route.params.modID}`" class="nav-link active" aria-current="page">
+                        <Icon name="arrow-left" /> Regresar
+                    </routerLink>
+                </li>
+                <!-- <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li> -->
+            </ul>
 
     <Loading v-if="modulo.loading"></Loading>
 
@@ -105,7 +117,9 @@ const updDescripcion = async() => {
                         <a style="text-decoration: none;" :href="doc.url" target="_blank" >
                             <span class="mx-2">{{ doc.nombre }}</span>
                         </a>
-                        <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#deleteModal${modulo.seccion.id}-${doc.id}`" style="color:red; cursor:pointer"><Icon name="x-circle-fill" /></a>
+                        
+                        <a class="float-end mx-2" data-bs-toggle="modal" :data-bs-target="`#deleteModal${modulo.seccion.id}-${doc.id}`" style="color:red; cursor:pointer"><Icon name="x-circle-fill" /></a>
+                        <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#updateFileData-${doc.id}`" style="color:blue; cursor:pointer"><Icon name="pencil-fill" /></a>
                         <ModalDeleteFile 
                             :id="`deleteModal${modulo.seccion.id}-${doc.id}`"
                             :archivo="{  
@@ -116,6 +130,7 @@ const updDescripcion = async() => {
                                 modulo:route.params.modID,
                                 url: doc.url 
                             }"></ModalDeleteFile>
+                        <EditarDocumentoModal :id="`#updateFileData-${doc.id}`" ></EditarDocumentoModal>
                     </li>
                 </ul>
             </div>
