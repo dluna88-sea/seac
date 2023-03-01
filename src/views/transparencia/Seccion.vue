@@ -119,7 +119,11 @@ const updDescripcion = async() => {
                         </a>
                         
                         <a class="float-end mx-2" data-bs-toggle="modal" :data-bs-target="`#deleteModal${modulo.seccion.id}-${doc.id}`" style="color:red; cursor:pointer"><Icon name="x-circle-fill" /></a>
-                        <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#updateFileData-${doc.id}`" style="color:blue; cursor:pointer"><Icon name="pencil-fill" /></a>
+                        <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#updateFileData_${doc.id}`" style="color:blue; cursor:pointer"><Icon name="pencil-fill" /></a>
+                        <EditarDocumentoModal
+                            :id="`updateFileData_${doc.id}`"
+                            :archivo="doc"
+                        ></EditarDocumentoModal>
                         <ModalDeleteFile 
                             :id="`deleteModal${modulo.seccion.id}-${doc.id}`"
                             :archivo="{  
@@ -130,7 +134,7 @@ const updDescripcion = async() => {
                                 modulo:route.params.modID,
                                 url: doc.url 
                             }"></ModalDeleteFile>
-                        <EditarDocumentoModal :id="`#updateFileData-${doc.id}`" ></EditarDocumentoModal>
+                        
                     </li>
                 </ul>
             </div>
