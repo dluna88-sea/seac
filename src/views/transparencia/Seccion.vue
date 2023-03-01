@@ -123,6 +123,9 @@ const updDescripcion = async() => {
                         <EditarDocumentoModal
                             :id="`updateFileData_${doc.id}`"
                             :archivo="doc"
+                            :modID="route.params.modID"
+                            :secID="route.params.secID"
+                            
                         ></EditarDocumentoModal>
                         <ModalDeleteFile 
                             :id="`deleteModal${modulo.seccion.id}-${doc.id}`"

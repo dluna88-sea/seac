@@ -263,6 +263,24 @@ export const useModuloStore = defineStore('SingleModulo',{
             }
         },
 
+        async updateDatosFile(datos){
+            try{
+                this.loading = true;
+                
+                const path = '/modulos/'+datos.modID+'/secciones/'+datos.secID+'/documentos/'
+
+                if("documento" in datos){
+                    //TODO: Subir nuevo documento y eliminar el anterior
+
+                }
+
+                //actualizar los datos
+
+            } catch(e) {
+                this.setError(e.message)                
+            } finally { this.loading = false; }
+        },
+
         async uploadFile(file, datos){
             try {
                 this.loading = true;
