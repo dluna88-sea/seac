@@ -270,11 +270,28 @@ export const useModuloStore = defineStore('SingleModulo',{
                 const path = '/modulos/'+datos.modID+'/secciones/'+datos.secID+'/documentos/'
 
                 if("documento" in datos){
-                    //TODO: Subir nuevo documento y eliminar el anterior
+                    //Borrar el doc anterior:
+                    const fireStorePath = datos.modID+'/'+datos.secID+'/'+datos.documentoViejo;
+                    const docRef = ref(getStorage(), fireStorePath);
+                    await deleteObject(docRef).then(async () => {
 
+                        //subir el nuevo archivo
+                        const refFile = ref( getStorage(), '/'+datos.modID+'/'+datos.secID+'/'+datos.documento.name );
+                        await uploadBytes( refFile, datos.documento ).then( async () => {
+
+                            const newFileurl = await getDownloadURL(docRef);
+
+                            //actualizar la info:
+                            setDoc(
+                                doc(db, path),
+                                
+                            )
+
+                        }).catch((e) => { console.log(e.message) })
+
+                    }).catch((e) => { console.log(e.message) })
                 }
 
-                //actualizar los datos
 
             } catch(e) {
                 this.setError(e.message)                
@@ -324,7 +341,7 @@ export const useModuloStore = defineStore('SingleModulo',{
         async deleteFile(datos){
             try {
                 this.loading = true;
-                console.log(datos.modulo+'/'+datos.seccion+'/'+datos.filename)
+                
                 const docRef = ref(getStorage(), datos.modulo+'/'+datos.seccion+'/'+datos.filename);
 
                 await deleteObject(docRef).then(async () => {

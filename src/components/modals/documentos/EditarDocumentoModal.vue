@@ -36,7 +36,7 @@ import { useModuloStore } from '../../../stores/modulo';
         }
 
         if(documento != undefined){
-            nuevosDatos = { ...nuevosDatos, documento:documento }
+            nuevosDatos = { ...nuevosDatos, documento:documento, documentoViejo:props.archivo.filename }
         }
 
         if(JSON.stringify(nuevosDatos) === "{}"){
