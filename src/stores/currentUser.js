@@ -71,7 +71,7 @@ export const useCurrentUserStore = defineStore('CurrentUser',{
                 );
                 
                 modulos.forEach((doc) => {
-                    if( this.modIds.includes(doc.data().fraccion)){
+                    if( this.modIds.includes(doc.data().articulo)){
                         this.modulos.push({fbid: doc.id, ...doc.data()})  
                     }
                 })
@@ -81,6 +81,28 @@ export const useCurrentUserStore = defineStore('CurrentUser',{
             } finally {
                 this.loading = false;
             }
+        },
+
+        async asignarModulo(modID){
+            try{
+
+                this.loading = true;
+                if(!this.modIds.includes(modID)){
+                    this.modIds.push(modID)
+
+                    await setDoc(
+                        doc(db, 'usuarios',this.id),
+                        {modulos: this.modIds},
+                        {merge:true}
+                    ).then(() => {
+                        this.setSuccess('Módulo asignado correctamente')
+                    }).catch((e) => {
+                        this.setError(e.message)
+                    })
+                }
+
+            } catch(e) { this.setError(e.message) }
+            finally { this.loading = false; }
         },
 
         //Actualizar datos de usuario:

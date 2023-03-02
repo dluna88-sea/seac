@@ -3,7 +3,7 @@ import { useRoute } from 'vue-router';
 import ModalNuevaSeccion from '../../components/modals/ModalNuevaSeccion.vue';
 import DeleteSeccionModal from '../../components/modals/DeleteSeccionModal.vue';
 import UpdateModTituloModal from '../../components/modals/secciones/UpdateModTituloModal.vue';
-import UploadFileModal from '../../components/modals/UploadFileModal.vue';
+import DeleteModuloModal from '../../components/modals/DeleteModuloModal.vue';
 import { useCurrentUserStore } from '../../stores/currentUser';
 import { useModuloStore } from '../../stores/modulo';
 const route = useRoute();
@@ -58,18 +58,11 @@ const updDescripcion = async(secID, desc) => {
     }
 }
 
-const uploadFile = async(secId) => {
-    const documento = document.forms['uplFilepdf_'+secId]['filepdf'].files[0];
-    const nombre = document.forms['uplFilepdf_'+secId]['nombre'].value.trim();
-    
-    if(documento != undefined){
-        await modulo.uploadFile(documento,{modID:route.params.id, secID:secId}, nombre);
-    }
-}
 
 const updateFecha = async() => {
     await modulo.update(null, modulo.fbid)
 }
+
 
 </script>
 
@@ -101,13 +94,13 @@ const updateFecha = async() => {
                     <Icon name="pencil-fill" />
                 </button>
 
-                <UpdateModTituloModal
-                    :tituloActual="modulo.titulo"
-                    :modID="route.params.id"
-                ></UpdateModTituloModal>
-
+                
             </PageTitle>
             
+            <UpdateModTituloModal
+                :tituloActual="`${modulo.titulo}`"
+                :modID="route.params.id"
+            ></UpdateModTituloModal>
             
             
             <div class="row">
@@ -225,6 +218,27 @@ const updateFecha = async() => {
                             <button class="btn btn-secondary mt-3" type="submit">Actualizar nota de cierre</button>
                         </div>
                     </form>
+                </div>
+            </div>
+
+            <div v-if="currentUser.rol == 'admin'" class="row mb-5">
+                <div class="col-12 p-3">
+                    <div class="card border-danger mb-3" style="border-radius:0;">
+                        
+                        <div class="card-body p-4 bg-danger-subtle text-danger">
+                            <h5 class="card-title">ELIMINAR MÓDULO</h5>
+                            <p class="card-text">ADVERTENCIA: Esta acción no puede deshacerse</p>
+                            <hr>
+                            <div class="float-end">
+                                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModulo">
+                                    <Icon name="trash-fill" />&nbsp; Eliminar
+                                </button>
+                            </div>
+                        </div>
+
+                        <DeleteModuloModal :modID="route.params.id"></DeleteModuloModal>
+
+                    </div>
                 </div>
             </div>
 

@@ -7,10 +7,10 @@ import { useModuloStore } from '../../stores/modulo';
             required:true
         },
     });
+const modulo = useModuloStore();
 
 const crearModulo = async() => {
 
-    const modulo = useModuloStore();
 
     const datos = {
         titulo: document.forms['nuevoModulo']['titulo'].value.trim(),
@@ -46,6 +46,8 @@ const crearModulo = async() => {
                         
                         <div class="row p-3">
                             
+                            <Error v-if="modulo.message.error">{{ modulo.message.text }}</Error>
+
                             <div class="col-12 mb-3">
                                 <label for="titulo" class="form-label">Título</label>
                                 <input required type="text" class="form-control" placeholder="Escribe el título del módulo" name="titulo">

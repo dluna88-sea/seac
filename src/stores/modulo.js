@@ -4,6 +4,7 @@ import { query, collection, where, getDocs, getDoc, addDoc, setDoc, doc, deleteD
 import { orderByChild } from 'firebase/database'
 import { getDownloadURL, getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
 
+
 export const useModuloStore = defineStore('SingleModulo',{
     state: () => ({
         loading: false,
@@ -34,29 +35,73 @@ export const useModuloStore = defineStore('SingleModulo',{
         async nuevoModulo(datos){
             try {
                 this.loading = true;
+                const articulo = datos.articulo+'-'+datos.fraccion;
 
-                const objData = {
-                    titulo:datos.titulo,
-                    actualizacion:this.fecha(),
-                    descripcion:datos.descripcion,
-                    nota:datos.nota,
-                    encargado:{
-                        nombre:datos.encargado.nombre,
-                        cargo:datos.encargado.cargo,
-                    },
-                    fraccion: datos.fraccion,
-                    articulo: datos.articulo,
+                if(! await this.modExists(articulo)){
+
+
+                    const objData = {
+                        titulo:datos.titulo,
+                        actualizacion:this.fecha(),
+                        descripcion:datos.descripcion,
+                        nota:datos.nota,
+                        encargado:{
+                            nombre:datos.encargado.nombre,
+                            cargo:datos.encargado.cargo,
+                        },
+                        fraccion: datos.fraccion,
+                        articulo: datos.articulo+"-"+datos.fraccion,
+                    }
+                    console.log(objData)
+                    const docRef = await addDoc(collection(db, "modulos"), objData).catch((e) => { console.log(e) });
+                    
+                    location.reload();  
+
+                }else{
+                    this.setError('El módulo del artículo '+datos.articulo+' fracción '+datos.fraccion+' ya existe');
                 }
-                console.log(objData)
-                const docRef = await addDoc(collection(db, "modulos"), objData).catch((e) => { console.log(e) });
-                
-                location.reload();  
 
             } catch (e) {
                 this.setError(e.message)
             } finally {
                 this.loading = false;
             }
+        },
+
+        async deleteModulo(id){
+            try {
+                this.loading = true;
+
+                await deleteDoc( doc(db,'modulos',id) ).then(async () => {
+                    this.setSuccess('Módulo eliminado correctamente');
+                    this.resetData();
+                    this.getAll()
+                }).catch((e) => { this.setError(e.message) })
+
+            } catch (e) {
+                this.setError(e.message)
+            } finally { this.loading = false; }
+        },
+
+        async modExists(articulo){
+            try {
+                this.loading = true;
+
+                const mod = await getDocs(
+                    query(
+                        collection(db, 'modulos'),
+                        where('articulo','==',articulo.toString())
+                    )
+                );
+
+                if(mod.docs.length != 0){
+                    return true;
+                }
+                return false;
+
+            } catch (e) {
+                this.setError(e.message)
+            } finally { this.loading = false; }
         },
 
         async getAll(){
@@ -399,14 +444,18 @@ export const useModuloStore = defineStore('SingleModulo',{
         },
 
         resetData(){
-            this.id = null
-            this.fbid = null
-            this.titulo = null
-            this.actualizacion = null
-            this.encargado.nombre = null
-            this.encargado.cargo = null
-            this.nota = null
-            this.secciones = []
+            this.fraccion = null;
+            this.articulo = null;
+            this.fbid = null;
+            this.titulo = null;
+            this.actualizacion = null;
+            this.encargado.nombre = null;
+            this.encargado.cargo = null;
+            this.nota = null;
+            this.secciones = [];
+            this.todos = [];
+            this.seccion = {};
+            this.documentos = [];
         },
 
         fecha(){
