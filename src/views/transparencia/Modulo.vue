@@ -172,7 +172,7 @@ const updateFecha = async() => {
                 </Info>
                 <div v-else>
 
-                    <div class="list-group shadow">
+                    <div class="list-group shadow mb-4">
                         <div v-for="seccion in modulo.secciones" class="list-group-item d-flex justify-content-between align-items-center">
                             <router-link :to="`/transparencia/${modulo.fbid}/${seccion.id}`" style="text-decoration:none; color:black" class="col-11">
                                 {{ seccion.subtitulo }}
