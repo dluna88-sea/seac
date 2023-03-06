@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
-import { auth, db } from '../firebase.js'
+import { auth, db, firebaseConfig } from '../firebase.js'
 import { query, collection, where, getDocs, setDoc, doc, getDoc } from "firebase/firestore/lite";
+import { createUserWithEmailAndPassword, initializeAuth } from "firebase/auth";
 
 export const useUsuariosStore = defineStore('UsuariosStore',{
     state: () => ({
@@ -106,7 +107,19 @@ export const useUsuariosStore = defineStore('UsuariosStore',{
             }
         },
 
+        async registrar(datos, pwd){
+            try{
+                
+                this.loading = true;
+                const appFb2 = initializeAuth()
+                console.log(appFb2);
+                await appFb2.createUserWithEmailAndPassword( datos.email, pwd ).then((res) => {
+                    console.log(res.user.uid);
+                }).catch((e) => { this.setError(e.message) })
 
+            } catch(e) { this.setError(e.message) }
+            finally { this.loading = false; }
+        },
 
 
         setError(msg = ''){

@@ -26,8 +26,16 @@ export const useModuloStore = defineStore('SingleModulo',{
         nota:null,
         secciones:[],
         todos:[],
+        modsOrd:{
+            art20:[], 
+            art21:[],
+            art25:[], 
+            art70:[],
+            artLGCG:[]
+        },
         seccion:{},
         documentos:[],
+        userList:[],
     }),
     actions:{
 
@@ -39,6 +47,7 @@ export const useModuloStore = defineStore('SingleModulo',{
 
                 if(! await this.modExists(articulo)){
 
+                    const nUID = await this.getLastModID();
 
                     const objData = {
                         titulo:datos.titulo,
@@ -51,6 +60,7 @@ export const useModuloStore = defineStore('SingleModulo',{
                         },
                         fraccion: datos.fraccion,
                         articulo: datos.articulo+"-"+datos.fraccion,
+                        uid:nUID
                     }
                     console.log(objData)
                     const docRef = await addDoc(collection(db, "modulos"), objData).catch((e) => { console.log(e) });
@@ -108,16 +118,36 @@ export const useModuloStore = defineStore('SingleModulo',{
             try {
                 this.loading = true;
 
-                const mods = await getDocs(
+                function startsWith(str, word) {
+                    return str.lastIndexOf(word, 0) === 0;
+                }
+
+                await getDocs(
                     query(
                         collection(db,'modulos'),
-                        orderBy("fraccion","asc")
+                        orderBy("uid","asc")
                     ),
-                )
+                ).then((result) => {
+                    
+                    result.docs.forEach((mod) => {
+                        
+                        let r = { fbid: mod.id, ...mod.data() };
+
+                        this.todos.push(r);
+
+                        if( startsWith( mod.data().articulo, "20-" ) ) this.modsOrd.art20.push(r);
+                        else if( startsWith( mod.data().articulo, "21-" ) ) this.modsOrd.art21.push(r);
+                        else if( startsWith( mod.data().articulo, "25-" ) ) this.modsOrd.art25.push(r);
+                        else if( startsWith( mod.data().articulo, "70-" ) ) this.modsOrd.art70.push(r);
+                        else if( startsWith( mod.data().articulo, "LGCG-" ) ) this.modsOrd.artLGCG.push(r);
+                        
+
+                    })
+
+                }).catch((e) => { console.log(e) })
                 
-                mods.docs.forEach((doc) => {
-                    this.todos.push({fbid:doc.id, ...doc.data()})
-                })
+            
+
                 
             } catch (e) {
                 this.setError(e.message)
@@ -428,6 +458,21 @@ export const useModuloStore = defineStore('SingleModulo',{
                 this.loading = false;
             }
         },
+
+        async getUserList(){
+            try {
+                this.loading = true;
+
+                const usuarios = await getDocs( query( collection(db, 'usuarios') ) )
+
+                usuarios.docs.forEach((user) => {
+                    this.userList.push({ nombre: user.data().nombre, cargo: user.data().cargo })
+                })
+
+            } catch (e) {
+                this.setError(e.message);
+            } finally { this.loading = false; }
+        },
         
         setError(msg = ''){
             this.message.error = true;
@@ -478,6 +523,22 @@ export const useModuloStore = defineStore('SingleModulo',{
                 }
             }
             return d.getDate()+' de '+mes+' de '+d.getFullYear();
+        },
+
+        async getLastModID(){
+            const defaultFirst = (new Date(Date.now()).getFullYear())+"00001";
+            let modulo = await getDocs(
+                query(
+                    collection(db,'modulos'),
+                    orderBy('uid','desc'),
+                    limit(1)
+                )
+            )
+            
+            if(modulo.docs.length > 0){
+                let modID = parseInt(modulo.docs[0].data().uid,10)+1;
+                return modID.toString();
+            }else return defaultFirst;
         },
 
         async getLastID(modID){

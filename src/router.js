@@ -1,33 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { useCurrentUserStore } from './stores/currentUser'
+import { useCurrentUserStore } from './stores/currentUser';
+import { auth, db } from './firebase'
 
 const isAuth = async(to, from, next) => {
     const currentUser = useCurrentUserStore();
-    const user = await currentUser.isAuth();
-    if(user){
-        next();
-    }else{
-        next('/login');
-    }
+    await currentUser.isAuth().then((user) => {
+        if(user) next();
+        else next('/login');
+    })
 }
 
 const isAdmin = async(to, from, next) => {
     const currentUser = useCurrentUserStore();
-    await currentUser.getDatos();
-    
-    const user = await currentUser.isAuth();
-    if(user){
-        console.log(currentUser.rol)
-        if(currentUser.rol == 'admin'){
-            next();
-        }else{
-            currentUser.setError('No tienes permiso de acceder a esta página')
-            next('/')
-        }
-
-    }else{
-        next('/login')
-    }
+    await currentUser.isAuth().then(async() => {
+        await currentUser.getRol(auth.currentUser.uid).then(() => {
+            if(currentUser.rol == 'admin') next();
+            else next('/');
+        });
+    });
 }
 
 const router = createRouter({

@@ -23,6 +23,26 @@ export const useCurrentUserStore = defineStore('CurrentUser',{
     }),
     actions:{
         
+        async getRol(uid){
+            try {
+                this.loading = true;
+                await getDocs( 
+                    query( 
+                        collection(db, '/usuarios'), 
+                        where('uid', '==', uid) 
+                    ) 
+                ).then((datos) => {
+                    
+                    this.rol = datos.docs[0].data().rol;
+
+                }).catch((e) => { this.setError(e.message) } );
+
+
+            } catch (e) {
+                this.setError(e.message);
+            } finally { this.loading = false; }
+        },
+
         //Consultar los datos del usuario
         async getDatos(){
             try {
@@ -66,7 +86,7 @@ export const useCurrentUserStore = defineStore('CurrentUser',{
                 const modulos = await getDocs(
                     query(
                         collection(db, '/modulos'),
-                        orderBy('fraccion','asc'),
+                        orderBy('uid','asc'),
                     ), 
                 );
                 

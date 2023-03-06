@@ -5,12 +5,14 @@ import ModalNuevoModulo from '../../components/modals/ModalNuevoModulo.vue';
 
 const currentUser = useCurrentUserStore();
 const modulo = useModuloStore();
-let modulos = [];
+
+
 async function getDatos(){
     if(currentUser.id == null){ await currentUser.getDatos(); }
     await currentUser.getModulos();
-    if(modulo.todos.length == 0 && currentUser.rol == 'admin'){ await modulo.getAll(); }
-
+    if(modulo.modsOrd.art20.length == 0){ await modulo.getAll(); }
+    if(modulo.userList.length == 0){ await modulo.getUserList(); }
+    
 }
 getDatos();
 
@@ -34,7 +36,7 @@ getDatos();
             </nav>
         </div>
 
-        <div class="row">
+        <div class="row mb-5">
             <div class="col" v-if="currentUser.rol == 'admin'">
 
                 <ul  class="nav nav-pills mb-3" id="pills-tab" role="tablist">
@@ -63,11 +65,62 @@ getDatos();
                     </div>
                     <div class="tab-pane fade" id="pills-todos" role="tabpanel" aria-labelledby="pills-todos-tab" tabindex="0">
                         <p>Estos son todos los módulos registrados:</p>
-                        <div  class="list-group shadow-sm">
+
+                        <div v-if="modulo.modsOrd.art20.length > 0">
+                            <h3>Artículo 20</h3>
+                            <div class="list-group mt-3 mb-4 shadow-sm">
+                                <router-link v-for="mod in modulo.modsOrd.art20" class="list-group-item" :to="`/transparencia/${mod.fbid}`">
+                                    {{ mod.fraccion }} - {{ mod.titulo }}
+                                </router-link>
+                            </div>
+                            <hr>
+                        </div>
+
+                        <div v-if="modulo.modsOrd.art21.length > 0">
+                            <h3>Artículo 21</h3>
+                            <div class="list-group mt-3 mb-4 shadow-sm">
+                                <router-link v-for="mod in modulo.modsOrd.art21" class="list-group-item" :to="`/transparencia/${mod.fbid}`">
+                                    {{ mod.fraccion }} - {{ mod.titulo }}
+                                </router-link>
+                            </div>
+                            <hr>
+                        </div>
+
+                        <div v-if="modulo.modsOrd.art25.length > 0">
+                            <h3>Artículo 25</h3>
+                            <div class="list-group mt-3 mb-4 shadow-sm">
+                                <router-link v-for="mod in modulo.modsOrd.art25" class="list-group-item" :to="`/transparencia/${mod.fbid}`">
+                                    {{ mod.fraccion }} - {{ mod.titulo }}
+                                </router-link>
+                            </div>
+                            <hr>
+                        </div>
+
+                        <div v-if="modulo.modsOrd.art70.length > 0">
+                            <h3>Artículo 70</h3>
+                            <div class="list-group mt-3 mb-4 shadow-sm">
+                                <router-link v-for="mod in modulo.modsOrd.art70" class="list-group-item" :to="`/transparencia/${mod.fbid}`">
+                                    {{ mod.fraccion }} - {{ mod.titulo }}
+                                </router-link>
+                            </div>
+                            <hr>
+                        </div>
+
+                        <div v-if="modulo.modsOrd.artLGCG.length > 0">
+                            <h3>Transparencia LGCG</h3>
+                            <div class="list-group mt-3 mb-4 shadow-sm">
+                                <router-link v-for="mod in modulo.modsOrd.artLGCG" class="list-group-item" :to="`/transparencia/${mod.fbid}`">
+                                    {{ mod.fraccion }} - {{ mod.titulo }}
+                                </router-link>
+                            </div>
+                            <hr>
+                        </div>
+
+                        <!-- <div  class="list-group shadow-sm">
                             <router-link v-for="mod in modulo.todos" class="list-group-item" :to="`/transparencia/${mod.fbid}`">
                                 {{ mod.fraccion }} - {{ mod.titulo }}
                             </router-link>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 
@@ -90,7 +143,9 @@ getDatos();
             </div>
         </div>
 
-        <ModalNuevoModulo :currentUser="currentUser" />
+        <ModalNuevoModulo 
+            :userList="modulo.userList" 
+            :currentUser="currentUser" />
 
     </DefaultPage>
 </template>

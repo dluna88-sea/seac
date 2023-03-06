@@ -6,25 +6,28 @@ import { useModuloStore } from '../../stores/modulo';
             type:Object,
             required:true
         },
+        userList:{
+            type:Array,
+            required:true
+        }
     });
 const modulo = useModuloStore();
 
 const crearModulo = async() => {
-
 
     const datos = {
         titulo: document.forms['nuevoModulo']['titulo'].value.trim(),
         descripcion: document.forms['nuevoModulo']['descripcion'].value.trim(),
         encargado: 
             {
-                nombre: document.forms['nuevoModulo']['encargado'].value.trim(),
-                cargo: document.forms['nuevoModulo']['cargo'].value.trim(),
+                nombre: document.forms['nuevoModulo']['encargado'].value.trim().split("|",1)[0],
+                cargo: document.forms['nuevoModulo']['encargado'].value.trim().split("|",-1)[1],
             },
         nota: document.forms['nuevoModulo']['nota'].value.trim(),
         articulo: document.forms['nuevoModulo']['articulo'].value.trim(),
         fraccion: document.forms['nuevoModulo']['fraccion'].value.trim(),
     }
-    
+
     await modulo.nuevoModulo(datos)
 }
 </script>
@@ -54,12 +57,19 @@ const crearModulo = async() => {
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="articulo" class="form-label">Título</label>
-                                <input required type="number" class="form-control" value="21" placeholder="Escribe el título del módulo" name="articulo">
+                                <label for="articulo" class="form-label">Artículo</label>
+                                <select required name="articulo" class="form-control" id="articulo">
+                                    <option value="20">Artículo 20</option>
+                                    <option value="21">Artículo 21</option>
+                                    <option value="25">Artículo 25</option>
+                                    <option value="70">Artículo 70</option>
+                                    <option value="LGCG">Transparencia LGCG</option>
+                                </select>
+                                
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="fraccion" class="form-label">Título</label>
+                                <label for="fraccion" class="form-label">Fracción</label>
                                 <input required type="number" class="form-control" placeholder="Escribe el número de fracción" name="fraccion">
                             </div>
                             
@@ -70,15 +80,19 @@ const crearModulo = async() => {
                             
                             <hr>
                             <label class="mb-3">ENCARGADO</label>
-                            <div class="col-md-6 mb-3">
-                                <label for="encargado" class="form-label">Nombre:</label>
-                                <input type="text" class="form-control" name="encargado" placeholder="Nombre">
+                            <div class="col-md-12 mb-3">
+                                <label for="encargado" class="form-label">Nombre y cargo:</label>
+                                <select class="form-control" name="encargado" id="encargado">
+                                    <option v-for="user in userList" :value="user.nombre+'|'+user.cargo">{{user.nombre}} - {{ user.cargo }}</option>
+                                    <option value="son los titulares de todas las áreas de la Secretaría Ejecutiva del Sistema Estatal Anticorrupción del Estado de Coahuila">Todos los jefes de área</option>
+                                </select>
+                                <!-- <input type="text" class="form-control" name="encargado" placeholder="Nombre"> -->
                             </div>
-                            
+<!--                             
                             <div class="col-md-6 mb-3">
                                 <label for="cargo" class="form-label">Cargo</label>
                                 <input type="text" class="form-control" name="cargo" placeholder="Escribe el cargo">
-                            </div>
+                            </div> -->
                             
                             <hr class="mt-3">
                             
