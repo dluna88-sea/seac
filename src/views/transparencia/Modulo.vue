@@ -4,8 +4,10 @@ import ModalNuevaSeccion from '../../components/modals/ModalNuevaSeccion.vue';
 import DeleteSeccionModal from '../../components/modals/DeleteSeccionModal.vue';
 import UpdateModTituloModal from '../../components/modals/secciones/UpdateModTituloModal.vue';
 import DeleteModuloModal from '../../components/modals/DeleteModuloModal.vue';
+import DeletePDescripcionModal from '../../components/modals/DeletePDescripcionModal.vue';
 import { useCurrentUserStore } from '../../stores/currentUser';
 import { useModuloStore } from '../../stores/modulo';
+
 const route = useRoute();
 const currentUser = useCurrentUserStore();
 const modulo = useModuloStore();
@@ -24,10 +26,51 @@ getMod();
  */
 const updateDescripcion = async() => {
     modulo.message.place = 'descripcion';
-    const desc = document.forms['modDescripcion']['descripcion'].value.trim()
-    await modulo.update({descripcion:desc}, modulo.fbid);
-    //getMod();
+    const counter = countChildrenNumber(document.querySelector('#description'));
+    const parrafos = [];
+    let i = 1;
+    let key = "00";
+    while(i <= counter){
+        
+        if(i<10) key = "0"+i; else key = i.toString();
+        const val = document.forms['modDescripcion']['descripcion-'+i].value.trim();
+
+        if(val != ''){
+            parrafos.push({ 
+                orden:key, 
+                valor:val
+            })
+        }
+        i++;
+    }
+
+    await modulo.update({descripcion:parrafos}, modulo.fbid);
     location.reload()
+}
+
+const removePDesc = (num) => {
+    const ta = document.querySelector("#descripcion-"+num.toString());
+    ta.remove();
+}
+
+const createPDesc = () => {
+    const div = document.querySelector('#description');
+    const textarea = document.createElement('textarea');
+    textarea.className = "form-control my-2";
+    textarea.name = "descripcion-"+document.forms['modDescripcion']['p-counter'].value;
+    textarea.id = "descripcion-"+document.forms['modDescripcion']['p-counter'].value;
+    div.appendChild(textarea);
+}
+
+function countChildrenNumber(el) {
+  let result = 0
+  if (el.children && el.children.length > 0) {
+    result = result + el.children.length;
+    for (let i = 0; i < el.children.length; i++) {
+      result = result + countChildrenNumber(el.children[i]);
+    }
+  }
+  return result;
 }
 
 const updateNota = async() => {
@@ -38,42 +81,10 @@ const updateNota = async() => {
     location.reload()
 }
 
-
-/** 
- * Acciones de cada sección
-*/
-const updSubtitulo = async(secID, subt) => {
-    const subtNuevo = document.forms['secSubtitulo_'+secID]['subtitulo'].value.trim();
-    if(subtNuevo != subt){
-        await modulo.updateSeccion({subtitulo:subtNuevo},modulo.fbid,secID);
-        location.reload();
-    }
-}
-
-const updDescripcion = async(secID, desc) => {
-    const descNueva = document.forms['secDescripcion_'+secID]['descripcion'].value.trim();
-    if(descNueva != desc){
-        await modulo.updateSeccion({descripcion:descNueva},modulo.fbid,secID);
-        location.reload();
-    }
-}
-
-
 const updateFecha = async() => {
     await modulo.update(null, modulo.fbid)
 }
 
-const createPDesc = () => {
-    const div = document.querySelector('#description');
-    const textarea = document.createElement('textarea');
-    textarea.className = "form-control my-2";
-    div.appendChild(textarea)
-}
-
-const textAreaAdjust = (element) => {
-  element.style.height = "1px";
-  element.style.height = (25+element.scrollHeight)+"px";
-}
 
 </script>
 
@@ -131,16 +142,24 @@ const textAreaAdjust = (element) => {
             <div class="row">
                 <div class="col-12">
                     <form @submit.prevent="updateDescripcion()" name="modDescripcion">
+                        <input type="hidden" name="p-counter" value="1">
                         <div class="mb-3">
                             <Error v-if="modulo.message.error && modulo.message.place == 'descripcion'">{{ modulo.message.text }}</Error>
                             <Success v-if="modulo.message.success && modulo.message.place == 'descripcion'">{{ modulo.message.text }}</Success>
                             <div>
-                                <label for="floatingTextarea">Descripción (Opcional)</label>
-                                <div id="description">
-                                    <textarea style="overflow:hidden" @keyup="textAreaAdjust(this)" class="form-control" placeholder="Escribe una descripción del módulo" name="descripcion" id="modDescripcion">{{ modulo.descripcion }}</textarea>
+                                <label class="my-3" for="floatingTextarea">Descripción (Opcional)</label>
+                                <div id="description" >
+                                    <div v-for="desc in modulo.descripcion">
+                                        <a href="#" data-bs-toggle="modal" :data-bs-target="`#descP${parseInt(desc.orden)}`" class="badge bg-danger rounded-pill float-end"><Icon name='trash-fill' /></a>
+                                        <textarea 
+                                            class="form-control my-2" 
+                                            :name="`descripcion-${parseInt(desc.orden)}`"
+                                            :id="`descripcion-${parseInt(desc.orden)}`">{{ desc.valor }}</textarea>
+                                        <DeletePDescripcionModal :id="`descP${parseInt(desc.orden)}`" :modID="route.params.id" :datos="desc"></DeletePDescripcionModal>
+                                    </div>
                                 </div>
                                 <div class="text-center my-3" style="font-size: 28px; color:#c4c4c4">
-                                    <span style="cursor:pointer" @click="createPDesc" ><Icon name="plus-circle" /></span>
+                                    <span style="cursor:pointer" @click="createPDesc" data-bs-toggle="tooltip" data-bs-placement="top" title="Agregar un párrafo" ><Icon name="plus-circle" /></span>
                                 </div>
                             </div>
                             <button class="btn btn-secondary my-3 float-end" type="submit">Actualizar descripción</button>

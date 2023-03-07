@@ -156,6 +156,36 @@ export const useModuloStore = defineStore('SingleModulo',{
             }
         },
 
+        async deleteParrafoDescMod(id, modID){
+            try {
+                this.loading = true;
+
+                
+                const path = "/modulos/"+modID;
+                await getDoc( doc(db, path) ).then( async(result) => {
+
+                    const descrip = result.data().descripcion;
+                    const descNueva = [];
+                    descrip.forEach((ob) => {
+                        if(ob.orden != id){
+                            descNueva.push({ ...ob });
+                        }
+                    });
+
+                    await setDoc( doc(db, path ), { descripcion: descNueva }, {merge: true}).then(() => {
+                        location.reload();
+                    }).catch((e) => { console.log(e); });
+                    
+                }).catch((e) => { console.log(e); })
+
+            } catch (e) {
+                console.log(e);
+                this.setError(e.message)
+            } finally {
+                this.loading = false;
+            }
+        },
+
         //Consultar detalles de un módulo especifico
         async get(fbid){
             try {
