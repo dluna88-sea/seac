@@ -63,6 +63,17 @@ const updateFecha = async() => {
     await modulo.update(null, modulo.fbid)
 }
 
+const createPDesc = () => {
+    const div = document.querySelector('#description');
+    const textarea = document.createElement('textarea');
+    textarea.className = "form-control my-2";
+    div.appendChild(textarea)
+}
+
+const textAreaAdjust = (element) => {
+  element.style.height = "1px";
+  element.style.height = (25+element.scrollHeight)+"px";
+}
 
 </script>
 
@@ -125,9 +136,14 @@ const updateFecha = async() => {
                             <Success v-if="modulo.message.success && modulo.message.place == 'descripcion'">{{ modulo.message.text }}</Success>
                             <div>
                                 <label for="floatingTextarea">Descripción (Opcional)</label>
-                                <textarea style="height:90px" class="form-control" placeholder="Escribe una descripción del módulo" name="descripcion" id="modDescripcion">{{ modulo.descripcion }}</textarea>
+                                <div id="description">
+                                    <textarea style="overflow:hidden" @keyup="textAreaAdjust(this)" class="form-control" placeholder="Escribe una descripción del módulo" name="descripcion" id="modDescripcion">{{ modulo.descripcion }}</textarea>
+                                </div>
+                                <div class="text-center my-3" style="font-size: 28px; color:#c4c4c4">
+                                    <span style="cursor:pointer" @click="createPDesc" ><Icon name="plus-circle" /></span>
+                                </div>
                             </div>
-                            <button class="btn btn-secondary mt-3" type="submit">Actualizar descripción</button>
+                            <button class="btn btn-secondary my-3 float-end" type="submit">Actualizar descripción</button>
                         </div>
                     </form>
                 </div>
