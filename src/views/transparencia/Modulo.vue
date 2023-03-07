@@ -33,8 +33,8 @@ const updateDescripcion = async() => {
     while(i <= counter){
         
         if(i<10) key = "0"+i; else key = i.toString();
-        const val = document.forms['modDescripcion']['descripcion-'+i].value.trim();
-
+        const val = document.querySelector('#descripcion-'+i).value.trim();
+        console.log(val);
         if(val != ''){
             parrafos.push({ 
                 orden:key, 
@@ -44,8 +44,8 @@ const updateDescripcion = async() => {
         i++;
     }
 
-    await modulo.update({descripcion:parrafos}, modulo.fbid);
-    location.reload()
+    //await modulo.update({descripcion:parrafos}, modulo.fbid);
+    //location.reload()
 }
 
 const removePDesc = (num) => {
