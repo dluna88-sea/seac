@@ -34,9 +34,10 @@ import { useModuloStore } from '../../stores/modulo';
                     </h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body text-center">
+                <div class="modal-body">
                     <p class="py-1">
-                        ¿Realmente deseas eliminar este párrafo? 
+                        Este párrafo ya está guardado y se muestra en línea. <br>
+                        ¿Realmente deseas eliminarlo? 
                     </p>
                 </div>
                 <div class="modal-footer">
