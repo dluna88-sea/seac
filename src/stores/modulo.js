@@ -496,10 +496,12 @@ export const useModuloStore = defineStore('SingleModulo',{
                 const usuarios = await getDocs( query( collection(db, 'usuarios') ) )
 
                 usuarios.docs.forEach((user) => {
-                    if(user.data().cargo != "admin"){
+                    if(user.data().rol != "admin"){
                         this.userList.push({ nombre: user.data().nombre, cargo: user.data().cargo });
                     }
                 })
+
+                console.log(this.userList)
 
             } catch (e) {
                 this.setError(e.message);
