@@ -496,7 +496,9 @@ export const useModuloStore = defineStore('SingleModulo',{
                 const usuarios = await getDocs( query( collection(db, 'usuarios') ) )
 
                 usuarios.docs.forEach((user) => {
-                    this.userList.push({ nombre: user.data().nombre, cargo: user.data().cargo })
+                    if(user.data().cargo != "admin"){
+                        this.userList.push({ nombre: user.data().nombre, cargo: user.data().cargo });
+                    }
                 })
 
             } catch (e) {
