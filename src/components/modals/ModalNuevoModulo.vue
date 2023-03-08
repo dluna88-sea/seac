@@ -15,13 +15,19 @@ const modulo = useModuloStore();
 
 const crearModulo = async() => {
 
+    let nombre = "";
+    let cargo = "";
+
+    if(document.forms['nuevoModulo']['encargado'].value.trim().split("|",-1)[1] != undefined) cargo = document.forms['nuevoModulo']['encargado'].value.trim().split("|",-1)[1];
+    if(document.forms['nuevoModulo']['encargado'].value.trim().split("|",-1)[0] != undefined) nombre = document.forms['nuevoModulo']['encargado'].value.trim().split("|",-1)[0];
+
     const datos = {
         titulo: document.forms['nuevoModulo']['titulo'].value.trim(),
         descripcion: document.forms['nuevoModulo']['descripcion'].value.trim(),
         encargado: 
             {
-                nombre: document.forms['nuevoModulo']['encargado'].value.trim().split("|",1)[0],
-                cargo: document.forms['nuevoModulo']['encargado'].value.trim().split("|",-1)[1],
+                nombre: nombre,
+                cargo: cargo,
             },
         nota: document.forms['nuevoModulo']['nota'].value.trim(),
         articulo: document.forms['nuevoModulo']['articulo'].value.trim(),
@@ -84,7 +90,7 @@ const crearModulo = async() => {
                                 <label for="encargado" class="form-label">Nombre y cargo:</label>
                                 <select class="form-control" name="encargado" id="encargado">
                                     <option v-for="user in userList" :value="user.nombre+'|'+user.cargo">{{user.nombre}} - {{ user.cargo }}</option>
-                                    <option value="son los titulares de todas las áreas de la Secretaría Ejecutiva del Sistema Estatal Anticorrupción del Estado de Coahuila">Todos los jefes de área</option>
+                                    <option value="Los titulares de todas las áreas de la Secretaría Ejecutiva del Sistema Estatal Anticorrupción del Estado de Coahuila">Todos los jefes de área</option>
                                 </select>
                                 <!-- <input type="text" class="form-control" name="encargado" placeholder="Nombre"> -->
                             </div>

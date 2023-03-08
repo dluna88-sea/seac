@@ -26,49 +26,71 @@ getMod();
  */
 const updateDescripcion = async() => {
     modulo.message.place = 'descripcion';
-    const counter = countChildrenNumber(document.querySelector('#description'));
+    
     const parrafos = [];
+    
+    const np = countChildrenNumber(document.querySelector('#description'));
     let i = 1;
-    let key = "00";
-    while(i <= counter){
-        
-        if(i<10) key = "0"+i; else key = i.toString();
-        const val = document.querySelector('#descripcion-'+i).value.trim();
-        console.log(val);
-        if(val != ''){
-            parrafos.push({ 
-                orden:key, 
-                valor:val
+    let id = "00";
+    let orden = 1;
+
+    while(i<=np){
+        if(i<10){ id = "0"+i.toString(); } else { id = i.toString(); }
+        //const txta = document.forms["modDescripcion"]["descripcion-"+i].value;
+        const txta = document.forms['modDescripcion']["descripcion-"+id].value;
+        if(txta.trim() != ""){
+            let or = "";
+            if(orden < 10){ or = "0"+orden.toString() }else{ or = orden.toString(); }
+            parrafos.push({
+                orden: or,
+                valor: txta.trim()
             })
+            orden++;
         }
         i++;
     }
 
-    //await modulo.update({descripcion:parrafos}, modulo.fbid);
-    //location.reload()
-}
-
-const removePDesc = (num) => {
-    const ta = document.querySelector("#descripcion-"+num.toString());
-    ta.remove();
+    await modulo.update({descripcion:parrafos}, modulo.fbid);
+    location.reload()
 }
 
 const createPDesc = () => {
-    const div = document.querySelector('#description');
-    const textarea = document.createElement('textarea');
-    textarea.className = "form-control my-2";
-    textarea.name = "descripcion-"+document.forms['modDescripcion']['p-counter'].value;
-    textarea.id = "descripcion-"+document.forms['modDescripcion']['p-counter'].value;
-    div.appendChild(textarea);
+    const ndiv = document.createElement("div");
+    
+    const nid = countChildrenNumber(document.querySelector("#description"))+1;
+    let id = "0"
+    if(nid < 10) id = "0"+nid.toString(); else id = nid;
+    
+    const delbtn = document.createElement("a");
+    delbtn.setAttribute("href","#");
+    delbtn.setAttribute("class","badge bg-danger rounded-pill float-end");
+    delbtn.setAttribute("onclick", "javascript:document.querySelector('#divDescP-"+parseInt(id)+"').remove()" );
+    
+    const icon = document.createElement("i");
+    icon.setAttribute("class","bi bi-x-lg");
+
+    delbtn.appendChild(icon);
+    
+    ndiv.setAttribute("id","divDescP-"+parseInt(id));
+    ndiv.appendChild(delbtn);
+    
+    const textarea = document.createElement("textarea");
+    textarea.setAttribute("class", "form-control my-2");
+    textarea.setAttribute("name", "descripcion-"+id);
+    textarea.setAttribute("id", "descripcion-"+id);
+
+    ndiv.appendChild(textarea);
+
+    document.querySelector("#description").appendChild(ndiv)
 }
 
 function countChildrenNumber(el) {
   let result = 0
   if (el.children && el.children.length > 0) {
     result = result + el.children.length;
-    for (let i = 0; i < el.children.length; i++) {
-      result = result + countChildrenNumber(el.children[i]);
-    }
+    // for (let i = 0; i < el.children.length; i++) {
+    //   result = result + countChildrenNumber(el.children[i]);
+    // }
   }
   return result;
 }
@@ -142,28 +164,29 @@ const updateFecha = async() => {
             <div class="row">
                 <div class="col-12">
                     <form @submit.prevent="updateDescripcion()" name="modDescripcion">
-                        <input type="hidden" name="p-counter" value="1">
+                        
                         <div class="mb-3">
                             <Error v-if="modulo.message.error && modulo.message.place == 'descripcion'">{{ modulo.message.text }}</Error>
                             <Success v-if="modulo.message.success && modulo.message.place == 'descripcion'">{{ modulo.message.text }}</Success>
                             <div>
-                                <label class="my-3" for="floatingTextarea">Descripción (Opcional)</label>
+                                <label class="my-3">Descripción (Opcional)</label>
                                 <div id="description" >
                                     <div v-for="desc in modulo.descripcion">
-                                        <a href="#" data-bs-toggle="modal" :data-bs-target="`#descP${parseInt(desc.orden)}`" class="badge bg-danger rounded-pill float-end"><Icon name='trash-fill' /></a>
+                                        <a href="#" data-bs-toggle="modal" :data-bs-target="`#descP-${desc.orden}`" class="badge bg-danger rounded-pill float-end"><Icon name='x-lg' /></a>
                                         <textarea 
                                             class="form-control my-2" 
-                                            :name="`descripcion-${parseInt(desc.orden)}`"
-                                            :id="`descripcion-${parseInt(desc.orden)}`">{{ desc.valor }}</textarea>
-                                        <DeletePDescripcionModal :id="`descP${parseInt(desc.orden)}`" :modID="route.params.id" :datos="desc"></DeletePDescripcionModal>
+                                            :name="`descripcion-${desc.orden}`"
+                                            :id="`descripcion-${desc.orden}`">{{ desc.valor }}</textarea>
+                                        <DeletePDescripcionModal :id="`descP-${desc.orden}`" :modID="route.params.id" :datos="desc"></DeletePDescripcionModal>
                                     </div>
                                 </div>
-                                <div class="text-center my-3" style="font-size: 28px; color:#c4c4c4">
+                                <div class="text-center my-3" style="font-size: 35px; color:#c4c4c4">
                                     <span style="cursor:pointer" @click="createPDesc" data-bs-toggle="tooltip" data-bs-placement="top" title="Agregar un párrafo" ><Icon name="plus-circle" /></span>
                                 </div>
                             </div>
-                            <button class="btn btn-secondary my-3 float-end" type="submit">Actualizar descripción</button>
+                            <button class="btn btn-secondary my-3 float-center" type="submit">Actualizar descripción</button>
                         </div>
+
                     </form>
                 </div>
 
