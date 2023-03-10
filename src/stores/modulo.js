@@ -31,7 +31,8 @@ export const useModuloStore = defineStore('SingleModulo',{
             art21:[],
             art25:[], 
             art70:[],
-            artLGCG:[]
+            artLGCG:[],
+            artCPC:[],
         },
         seccion:{},
         documentos:[],
@@ -160,6 +161,7 @@ export const useModuloStore = defineStore('SingleModulo',{
                         else if( startsWith( mod.data().articulo, "25-" ) ) this.modsOrd.art25.push(r);
                         else if( startsWith( mod.data().articulo, "70-" ) ) this.modsOrd.art70.push(r);
                         else if( startsWith( mod.data().articulo, "LGCG-" ) ) this.modsOrd.artLGCG.push(r);
+                        else if( startsWith( mod.data().articulo, "CPC-" ) ) this.modsOrd.artCPC.push(r);
                         
 
                     })

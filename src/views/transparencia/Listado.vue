@@ -116,6 +116,16 @@ getDatos();
                             <hr>
                         </div>
 
+                        <div v-if="modulo.modsOrd.artCPC.length > 0">
+                            <h3>CPC</h3>
+                            <div class="list-group mt-3 mb-4 shadow-sm">
+                                <router-link v-for="mod in modulo.modsOrd.artCPC" class="list-group-item" :to="`/transparencia/${mod.fbid}`">
+                                    {{ mod.fraccion }} - {{ mod.titulo }}
+                                </router-link>
+                            </div>
+                            <hr>
+                        </div>
+
                         <!-- <div  class="list-group shadow-sm">
                             <router-link v-for="mod in modulo.todos" class="list-group-item" :to="`/transparencia/${mod.fbid}`">
                                 {{ mod.fraccion }} - {{ mod.titulo }}
