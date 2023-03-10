@@ -36,6 +36,7 @@ export const useModuloStore = defineStore('SingleModulo',{
         seccion:{},
         documentos:[],
         userList:[],
+        articulos:[]
     }),
     actions:{
 
@@ -112,6 +113,25 @@ export const useModuloStore = defineStore('SingleModulo',{
             } catch (e) {
                 this.setError(e.message)
             } finally { this.loading = false; }
+        },
+
+        async getArticulos(){
+            try {
+                this.loading = true;
+
+                await getDocs(query( collection(db, 'articulos') )).then((result) => {
+
+                    result.docs.forEach((art) => {
+                        this.articulos.push({ id: art.id, ...art.data() });
+                    })
+
+                }).catch((e) => { console.log(e); })
+
+            } catch (e) {
+                console.log(e);
+            } finally {
+                this.loading = false;
+            }
         },
 
         async getAll(){

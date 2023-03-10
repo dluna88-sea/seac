@@ -88,13 +88,8 @@ const crearModulo = async() => {
                                     <option v-for="user in userList" :value="user.nombre+'|'+user.cargo">{{user.nombre}} - {{ user.cargo }}</option>
                                     <option value="Los titulares de todas las áreas de la Secretaría Ejecutiva del Sistema Estatal Anticorrupción del Estado de Coahuila">Todos los jefes de área</option>
                                 </select>
-                                <!-- <input type="text" class="form-control" name="encargado" placeholder="Nombre"> -->
                             </div>
-<!--                             
-                            <div class="col-md-6 mb-3">
-                                <label for="cargo" class="form-label">Cargo</label>
-                                <input type="text" class="form-control" name="cargo" placeholder="Escribe el cargo">
-                            </div> -->
+
                             
                             <hr class="mt-3">
                             
