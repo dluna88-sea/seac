@@ -18,7 +18,6 @@ async function getUsuario(){
     if(user.datos.valueOf.length == 0){ 
         await user.get(route.params.id);
         await user.getModulos(user.datos.modulos);
-        console.log(user.modulos)
     }
 
 }

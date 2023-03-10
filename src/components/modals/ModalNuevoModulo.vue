@@ -64,12 +64,8 @@ const crearModulo = async() => {
 
                             <div class="col-md-6 mb-3">
                                 <label for="articulo" class="form-label">Artículo</label>
-                                <select required name="articulo" class="form-control" id="articulo">
-                                    <option value="20">Artículo 20</option>
-                                    <option value="21">Artículo 21</option>
-                                    <option value="25">Artículo 25</option>
-                                    <option value="70">Artículo 70</option>
-                                    <option value="LGCG">Transparencia LGCG</option>
+                                <select  required name="articulo" class="form-control" id="articulo">
+                                    <option v-for="a in modulo.articulos" :value="a.id">{{ a.titulo }}</option>
                                 </select>
                                 
                             </div>

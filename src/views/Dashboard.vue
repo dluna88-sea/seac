@@ -1,9 +1,11 @@
 <script setup>
 import { useCurrentUserStore } from '../stores/currentUser';
+import { auth } from '../firebase';
 const currentUser = useCurrentUserStore();
 async function traerDatos(){
     if(currentUser.id == null){ await currentUser.getDatos(); }
     if(currentUser.modulos.length == 0){ await currentUser.getModulos(); }
+
 }
 
 

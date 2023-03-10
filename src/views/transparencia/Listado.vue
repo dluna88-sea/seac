@@ -12,7 +12,7 @@ async function getDatos(){
     await currentUser.getModulos();
     if(modulo.modsOrd.art20.length == 0){ await modulo.getAll(); }
     if(modulo.userList.length == 0){ await modulo.getUserList(); }
-    
+    await modulo.getArticulos();
 }
 getDatos();
 

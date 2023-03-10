@@ -102,15 +102,20 @@ export const useUsuariosStore = defineStore('UsuariosStore',{
             try {
                 this.loading = true;
 
+                const userMods = [];
+
                 mods.forEach(async(m) => {
-
-                    await getDocs( query( collection(db, 'modulos') ), where('articulo','==',m) ).then((r) => {
-                        r.docs.forEach((doc) => {
-                            this.modulos.push({ id:doc.id, ...doc.data() });
-                        })
-                    }).catch((e) => { console.log(e) })
-
-                });
+                    await getDocs(
+                        query(
+                            collection(db, "modulos"),
+                            where("articulo","==",m)
+                        )
+                    ).then((result) => {
+                        userMods.push({...result.docs[0].data()});
+                    }).catch((e) => {
+                        console.log(e);
+                    })
+                })
 
             } catch (error) {
                 this.setError(error.message);
