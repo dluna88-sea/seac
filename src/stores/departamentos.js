@@ -87,7 +87,8 @@ export const useDepartamentosStore = defineStore('DepartamentosStore',{
             try {
                 this.loading = true;
                 await setDoc(doc(db,'departamentos/'+id), datos, { merge:true }).then((e) => {
-                    this.setSuccess('Actualizado correctamente');
+                    this.setSuccess('Actualizado correctamente. Espere...');
+                    setTimeout(() => { location.reload(); }, 2500);
                 }).catch((e) => { console.log(e.message); this.setError(e.message); })
             } catch (e) {
                 console.log(e);
