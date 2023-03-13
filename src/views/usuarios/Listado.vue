@@ -1,5 +1,6 @@
 <script setup>
 import { useUsuariosStore } from '../../stores/usuarios';
+import ListadoDptoModal from '../../components/modals/departamentos/ListadoDptoModal.vue';
 import { useCurrentUserStore } from '../../stores/currentUser';
 import router from '../../router';
 const usuarios = useUsuariosStore();
@@ -38,11 +39,13 @@ getUsuarios();
                     <span class="navbar-text">
                         Herramientas de administrador:
                     </span>
-                    <div class="btn-group" role="group" aria-label="Basic example">
+                    <div class="btn-group" role="group" aria-label="Herrmaientas">
                         <RouterLink class="btn btn-secondary" to="/usuario/nuevo">
                             <Icon name="person-plus-fill" />&nbsp; Registrar
                         </RouterLink>
+                        <a data-bs-toggle="modal" data-bs-target="#dptosListModal" class="btn btn-primary" href="#"> <Icon name="list-task" />&nbsp; Departamentos </a>
                     </div>
+                    <ListadoDptoModal></ListadoDptoModal>
                 </nav>
             </div>
 
