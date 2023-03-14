@@ -107,6 +107,12 @@ const updateFecha = async() => {
     await modulo.update(null, modulo.fbid)
 }
 
+const reorder = async (i, uid, to, secID) => {
+    let nuevo = 0;
+    if(to == 0) nuevo = parseInt(uid) + 1;
+    else nuevo = parseInt(uid) - 1;
+    await modulo.reorderSection(uid,nuevo,modulo.fbid, secID).then(() => { getMod() });
+}
 
 </script>
 
@@ -170,7 +176,7 @@ const updateFecha = async() => {
                             <Success v-if="modulo.message.success && modulo.message.place == 'descripcion'">{{ modulo.message.text }}</Success>
                             <div>
                                 <label class="my-3">Descripción (Opcional)</label>
-                                <div id="description" >
+                                <div id="description">
                                     <div v-for="desc in modulo.descripcion">
                                         <a href="#" data-bs-toggle="modal" :data-bs-target="`#descP-${desc.orden}`" class="badge bg-danger rounded-pill float-end"><Icon name='x-lg' /></a>
                                         <textarea 
@@ -222,14 +228,24 @@ const updateFecha = async() => {
                     <div class="text-center">NO HAY SECCIONES REGISTRADAS</div>
                 </Info>
                 <div v-else>
-
+                    
                     <div class="list-group shadow mb-4">
-                        <div v-for="seccion in modulo.secciones" class="list-group-item d-flex justify-content-between align-items-center">
+                        <div v-for="seccion, i in modulo.secciones" class="list-group-item d-flex justify-content-between align-items-center">
                             <router-link :to="`/transparencia/${modulo.fbid}/${seccion.id}`" style="text-decoration:none; color:black" class="col-11">
-                                {{ seccion.subtitulo }}
+                                {{ seccion.uid + ' - ' + seccion.subtitulo }}
                             </router-link>
                             <div class="col-1">
-                                <a href="#" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${seccion.id}`" class="badge bg-danger rounded-pill float-end"><Icon name='trash-fill' /></a>
+                                <div class="btn-group btn-group-sm float-end shadow-sm" role="group" aria-label="Basic example">
+                                    <button v-if="i > 0" @click="reorder(i,seccion.uid,1, seccion.id)" type="button" class="btn btn-light">
+                                        <Icon name="chevron-up" />
+                                    </button>
+                                    <button v-if="i < (modulo.secciones.length -1)" @click="reorder(i,seccion.uid,0, seccion.id)" type="button" class="btn btn-light">
+                                        <Icon name="chevron-down" />
+                                    </button>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${seccion.id}`">
+                                        <Icon name="x" />
+                                    </button>
+                                </div>
                                 <DeleteSeccionModal
                                     :id="seccion.id"
                                     :modID="route.params.id"
@@ -237,22 +253,6 @@ const updateFecha = async() => {
                                 ></DeleteSeccionModal>
                             </div>
                         </div>
-                        <!-- <router-link 
-                            v-for="seccion in modulo.secciones" 
-                            :to="`/transparencia/${modulo.fbid}/${seccion.id}`" 
-                            class="list-group-item"
-                            >
-                                {{ seccion.subtitulo }} 
-                                
-                                <span class="badge bg-primary rounded-pill">14</span>
-                                 <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${seccion.id}`" style="color:red; z-index:100; cursor:pointer"><Icon name="x-circle-fill" /></a>
-                                <DeleteSeccionModal
-                                    :id="seccion.id"
-                                    :modID="route.params.id"
-                                    :subtitulo="seccion.subtitulo"
-                                ></DeleteSeccionModal>
-                        </router-link> -->
-                        
                     </div>
 
                 </div>

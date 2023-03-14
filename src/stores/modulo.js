@@ -41,6 +41,30 @@ export const useModuloStore = defineStore('SingleModulo',{
     }),
     actions:{
 
+        async reorderSection(actOrder, newOrder, modID, secID){
+            try {
+                this.loading = true;
+
+                const modif = await getDocs(
+                    query(
+                        collection(db,'modulos/'+modID+'/secciones'), 
+                        where('uid','==',newOrder.toString())
+                    )
+                )
+
+                const neSecID = modif.docs[0].id;
+
+                await setDoc(doc(db, 'modulos/'+modID+'/secciones', neSecID), { uid:actOrder.toString() }, { merge:true }).then(async() => {
+                    await setDoc(doc(db,'modulos/'+modID+'/secciones', secID), { uid:newOrder.toString() }, { merge:true }).then(() => {
+                        
+                    }).catch((e) => { console.log('adentro: '+e) })
+                }).catch((e) => { console.log('afuera: '+e); })
+
+            } catch (e) {
+                this.setError(e.message)
+                console.log(e)
+            } finally { this.loading = false; }
+        },
 
         async nuevoModulo(datos){
             try {
