@@ -523,8 +523,6 @@ export const useModuloStore = defineStore('SingleModulo',{
                     }
                 })
 
-                console.log(this.userList)
-
             } catch (e) {
                 this.setError(e.message);
             } finally { this.loading = false; }
