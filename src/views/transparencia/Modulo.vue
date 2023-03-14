@@ -232,7 +232,7 @@ const reorder = async (i, uid, to, secID) => {
                     <div class="list-group shadow mb-4">
                         <div v-for="seccion, i in modulo.secciones" class="list-group-item d-flex justify-content-between align-items-center">
                             <router-link :to="`/transparencia/${modulo.fbid}/${seccion.id}`" style="text-decoration:none; color:black" class="col-11">
-                                {{ seccion.uid + ' - ' + seccion.subtitulo }}
+                                {{ seccion.subtitulo }}
                             </router-link>
                             <div class="col-1">
                                 <div class="btn-group btn-group-sm float-end shadow-sm" role="group" aria-label="Basic example">
