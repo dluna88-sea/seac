@@ -59,21 +59,25 @@ export const useModulosStore = defineStore('pluralModulos',{
                     }).catch((e) => {
                         console.log(e.message);
                     })
+                    
 
                     await getDocs(
-                        query( collection(db,'modulos'), where('encargado', 'in' , dpts) ), orderByChild('fraccion', 'asc') 
+                        query( collection(db,'modulos'), orderBy('fraccion', 'asc') ) 
                     ).then((r) => {
 
                         r.docs.forEach((m) => {
-                            this.listado.push({ id:m.id, ...m.data() });
-                            switch(m.data().articulo){
-                                case "20": this.art20.push({ id:m.id, ...m.data() }); break;
-                                case "21": this.art21.push({ id:m.id, ...m.data() }); break;
-                                case "25": this.art25.push({ id:m.id, ...m.data() }); break;
-                                case "70": this.art70.push({ id:m.id, ...m.data() }); break;
-                                case "LGCG": this.artLGCG.push({ id:m.id, ...m.data() }); break;
-                                case "CPC": this.artCPC.push({ id:m.id, ...m.data() }); break;
+                            if(dpts.includes(m.data().encargado)){
+                                this.listado.push({ id:m.id, ...m.data() });
+                                switch(m.data().articulo){
+                                    case "20": this.art20.push({ id:m.id, ...m.data() }); break;
+                                    case "21": this.art21.push({ id:m.id, ...m.data() }); break;
+                                    case "25": this.art25.push({ id:m.id, ...m.data() }); break;
+                                    case "70": this.art70.push({ id:m.id, ...m.data() }); break;
+                                    case "LGCG": this.artLGCG.push({ id:m.id, ...m.data() }); break;
+                                    case "CPC": this.artCPC.push({ id:m.id, ...m.data() }); break;
+                                }
                             }
+
                         })
 
                     }).catch((e) => { this.setError(e.message); })
