@@ -118,26 +118,7 @@ const updatePwd = async () => {
                         </div>
                     </form>
                 </div>
-                <div class="col-md-6 mt-3 px-lg-5">
-                    <div class="my-3">
-                        <Error v-if="currentUser.message.error && currentUser.message.place == 'cargo'">
-                            {{ currentUser.message.text }}
-                        </Error>
-
-                        <Success v-if="currentUser.message.success && currentUser.message.place == 'cargo'">
-                            {{ currentUser.message.text }}
-                        </Success>
-                    </div>
-                    <form @submit.prevent="updateCargo()" name="updateCargo" class="form-floating">
-                        
-
-                        <input type="text" class="form-control shadow-sm" name="cargo" id="cargo" placeholder="Escribe el nombre del cargo" :value="currentUser.cargo">
-                        <label for="cargo">Cargo</label>
-                        <div class="d-grid mt-2">
-                            <button class="btn btn-secondary block">Actualizar</button>
-                        </div>
-                    </form>
-                </div>
+                
                 <div class="col-md-12 mt-5 px-lg-5 mb-5">
                     <Card>
                         <CardHeader>Actualizar contraseña</CardHeader>
