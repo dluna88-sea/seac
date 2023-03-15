@@ -107,7 +107,7 @@ const updateFecha = async() => {
     await modulo.update(null, modulo.fbid)
 }
 
-const reorder = async (i, uid, to, secID) => {
+const reorder = async (uid, to, secID) => {
     let nuevo = 0;
     if(to == 0) nuevo = parseInt(uid) + 1;
     else nuevo = parseInt(uid) - 1;
@@ -236,10 +236,10 @@ const reorder = async (i, uid, to, secID) => {
                             </router-link>
                             <div class="col-1">
                                 <div class="btn-group btn-group-sm float-end shadow-sm" role="group" aria-label="Basic example">
-                                    <button v-if="i > 0" @click="reorder(i,seccion.uid,1, seccion.id)" type="button" class="btn btn-light">
+                                    <button v-if="i > 0" @click="reorder(seccion.uid,1, seccion.id)" type="button" class="btn btn-light">
                                         <Icon name="chevron-up" />
                                     </button>
-                                    <button v-if="i < (modulo.secciones.length -1)" @click="reorder(i,seccion.uid,0, seccion.id)" type="button" class="btn btn-light">
+                                    <button v-if="i < (modulo.secciones.length -1)" @click="reorder(seccion.uid,0, seccion.id)" type="button" class="btn btn-light">
                                         <Icon name="chevron-down" />
                                     </button>
                                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${seccion.id}`">

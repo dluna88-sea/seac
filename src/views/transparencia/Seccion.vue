@@ -34,6 +34,12 @@ const updDescripcion = async() => {
     }
 }
 
+const reorderFile = async (actUID, to, fileID) => {
+    let nuevoUID = 0;
+    if(to == 0) nuevoUID = parseInt(actUID) + 1; else nuevoUID = parseInt(actUID) - 1;
+    await modulo.reorderFile(actUID,nuevoUID,route.params.modID, route.params.secID, fileID).then(() => { getDatos() });
+}
+
 </script>
 <template>
 
@@ -92,57 +98,76 @@ const updDescripcion = async() => {
 
         <hr>
 
-        <fieldset class="row mb-3">
-            
-            <legend class="col-form-label col-sm-3 pt-0  text-sm-end">
-                <Icon name="paperclip" /> Documentos adjuntos:
-                <br />
+        <div class="row mb-4">
+            <div class="col text-center">
+
+                <h4>
+                    <Icon name="paperclip" /> Documentos adjuntos:
+                </h4>
                 <a class="btn btn-secondary mt-3" data-bs-toggle="modal" :data-bs-target="`#uploadModal_${modulo.seccion.id}`" ><Icon name="upload" /> Subir archivo</a>
-                    
-            </legend>
-            <UploadFileModal
-                :id="`uploadModal_${modulo.seccion.id}`"
-                :seccion="{ modID:route.params.modID, secID:route.params.secID }"
-            ></UploadFileModal>
-            
-            <div class="col-sm-9">
                 
+                <UploadFileModal
+                    :id="`uploadModal_${modulo.seccion.id}`"
+                    :seccion="{ modID:route.params.modID, secID:route.params.secID }"
+                ></UploadFileModal>
+
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col">
+
                 <Loading v-if="modulo.loading"></Loading>
                 
                 <Info v-else-if="modulo.documentos.length == 0">No hay documentos adjuntos</Info>
                 
                 <ul v-else class="list-group shadow-sm" >
-                    <li v-for="(doc) in modulo.documentos" class="list-group-item ">
-                        <Icon name="file-pdf" />
-                        <a style="text-decoration: none;" :href="doc.url" target="_blank" >
-                            <span class="mx-2">{{ doc.nombre }}</span>
-                        </a>
-                        
-                        <a class="float-end mx-2" data-bs-toggle="modal" :data-bs-target="`#deleteModal${modulo.seccion.id}-${doc.id}`" style="color:red; cursor:pointer"><Icon name="x-circle-fill" /></a>
-                        <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#updateFileData_${doc.id}`" style="color:blue; cursor:pointer"><Icon name="pencil-fill" /></a>
-                        <EditarDocumentoModal
-                            :id="`updateFileData_${doc.id}`"
-                            :archivo="doc"
-                            :modID="route.params.modID"
-                            :secID="route.params.secID"
-                            
-                        ></EditarDocumentoModal>
-                        <ModalDeleteFile 
-                            :id="`deleteModal${modulo.seccion.id}-${doc.id}`"
-                            :archivo="{  
-                                docID: doc.id,
-                                seccion: modulo.seccion.id, 
-                                nombre: doc.nombre,
-                                filename: doc.filename, 
-                                modulo:route.params.modID,
-                                url: doc.url 
-                            }"></ModalDeleteFile>
-                        
+                    <li v-for="(doc, i) in modulo.documentos" class="list-group-item ">
+                        <div class="row">
+                            <a :href="doc.url" target="_blank" style="text-decoration:none; color:black" class="col-9">
+                                <Icon name="file-pdf" />
+                                <span class="mx-2">{{ doc.nombre }}</span>
+                            </a>
+                            <div class="col-3">
+                                <div class="btn-group btn-group-sm float-end shadow-sm" role="group" >
+                                    <button v-if="i > 0" @click="reorderFile(doc.uid,1,doc.id)" class="btn btn-light">
+                                        <Icon name="chevron-up" />
+                                    </button>
+                                    <button v-if="i < (modulo.documentos.length - 1)" @click="reorderFile(doc.uid,0,doc.id)" class="btn btn-light">
+                                        <Icon name="chevron-down" />
+                                    </button>
+                                    <button class="btn btn-light" data-bs-toggle="modal" :data-bs-target="`#updateFileData_${doc.id}`">
+                                        <Icon name="pencil" />
+                                    </button>
+                                    <button class="btn btn-danger" data-bs-toggle="modal" :data-bs-target="`#deleteModal${modulo.seccion.id}-${doc.id}`">
+                                        <Icon name="x" />
+                                    </button>
+                                </div>
+                                <EditarDocumentoModal
+                                :id="`updateFileData_${doc.id}`"
+                                :archivo="doc"
+                                :modID="route.params.modID"
+                                :secID="route.params.secID"
+                                
+                            ></EditarDocumentoModal>
+                            <ModalDeleteFile 
+                                :id="`deleteModal${modulo.seccion.id}-${doc.id}`"
+                                :archivo="{  
+                                    docID: doc.id,
+                                    seccion: modulo.seccion.id, 
+                                    nombre: doc.nombre,
+                                    filename: doc.filename, 
+                                    modulo:route.params.modID,
+                                    url: doc.url 
+                                }"></ModalDeleteFile>
+                            </div>
+                        </div>
                     </li>
                 </ul>
-            </div>
 
-        </fieldset>
+            </div>
+        </div>
+
 
     </CardBody>    
     
