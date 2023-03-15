@@ -106,12 +106,11 @@ const reorderFile = async (actUID, to, fileID) => {
                 </h4>
                 <a class="btn btn-secondary mt-3" data-bs-toggle="modal" :data-bs-target="`#uploadModal_${modulo.seccion.id}`" ><Icon name="upload" /> Subir archivo</a>
                 
-                <UploadFileModal
+            </div>
+            <UploadFileModal
                     :id="`uploadModal_${modulo.seccion.id}`"
                     :seccion="{ modID:route.params.modID, secID:route.params.secID }"
                 ></UploadFileModal>
-
-            </div>
         </div>
 
         <div class="row mb-4">
@@ -121,7 +120,7 @@ const reorderFile = async (actUID, to, fileID) => {
                 
                 <Info v-else-if="modulo.documentos.length == 0">No hay documentos adjuntos</Info>
                 
-                <ul v-else class="list-group shadow-sm" >
+                <ul v-else class="list-group shadow" >
                     <li v-for="(doc, i) in modulo.documentos" class="list-group-item ">
                         <div class="row">
                             <a :href="doc.url" target="_blank" style="text-decoration:none; color:black" class="col-9">
