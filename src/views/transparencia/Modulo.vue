@@ -5,18 +5,27 @@ import DeleteSeccionModal from '../../components/modals/DeleteSeccionModal.vue';
 import UpdateModTituloModal from '../../components/modals/secciones/UpdateModTituloModal.vue';
 import DeleteModuloModal from '../../components/modals/DeleteModuloModal.vue';
 import DeletePDescripcionModal from '../../components/modals/DeletePDescripcionModal.vue';
+import AsignarEncargado from '../../components/modals/AsignarEncargado.vue';
 import { useCurrentUserStore } from '../../stores/currentUser';
 import { useModuloStore } from '../../stores/modulo';
+import { useDepartamentosStore } from '../../stores/departamentos';
 
 const route = useRoute();
 const currentUser = useCurrentUserStore();
 const modulo = useModuloStore();
+const departamentos = useDepartamentosStore();
+
+let bread = [
+    { href:"/", class:"", text:"Panel" },
+    { href:"/transparencia", class:"", text:"Transparencia" },
+]
 
 async function getMod(){ 
     
     if(currentUser.id == null){ await currentUser.getDatos(); }
     await modulo.get(route.params.id);
-
+    await departamentos.getAll();
+    
 }
 getMod();
 
@@ -50,8 +59,8 @@ const updateDescripcion = async() => {
         i++;
     }
 
-    await modulo.update({descripcion:parrafos}, modulo.fbid);
-    location.reload()
+    await modulo.update({descripcion:parrafos}, modulo.id);
+    
 }
 
 const createPDesc = () => {
@@ -104,7 +113,7 @@ const updateNota = async() => {
 }
 
 const updateFecha = async() => {
-    await modulo.update(null, modulo.fbid)
+    await modulo.updateFecha(modulo.id).then(getMod());
 }
 
 
@@ -116,22 +125,15 @@ const updateFecha = async() => {
         
         <DefaultPage>
 
-            <ul class="nav nav-pills mb-2 mt-3">
-                <li class="nav-item">
-                    <routerLink to="/transparencia" class="nav-link active" aria-current="page">
-                        <Icon name="arrow-left" /> Regresar
-                    </routerLink>
-                </li>
-            </ul>
 
             <Error v-if="modulo.message.error && modulo.message.place == null">{{ modulo.message.text }}</Error>
             <Success v-if="modulo.message.success && modulo.message.place == null">{{ modulo.message.text }}</Success>
 
-            <PageTitle>
-                {{ modulo.titulo }}
+            <PageTitle :bread="bread">
+                {{ modulo.data.titulo }}
                 <button 
                     v-if="currentUser.rol == 'admin'" 
-                    class="btn btn-secondary"
+                    class="btn btn-outline-primary"
                     data-bs-target="#updateTitleModal"
                     data-bs-toggle="modal"
                     >
@@ -140,29 +142,44 @@ const updateFecha = async() => {
 
                 
             </PageTitle>
-            
-            <UpdateModTituloModal
-                :tituloActual="`${modulo.titulo}`"
-                :modID="route.params.id"
-            ></UpdateModTituloModal>
-            
-            
-            <div class="row">
-                <div class="col-12 mb-3">
-                    <p>
-                        <Icon name="person" />&nbsp; Encargado: {{ modulo.encargado.nombre }} - {{ modulo.encargado.cargo }}<br>
-                    </p>
-                    <p>
-                        <Icon name='calendar' />&nbsp; Última actualización: {{ modulo.actualizacion }} <button @click="updateFecha()" class="btn btn-secondary btn-sm mb-2"> <Icon name="clock" />&nbsp; Marcar actualización</button>
-                    </p>
-                </div>
+            <div v-if="currentUser.rol == 'admin'">
+                <UpdateModTituloModal
+                    :tituloActual="`${modulo.data.titulo}`"
+                    :modID="route.params.id"
+                ></UpdateModTituloModal>
+            </div>
+            <!-- ENCARGADO -->
+            <div class="row my-3">
+                <div class="col">
 
-                <hr>
+                    <div class="list-group">
+                        <div class="list-group-item bg-light">
+                            <Icon name="person-fill" /> Encargado: {{ modulo.encargado }} - {{ modulo.cargo }} &nbsp;
+                            <span v-if="currentUser.rol == 'admin'" class="badge text-bg-primary cursorHand" data-bs-toggle="modal" data-bs-target="#asignarEncargado"> <Icon name="pencil" /> &nbsp;Editar </span>
+                        </div>
+                        <div class="list-group-item bg-light">
+                            <Icon name="calendar2-check" /> Última actualización: {{ modulo.data.actualizacion }} &nbsp;
+                            <span class="badge text-bg-primary cursorHand" @click="updateFecha()" > <Icon name="clock" /> &nbsp;Marcar actualización</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div v-if="currentUser.rol == 'admin' && !modulo.loading">
+            <AsignarEncargado
+                :modID="route.params.id"
+                :titulo="`${modulo.data.titulo}`"
+                :encargado="`${modulo.encargado} ${modulo.cargo}`"
+            ></AsignarEncargado>
             </div>
 
 
+
             <div class="row">
+                
                 <div class="col-12">
+                    <hr>
                     <form @submit.prevent="updateDescripcion()" name="modDescripcion">
                         
                         <div class="mb-3">
@@ -170,7 +187,7 @@ const updateFecha = async() => {
                             <Success v-if="modulo.message.success && modulo.message.place == 'descripcion'">{{ modulo.message.text }}</Success>
                             <div>
                                 <label class="my-3">Descripción (Opcional)</label>
-                                <div id="description" >
+                                <div id="description">
                                     <div v-for="desc in modulo.descripcion">
                                         <a href="#" data-bs-toggle="modal" :data-bs-target="`#descP-${desc.orden}`" class="badge bg-danger rounded-pill float-end"><Icon name='x-lg' /></a>
                                         <textarea 
@@ -188,96 +205,13 @@ const updateFecha = async() => {
                         </div>
 
                     </form>
-                </div>
-
-
-                <hr>
-            </div>
-
-            <div class="row">
-                <div class="col-12 my-2">
-                    <nav class="navbar bg-body-tertiary px-3 mb-4 shadow-sm">
-                        <span class="navbar-text">
-                            SECCIONES
-                        </span>
-                        <div class="btn-group" role="group" aria-label="Basic example">
-                            <a class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#nuevaSeccionModal" style="cursor:pointer">
-                                <Icon name="plus-circle" /> Agregar Sección
-                            </a>
-                        </div>
-                    </nav>
-                </div>
-            </div>
-
-            <!-- Modal para agregar una nueva sección -->
-            <ModalNuevaSeccion
-                :modID="route.params.id"
-                id="nuevaSeccionModal"
-            >
-            </ModalNuevaSeccion>
-
-            <!-- Secciones-->
-            <div class="row">
-                <Info v-if="modulo.secciones.length == 0" >
-                    <div class="text-center">NO HAY SECCIONES REGISTRADAS</div>
-                </Info>
-                <div v-else>
-
-                    <div class="list-group shadow mb-4">
-                        <div v-for="seccion in modulo.secciones" class="list-group-item d-flex justify-content-between align-items-center">
-                            <router-link :to="`/transparencia/${modulo.fbid}/${seccion.id}`" style="text-decoration:none; color:black" class="col-11">
-                                {{ seccion.subtitulo }}
-                            </router-link>
-                            <div class="col-1">
-                                <a href="#" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${seccion.id}`" class="badge bg-danger rounded-pill float-end"><Icon name='trash-fill' /></a>
-                                <DeleteSeccionModal
-                                    :id="seccion.id"
-                                    :modID="route.params.id"
-                                    :subtitulo="seccion.subtitulo"
-                                ></DeleteSeccionModal>
-                            </div>
-                        </div>
-                        <!-- <router-link 
-                            v-for="seccion in modulo.secciones" 
-                            :to="`/transparencia/${modulo.fbid}/${seccion.id}`" 
-                            class="list-group-item"
-                            >
-                                {{ seccion.subtitulo }} 
-                                
-                                <span class="badge bg-primary rounded-pill">14</span>
-                                 <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${seccion.id}`" style="color:red; z-index:100; cursor:pointer"><Icon name="x-circle-fill" /></a>
-                                <DeleteSeccionModal
-                                    :id="seccion.id"
-                                    :modID="route.params.id"
-                                    :subtitulo="seccion.subtitulo"
-                                ></DeleteSeccionModal>
-                        </router-link> -->
-                        
-                    </div>
-
-                </div>
-            </div>
-
-
-            <!-- nota de cierre-->
-            <div class="row mb-5">
-                <div class="col-12">
                     <hr>
-                    <form @submit.prevent="updateNota()" name="modNota">
-                        <div class="mb-3">
-                            <Error v-if="modulo.message.error && modulo.message.place == 'nota'" >{{ modulo.message.text }}</Error>
-                            <Success v-if="modulo.message.success && modulo.message.place == 'nota'" >{{ modulo.message.text }}</Success>
-                        </div>
-                        <div class="mb-3">
-                            <div>
-                                <label for="notaCierre">Nota de cierre</label>
-                                <textarea style="height:90px" class="form-control" placeholder="Escribe una descripción del módulo" name="nota" id="notaCierre">{{ modulo.nota }}</textarea>
-                            </div>
-                            <button class="btn btn-secondary mt-3" type="submit">Actualizar nota de cierre</button>
-                        </div>
-                    </form>
                 </div>
+
+
             </div>
+
+
 
             <div v-if="currentUser.rol == 'admin'" class="row mb-5">
                 <div class="col-12 p-3">

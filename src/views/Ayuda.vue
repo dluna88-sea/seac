@@ -1,12 +1,17 @@
 <script setup>
 
+const bread = [
+    { text:'Panel', href:'/', class:'' },
+    { text:'Ayuda', href:'', class:'active' }
+];
+
 </script>
 
 <template>
 
 <DefaultPage>
     
-    <PageTitle><Icon name="info-circle-fill"/> Ayuda</PageTitle>
+    <PageTitle :bread="bread"><Icon name="info-circle-fill"/> Ayuda</PageTitle>
     <div class="row">
         <BigCard>
             <h3>Manual de usuario</h3>

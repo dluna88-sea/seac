@@ -1,10 +1,13 @@
 <script setup>
 import { useCurrentUserStore } from '../stores/currentUser';
 import { auth } from '../firebase';
+import { useModulosStore } from '../stores/modulos';
 const currentUser = useCurrentUserStore();
+const modulos = useModulosStore();
 async function traerDatos(){
     if(currentUser.id == null){ await currentUser.getDatos(); }
-    if(currentUser.modulos.length == 0){ await currentUser.getModulos(); }
+    
+    modulos.get()
 
 }
 
@@ -34,14 +37,14 @@ traerDatos();
             <!-- CARD MÓDULOS DE TRANSPARENCIA -->
             <div class="col-md-6 col-xl-4 my-3">
                 <BigCard>
-                    <Loading v-if="currentUser.loading"></Loading>
+                    <Loading v-if="modulos.loading"></Loading>
                     <div v-else>
                         <h2><Icon name="boxes" /> Transparencia</h2>
-                        <Info v-if="currentUser.modulos.length == 0">No tienes módulos asignados</Info>
+                        <Info v-if="modulos.listado.length == 0">No tienes módulos asignados</Info>
                         
                         <!-- Mostrar solo 5 módulos de transparencia -->
                         <ul v-else class="list-group my-3">
-                            <RouterLink v-for="mod in currentUser.modulos.slice(0,4)" :to="`/transparencia/${mod.fbid}`" class="list-group-item">{{ mod.titulo }}</RouterLink>
+                            <RouterLink v-for="mod in modulos.listado.slice(0,4)" :to="`/transparencia/${mod.fbid}`" class="list-group-item">{{ mod.titulo }}</RouterLink>
                         </ul>
 
                         <RouterLink class="btn btn-outline-secondary" to="/transparencia"><Icon name="plus" />Ver más</RouterLink>

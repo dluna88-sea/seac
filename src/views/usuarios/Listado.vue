@@ -12,6 +12,11 @@ async function getUsuarios(){
 
 }
 
+const bread = [
+    { text:'Panel', href:'/', class:'' },
+    { text:'Usuarios', href:'', class:'active' }
+];
+
 getUsuarios();
 </script>
 <template>
@@ -30,7 +35,7 @@ getUsuarios();
                 <Error>{{ usuarios.message.text }}</Error>
             </div>
 
-            <PageTitle>
+            <PageTitle :bread="bread">
                 <Icon name="people-fill" /> &nbsp; Usuarios
             </PageTitle>
 

@@ -7,9 +7,14 @@ const route = useRoute();
 const user = useUsuariosStore();
 const currentUser = useCurrentUserStore();
 
+const bread = [
+    { text:'Panel', href:'/', class:'' },
+    { text:'Usuarios', href:'/usuarios', class:'' }
+];
+
 async function getUsuario(){
 
-    if(currentUser.id == null){ await currentUser.getDatos(); }
+    if(currentUser.id == null){ await currentUser.getDatos().then(() => { bread.push({ text:currentUser.nombre, href:'', class:'active' }) }); }
     if(currentUser.rol != 'admin'){
         currentUser.setError('No tienes permiso para acceder a esta página')
         router.push('/');
@@ -28,7 +33,7 @@ getUsuario();
     
     <DefaultPage>
 
-        <PageTitle><Icon name="people-fill"/> &nbsp;{{ user.datos.nombre }}</PageTitle>
+        <PageTitle :bread="bread"><Icon name="people-fill"/> &nbsp;{{ user.datos.nombre }}</PageTitle>
 
         <div class="row">
             <div class="col">

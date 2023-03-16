@@ -1,3 +1,31 @@
+<script setup>
+
+const props = defineProps({
+    bread:{
+        type:Array,
+        required:false,
+        default:[]
+    }
+})
+
+</script>
+
 <template>
-    <div class="py-3"><h2><slot></slot></h2><hr/></div>
+    <div class="mb-4 pt-3">
+        <div v-if="bread.length > 0" class="row">
+            <div class="col">
+                <nav aria-label="breadcrumb ">
+                    <ol class="breadcrumb">
+                        <li v-for="item in bread" :class="`breadcrumb-item ${item.class}`">
+                            <a v-if="item.class != 'active'" :href="item.href">{{ item.text }}</a>
+                            <span v-else>{{ item.text }}</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <h2><slot></slot></h2>
+        <hr class="mt-4"/>
+    </div>
+    
 </template>

@@ -40,7 +40,27 @@ export const useModulosStore = defineStore('pluralModulos',{
                 const user = await getDocs(query(collection(db,'usuarios'), where( 'uid', "==", auth.currentUser.uid ))).catch((e) => {
                     console.log(e.message);
                 })
-                if(user.docs.length == 1){
+                if(user.docs[0].data().rol == "admin"){
+
+                    await getDocs(
+                        query( collection(db,'modulos'), orderBy('fraccion', 'asc') ) 
+                    ).then((r) => {
+
+                        r.docs.forEach((m) => {
+                            this.listado.push({ id:m.id, ...m.data() });
+                            switch(m.data().articulo){
+                                case "20": this.art20.push({ id:m.id, ...m.data() }); break;
+                                case "21": this.art21.push({ id:m.id, ...m.data() }); break;
+                                case "25": this.art25.push({ id:m.id, ...m.data() }); break;
+                                case "70": this.art70.push({ id:m.id, ...m.data() }); break;
+                                case "LGCG": this.artLGCG.push({ id:m.id, ...m.data() }); break;
+                                case "CPC": this.artCPC.push({ id:m.id, ...m.data() }); break;
+                            }
+                        })
+
+                    }).catch((e) => { this.setError(e.message); })
+
+                }else if(user.docs.length == 1){
                     const rol = user.docs[0].data().rol;
                     const dpts = [];
                     await getDocs(query(

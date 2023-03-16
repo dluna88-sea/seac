@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { auth, db } from '../firebase.js'
 import { query, collection, where, getDocs, getDoc, addDoc, setDoc, doc, deleteDoc, orderBy, limit, FieldPath, serverTimestamp } from "firebase/firestore/lite";
-import { orderByChild } from 'firebase/database'
 import { getDownloadURL, getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
 
 export const useDepartamentosStore = defineStore('DepartamentosStore',{
@@ -106,6 +105,12 @@ export const useDepartamentosStore = defineStore('DepartamentosStore',{
                 console.log(e);
                 this.setError(e.message);
             } finally { this.loading = false; }
+        },
+
+        async asignarModulo(depID, modID){
+            await setDoc(doc(db, 'modulos', modID), { encargado:depID }, { merge:true }).then(() => {
+                this.setSuccess('Encargado asignado correctamente');
+            }).catch((e) => { e.setError(e.message) })
         },
 
         setError(msg = ''){
