@@ -107,7 +107,7 @@ function countChildrenNumber(el) {
 const updateNota = async() => {
     modulo.message.place = 'nota';
     const note = document.forms['modNota']['nota'].value.trim()
-    await modulo.update({nota:note}, modulo.fbid);
+    await modulo.update({nota:note}, modulo.id);
     // getMod();
     location.reload()
 }
@@ -116,6 +116,12 @@ const updateFecha = async() => {
     await modulo.updateFecha(modulo.id).then(getMod());
 }
 
+const reorder = async (uid, to, secID) => {
+    let nuevo = 0;
+    if(to == 0) nuevo = parseInt(uid) + 1;
+    else nuevo = parseInt(uid) - 1;
+    await modulo.reorderSection(uid,nuevo,modulo.id, secID).then(() => { getMod() });
+}
 
 </script>
 
@@ -154,12 +160,12 @@ const updateFecha = async() => {
 
                     <div class="list-group">
                         <div class="list-group-item bg-light">
-                            <Icon name="person-fill" /> Encargado: {{ modulo.encargado }} - {{ modulo.cargo }} &nbsp;
-                            <span v-if="currentUser.rol == 'admin'" class="badge text-bg-primary cursorHand" data-bs-toggle="modal" data-bs-target="#asignarEncargado"> <Icon name="pencil" /> &nbsp;Editar </span>
+                            <Icon name="person-fill" Class="mx-1" /> Encargado: {{ modulo.encargado }} - {{ modulo.cargo }} &nbsp;
+                            <span v-if="currentUser.rol == 'admin'" style="font-weight:400" class="badge float-end shadow-sm text-bg-primary cursorHand" data-bs-toggle="modal" data-bs-target="#asignarEncargado"> <Icon name="pencil" /> &nbsp;Editar </span>
                         </div>
                         <div class="list-group-item bg-light">
-                            <Icon name="calendar2-check" /> Última actualización: {{ modulo.data.actualizacion }} &nbsp;
-                            <span class="badge text-bg-primary cursorHand" @click="updateFecha()" > <Icon name="clock" /> &nbsp;Marcar actualización</span>
+                            <Icon name="calendar2-check" Class="mx-1" /> Última actualización: {{ modulo.data.actualizacion }} &nbsp;
+                            <span class="badge float-end shadow-sm text-bg-primary cursorHand" style="font-weight:400" @click="updateFecha()" > <Icon name="clock" /> &nbsp;Marcar actualización</span>
                         </div>
                     </div>
 
@@ -212,8 +218,91 @@ const updateFecha = async() => {
             </div>
 
 
+            
+            <div class="row my-3">
 
-            <div v-if="currentUser.rol == 'admin'" class="row mb-5">
+                <!-- Secciones-->
+                <div class="col-12">
+                    <div class="col-12 my-2">
+                        <nav class="navbar bg-body-tertiary px-3 mb-4 shadow-sm">
+                            <span class="navbar-text">
+                                SECCIONES
+                            </span>
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <a class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#nuevaSeccionModal" style="cursor:pointer">
+                                    <Icon name="plus-circle" /> Agregar Sección
+                                </a>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Modal para agregar una nueva sección -->
+                <ModalNuevaSeccion
+                    :modID="route.params.id"
+                    id="nuevaSeccionModal"
+                >
+                </ModalNuevaSeccion>
+
+                <div v-if="modulo.secciones.length == 0" class="col">
+                    <Info >
+                        <div class="text-center">NO HAY SECCIONES REGISTRADAS</div>
+                    </Info>
+                </div>
+                <div class="col" v-else>
+                    
+                    <div class="list-group shadow mb-5">
+                        <div v-for="seccion, i in modulo.secciones" class="list-group-item d-flex justify-content-between align-items-center">
+                            <router-link :to="`/transparencia/${modulo.id}/${seccion.id}`" style="text-decoration:none; color:black" class="col-11">
+                                {{ seccion.subtitulo }}
+                            </router-link>
+                            <div class="col-1">
+                                <div class="btn-group btn-group-sm float-end shadow-sm" role="group" aria-label="Basic example">
+                                    <button v-if="i > 0" @click="reorder(seccion.uid,1, seccion.id)" type="button" class="btn btn-light">
+                                        <Icon name="chevron-up" />
+                                    </button>
+                                    <button v-if="i < (modulo.secciones.length -1)" @click="reorder(seccion.uid,0, seccion.id)" type="button" class="btn btn-light">
+                                        <Icon name="chevron-down" />
+                                    </button>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${seccion.id}`">
+                                        <Icon name="x" />
+                                    </button>
+                                </div>
+                                <DeleteSeccionModal
+                                    :id="seccion.id"
+                                    :modID="route.params.id"
+                                    :subtitulo="seccion.subtitulo"
+                                ></DeleteSeccionModal>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+
+
+            <!-- nota de cierre-->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <form @submit.prevent="updateNota()" name="modNota" class="mb-5">
+                        <div class="mb-3">
+                            <Error v-if="modulo.message.error && modulo.message.place == 'nota'" >{{ modulo.message.text }}</Error>
+                            <Success v-if="modulo.message.success && modulo.message.place == 'nota'" >{{ modulo.message.text }}</Success>
+                        </div>
+                        <div class="mb-3">
+                            <div>
+                                <label for="notaCierre">Nota de cierre: (Opcional)</label>
+                                <textarea style="height:90px" class="form-control mt-2" name="nota" id="notaCierre">{{ modulo.nota }}</textarea>
+                            </div>
+                            <button class="btn btn-secondary mt-3" type="submit">Actualizar nota de cierre</button>
+                        </div>
+                    </form>
+                    <hr>
+                </div>
+            </div>
+
+
+            <div v-if="currentUser.rol == 'admin'" class="row my-5">
                 <div class="col-12 p-3">
                     <div class="card border-danger mb-3" style="border-radius:0;">
                         
