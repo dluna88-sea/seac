@@ -44,7 +44,7 @@ export const useModulosStore = defineStore('pluralModulos',{
                 if(user.docs[0].data().rol == "admin"){
 
                     await getDocs(
-                        query( collection(db,'modulos'), orderBy('fraccion', 'asc') ) 
+                        query( collection(db,'modulos'), orderBy('uid', 'asc') ) 
                     ).then((r) => {
 
                         r.docs.forEach((m) => {
@@ -83,7 +83,7 @@ export const useModulosStore = defineStore('pluralModulos',{
                     
 
                     await getDocs(
-                        query( collection(db,'modulos'), orderBy('fraccion', 'asc') ) 
+                        query( collection(db,'modulos'), orderBy('uid', 'asc') ) 
                     ).then((r) => {
 
                         r.docs.forEach((m) => {
@@ -102,30 +102,6 @@ export const useModulosStore = defineStore('pluralModulos',{
                         })
 
                     }).catch((e) => { this.setError(e.message); })
-
-                    // await getDocs( query( collection(db, 'modulos') ) ).then((result) => {
-                        
-                    //     result.docs.forEach(async(d) => {
-                            
-                    //         if(rol == "admin"){
-                    //             this.listado.push({ id:d.id, ...d.data() });
-                    //             switch(d.data().articulo){
-                    //                 case "20": this.art20.push({ id:d.id, ...d.data() }); break;
-                    //                 case "21": this.art21.push({ id:d.id, ...d.data() }); break;
-                    //                 case "25": this.art25.push({ id:d.id, ...d.data() }); break;
-                    //                 case "70": this.art70.push({ id:d.id, ...d.data() }); break;
-                    //                 case "LGCG": this.artLGCG.push({ id:d.id, ...d.data() }); break;
-                    //                 case "CPC": this.artCPC.push({ id:d.id, ...d.data() }); break;
-                    //             }
-                    //         }else{
-
-                                
-
-                    //         }
-    
-                    //     });
-                        
-                    // }).catch((e) => { this.setError(e.message); })
                 }else{
                     this.setError('No se pudo obtener el rol de usuario. Inicia Sesión nuevamente');
                 }
