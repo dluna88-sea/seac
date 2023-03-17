@@ -44,7 +44,7 @@ traerDatos();
                         
                         <!-- Mostrar solo 5 módulos de transparencia -->
                         <ul v-else class="list-group my-3">
-                            <RouterLink v-for="mod in modulos.listado.slice(0,4)" :to="`/transparencia/${mod.fbid}`" class="list-group-item">{{ mod.titulo }}</RouterLink>
+                            <RouterLink v-for="mod in modulos.listado.slice(0,4)" :to="`/transparencia/${mod.id}`" class="list-group-item">{{ mod.titulo }}</RouterLink>
                         </ul>
 
                         <RouterLink class="btn btn-outline-secondary" to="/transparencia"><Icon name="plus" />Ver más</RouterLink>

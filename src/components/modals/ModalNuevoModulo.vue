@@ -24,10 +24,17 @@ const crearModulo = async() => {
 
     if(document.forms['nuevoModulo']['encargado'].value.trim().split("|",-1)[1] != undefined) cargo = document.forms['nuevoModulo']['encargado'].value.trim().split("|",-1)[1];
     if(document.forms['nuevoModulo']['encargado'].value.trim().split("|",-1)[0] != undefined) nombre = document.forms['nuevoModulo']['encargado'].value.trim().split("|",-1)[0];
-
+    let descript = [];
+    if(document.forms['nuevoModulo']['descripcion'].value.trim() != ""){
+        descript.push({
+            orden:"20230001",
+            valor:document.forms['nuevoModulo']['descripcion'].value.trim()
+        })
+    }
+    
     const datos = {
         titulo: document.forms['nuevoModulo']['titulo'].value.trim(),
-        descripcion: document.forms['nuevoModulo']['descripcion'].value.trim(),
+        descripcion: descript,
         encargado: nombre,
         nota: document.forms['nuevoModulo']['nota'].value.trim(),
         articulo: document.forms['nuevoModulo']['articulo'].value.trim(),

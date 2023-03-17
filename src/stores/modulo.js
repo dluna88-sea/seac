@@ -77,7 +77,7 @@ export const useModuloStore = defineStore('SingleModulo',{
                     
                     await addDoc(collection(db,'modulos'),datos).then(
                         this.setSuccess('Creado correctamente')).catch((e) => { this.setError(e.message) })
-
+                        setTimeout(location.reload(),2000);
                 }else{
                     this.setError('Ya existe el modulo '+data.fraccion+' del articulo '+data.articulo);
                 }
