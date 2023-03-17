@@ -6,7 +6,11 @@ import { useModuloStore } from '../../stores/modulo';
             type:Object,
             required:true
         },
-        userList:{
+        departamentos:{
+            type:Array,
+            required:true
+        },
+        articulos:{
             type:Array,
             required:true
         }
@@ -24,17 +28,13 @@ const crearModulo = async() => {
     const datos = {
         titulo: document.forms['nuevoModulo']['titulo'].value.trim(),
         descripcion: document.forms['nuevoModulo']['descripcion'].value.trim(),
-        encargado: 
-            {
-                nombre: nombre,
-                cargo: cargo,
-            },
+        encargado: nombre,
         nota: document.forms['nuevoModulo']['nota'].value.trim(),
         articulo: document.forms['nuevoModulo']['articulo'].value.trim(),
         fraccion: document.forms['nuevoModulo']['fraccion'].value.trim(),
     }
 
-    await modulo.nuevoModulo(datos)
+    await modulo.nuevoModulo(datos);
 }
 </script>
 
@@ -54,8 +54,9 @@ const crearModulo = async() => {
                     <div class="modal-body">
                         
                         <div class="row p-3">
-                            
+                            <Loading v-if="modulo.loading"></Loading>
                             <Error v-if="modulo.message.error">{{ modulo.message.text }}</Error>
+                            <Success v-if="modulo.message.success">{{ modulo.message.text }}</Success>
 
                             <div class="col-12 mb-3">
                                 <label for="titulo" class="form-label">Título</label>
@@ -65,7 +66,7 @@ const crearModulo = async() => {
                             <div class="col-md-6 mb-3">
                                 <label for="articulo" class="form-label">Artículo</label>
                                 <select  required name="articulo" class="form-control" id="articulo">
-                                    <option v-for="a in modulo.articulos" :value="a.id">{{ a.titulo }}</option>
+                                    <option v-for="a in articulos" :value="a.id">{{ a.titulo }}</option>
                                 </select>
                                 
                             </div>
@@ -83,10 +84,9 @@ const crearModulo = async() => {
                             <hr>
                             <label class="mb-3">ENCARGADO</label>
                             <div class="col-md-12 mb-3">
-                                <label for="encargado" class="form-label">Nombre y cargo:</label>
+                                <label for="encargado" class="form-label">El titular del departamento:</label>
                                 <select class="form-control" name="encargado" id="encargado">
-                                    <option v-for="user in userList" :value="user.nombre+'|'+user.cargo">{{user.nombre}} - {{ user.cargo }}</option>
-                                    <option value="Los titulares de todas las áreas de la Secretaría Ejecutiva del Sistema Estatal Anticorrupción del Estado de Coahuila">Todos los jefes de área</option>
+                                    <option v-for="dpto in departamentos" :value="dpto.id">{{dpto.nombre}}</option>
                                 </select>
                             </div>
 

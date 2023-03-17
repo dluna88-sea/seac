@@ -38,6 +38,20 @@ export const useSeccionStore = defineStore('SingleSection',{
             finally{ this.loading=false; }
         },
 
+        async update(values, modID, secID){
+            try{
+                this.loading = true;
+                
+                await setDoc(
+                    doc(db,'modulos/'+modID+'/secciones', secID), 
+                    { ...values, updatedAt:serverTimestamp() }, 
+                    {merge:true}
+                ).catch((e) => { this.setError(e.message); });
+
+            }catch(e) { this.setError(e.message) }
+            finally{ this.loading=false; }
+        },
+
         async getDocuments(modID, secID){
             try {
                 
@@ -100,6 +114,61 @@ export const useSeccionStore = defineStore('SingleSection',{
             } finally {
                 this.loading = false;
             }
+        },
+
+        async updateDatosFile(datos){
+            try{
+                this.loading = true;
+            
+                let data = {}
+
+                if("documento" in datos){
+                    //Borrar el doc anterior:
+                    const fireStorePath = datos.modID+'/'+datos.secID+'/'+datos.documentoViejo;
+                    const docRef = ref(getStorage(), fireStorePath);
+                    await deleteObject(docRef).then(async () => {
+
+                        console.log(datos.documento.name)
+                        //subir el nuevo archivo
+                        const refFile = ref( getStorage(), '/'+datos.modID+'/'+datos.secID+'/'+datos.documento.name );
+                        await uploadBytes( refFile, datos.documento ).then( async () => {
+
+                            const newFileurl = await getDownloadURL(refFile);
+                            data = {
+                                ...data,
+                                filename:datos.documento.name,
+                                url:newFileurl,
+                                uploadedAt:serverTimestamp(),
+                            }
+                            
+
+                        }).catch((e) => { console.log(e.message) })
+
+                    }).catch((e) => { console.log(e.message) })
+                }
+
+                if("descripcion" in datos){
+                    data = { ...data, descripcion:datos.descripcion }
+                }
+
+                if("nombre" in datos){
+                    data = { ...data, nombre:datos.nombre }
+                }
+
+                //actualizar la info:
+                const path = '/modulos/'+datos.modID+'/secciones/'+datos.secID+'/documentos/'+datos.docID
+                await setDoc(
+                    doc(db, path),
+                    data,
+                    {merge:true}
+                ).then(() => {
+                    this.update(null, datos.modID)
+
+                }).catch((e) => { this.setError(e.message) })
+
+            } catch(e) {
+                this.setError(e.message)                
+            } finally { this.loading = false; }
         },
 
         async reorderFile(actOrder, newOrder, modID, secID, fileID){

@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
-import { db } from '../firebase.js'
+import { db } from '../firebase.js';
+import router from '../router';
 import { query, collection, where, getDocs, getDoc, addDoc, setDoc, doc, deleteDoc, orderBy, limit, FieldPath, serverTimestamp } from "firebase/firestore/lite";
 import { orderByChild } from 'firebase/database'
 import { getDownloadURL, getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
@@ -20,7 +21,8 @@ export const useModuloStore = defineStore('SingleModulo',{
         id:null,
         nota:'',
         descripcion:[],
-        secciones:[]
+        secciones:[],
+        articulos:[]
     }),
     actions:{
 
@@ -64,6 +66,24 @@ export const useModuloStore = defineStore('SingleModulo',{
                 }).catch((e) => { this.setError(e.message); })
             }catch(e) { this.setError(e.message) }
             finally{ this.loading=false; }
+        },
+
+        async nuevoModulo(data){
+            try {
+                this.loading = true;
+                const datos = { ...data, actualizacion:this.fecha() }
+                
+                if(! await this.modExists(data.articulo,data.fraccion)){
+                    
+                    await addDoc(collection(db,'modulos'),datos).then(
+                        this.setSuccess('Creado correctamente')).catch((e) => { this.setError(e.message) })
+
+                }else{
+                    this.setError('Ya existe el modulo '+data.fraccion+' del articulo '+data.articulo);
+                }
+
+            } catch (e) { this.setError(e.message) }
+            finally { this.loading = false; }
         },
 
         async updateFecha(modID){
@@ -143,7 +163,6 @@ export const useModuloStore = defineStore('SingleModulo',{
                 const path = "/modulos/"+modID+"/secciones";
                 await deleteDoc(doc(db, path, id)).then(async () =>{
                     await this.update(null, modID);
-                    location.reload();
                 }).catch((e) => { this.setError(e.message) });
 
             } catch (e) {
@@ -209,6 +228,37 @@ export const useModuloStore = defineStore('SingleModulo',{
             } finally { this.loading = false; }
         },
 
+        async deleteModulo(id){
+            try {
+                this.loading = true;
+
+                await deleteDoc( doc(db,'modulos',id) ).then(async () => {
+                    this.setSuccess('Módulo eliminado correctamente');
+                }).catch((e) => { this.setError(e.message) })
+
+            } catch (e) {
+                this.setError(e.message)
+            } finally { this.loading = false; }
+        },
+
+        async getArticulos(){
+            try {
+                this.loading = true;
+
+                await getDocs(collection(db,'articulos')).then((arts) => {
+
+                    arts.docs.forEach((art) => {
+
+                        this.articulos.push({ id:art.id, ...art.data() });
+
+                    });
+
+                }).catch((e) => { this.setError(e.message); });
+
+            } catch (e) { this.setError(e.message) } 
+            finally { this.loading = false; }
+        },
+
         async getLastID(modID){
             const defaultFirst = (new Date(Date.now()).getFullYear())+"00001";
             
@@ -224,6 +274,32 @@ export const useModuloStore = defineStore('SingleModulo',{
                 let seccionID = parseInt(seccion.docs[0].data().uid,10)+1;
                 return seccionID.toString();
             }else return defaultFirst;
+        },
+
+        async modExists(articulo, fraccion){
+            try {
+                this.loading = true;
+
+                const mods = await getDocs(query(
+                    collection(db,'modulos'),
+                    where('articulo', '==', articulo.toString())
+                ));
+
+                let coincidencias = false;
+
+                if(mods.docs.length > 0){
+                    mods.docs.forEach((mod) => {
+                        if(mod.data().fraccion == fraccion){
+                            coincidencias = true;
+                        }
+                    })
+                }
+
+                return coincidencias;
+
+            } catch (e) {
+                this.setError(e.message)
+            } finally { this.loading = false; }
         },
 
         fecha(){

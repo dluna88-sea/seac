@@ -23,7 +23,7 @@ const subirArchivo = async () => {
         descripcion:descripcion, 
         nombre:nombre 
     }
-    await seccion.uploadFile(file, datos)
+    await seccion.uploadFile(file, datos).then(() => { location.reload() })
 }
 
 </script>

@@ -59,7 +59,9 @@ const updateDescripcion = async() => {
         i++;
     }
 
-    await modulo.update({descripcion:parrafos}, modulo.id);
+    if(parrafos.length > 0){
+        await modulo.update({descripcion:parrafos}, modulo.id);
+    }
     
 }
 

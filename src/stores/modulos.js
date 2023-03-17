@@ -20,7 +20,8 @@ export const useModulosStore = defineStore('pluralModulos',{
         art25:[],
         art70:[],
         artLGCG:[],
-        artCPC:[]
+        artCPC:[],
+        articulos:[]
 
     }),
     actions:{
@@ -216,6 +217,22 @@ export const useModulosStore = defineStore('pluralModulos',{
                 let documentID = parseInt(documento.docs[0].data().uid,10)+1;
                 return documentID.toString();
             }else return defaultFirst;
+        },
+
+        async getArticulos(){
+            try {
+                this.loading = true;
+                this.articulos = [];
+                await getDocs(query(collection(db,'articulos'))).then((arts) => {
+
+                    arts.docs.forEach((art) => {
+                        this.articulos.push({ id:art.id, ...art.data() });
+                    });
+
+                }).catch((e) => { this.setError(e.message); });
+
+            } catch (e) { this.setError(e.message) } 
+            finally { this.loading = false; }
         },
 
         julDatePlusSecs(){

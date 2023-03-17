@@ -17,7 +17,7 @@ import { useModuloStore } from '../../../stores/modulo';
         const tit = document.forms['nuevoTitulo']['titulo'].value.trim();
         if(tit != props.tituloActual && tit != ""){
             const valores = { titulo: tit }
-            await modulo.update(valores, props.modID)
+            await modulo.update(valores, props.modID).then(location.reload())
         }
     }
 </script>

@@ -18,7 +18,9 @@ import { useModuloStore } from '../../stores/modulo';
 
     const eliminarSeccion = async() => {
         const modulo = useModuloStore();
-        await modulo.deleteSeccion(props.id, props.modID)
+        await modulo.deleteSeccion(props.id, props.modID).then(() => {
+            location.href = '/transparencia/'+props.modID;
+        })
     }
 </script>
 
