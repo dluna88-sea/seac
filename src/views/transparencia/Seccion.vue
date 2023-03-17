@@ -1,37 +1,40 @@
 <script setup>
 import { useRoute } from 'vue-router';
-import { useModuloStore } from '../../stores/modulo';
+import { useSeccionStore } from '../../stores/seccion';
 import DeleteSeccionModal from '../../components/modals/DeleteSeccionModal.vue';
 import EditarDocumentoModal from '../../components/modals/documentos/EditarDocumentoModal.vue';
 import UploadFileModal from '../../components/modals/UploadFileModal.vue';
 
-const modulo = useModuloStore();
+const seccion = useSeccionStore();
 const route = useRoute();
-let documentos = [];
+
 async function getDatos(){
-    await modulo.getSeccion(route.params.modID, route.params.secID)
-    documentos = await modulo.getDocuments(route.params.modID, route.params.secID)
+    await seccion.get(route.params.modID, route.params.secID)
 }
 
 getDatos();
 
-/** 
- * Acciones de cada sección
-*/
-const updSubtitulo = async() => {
-    const subtNuevo = document.forms['secSubtitulo']['subtitulo'].value.trim();
-    if(subtNuevo != modulo.seccion.subtitulo){
-        await modulo.updateSeccion({subtitulo:subtNuevo},route.params.modID,modulo.seccion.id);
-        location.reload();
-    }
+let bread = [
+    { href:"/", class:"", text:"Panel" },
+    { href:"/transparencia", class:"", text:"Transparencia" },
+    { href:"/transparencia/"+route.params.modID, class:"", text:'Módulo' },
+    { href:"", class:"active", text:'Seccion' },
+]
+
+const editSubtitulo = async () => {
+    const subtitulo = document.forms['editSubtituloForm']['subtitulo'].value.trim();
+    await seccion.update({ subtitulo:subtitulo }, route.params.modID, route.params.secID ).then(getDatos())
 }
 
-const updDescripcion = async() => {
-    const descNueva = document.forms['secDescripcion']['descripcion'].value.trim();
-    if(descNueva != modulo.seccion.descripcion){
-        await modulo.updateSeccion({descripcion:descNueva},route.params.modID,modulo.seccion.id);
-        location.reload();
-    }
+const editDescripcion = async () => {
+    const descripcion = document.forms['editDescripcionForm']['descripcion'].value.trim();
+    await seccion.update({ descripcion:descripcion }, route.params.modID, route.params.secID ).then(getDatos())
+}
+
+const reorderFile = async (actUID, to, fileID) => {
+    let nuevoUID = 0;
+    if(to == 0) nuevoUID = parseInt(actUID) + 1; else nuevoUID = parseInt(actUID) - 1;
+    await seccion.reorderFile(actUID,nuevoUID,route.params.modID, route.params.secID, fileID).then(() => { getDatos() });
 }
 
 const reorderFile = async (actUID, to, fileID) => {
@@ -45,36 +48,41 @@ const reorderFile = async (actUID, to, fileID) => {
 
 <DefaultPage>
 
-    <ul class="nav nav-pills mb-2 mt-3">
-                <li class="nav-item">
-                    <routerLink :to="`/transparencia/${route.params.modID}`" class="nav-link active" aria-current="page">
-                        <Icon name="arrow-left" /> Regresar
-                    </routerLink>
-                </li>
-                <!-- <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                </li> -->
-            </ul>
+    
 
-    <Loading v-if="modulo.loading"></Loading>
+    <Loading v-if="seccion.loading"></Loading>
+    <div v-else>
 
-    <Card v-else Class="mb-5">
-    <CardHeader>
-        <div class="row">
-
-            <label for="subtitulo" class="col-sm-3 col-form-label text-sm-end">Subtítulo</label>
-            <div class="col-sm-9">
-                
-                <form name="secSubtitulo" @submit.prevent="updSubtitulo(modulo.seccion.id,modulo.seccion.subtitulo)" class="row row-cols-auto g-3">
-                    <input type="hidden" name="orden" :value="modulo.seccion.orden">
-                    <div class="col-xl-10 col-lg-8 col-md-7 col-sm-7 col-xs-12">
-                        <input type="hidden" name="idSeccion" :value="modulo.seccion.id">
-                        <input type="text" class="form-control" name="subtitulo" :value="modulo.seccion.subtitulo">
+        <PageTitle :bread="bread"></PageTitle>
+    
+        <div class="row my-3">
+            <div class="col">
+                <div class="list-group shadow-sm">
+                    <div class="list-group-item bg-light">
+                        <h4 class="float-start">Editar Sección</h4>
+                        <button class="btn btn-danger float-end" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${route.params.secID}`">
+                            <Icon name="x-circle" />
+                            Eliminar esta sección</button>
                     </div>
-                    <div class="col-xl-2 col-lg-4 col-md-5 col-sm-5 col-xs-12">
-                        <button class="btn btn-secondary" type="submit">Editar</button>
-                        <a class="float-end" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${modulo.seccion.id}`" style="color:red; cursor:pointer"><Icon name="x-circle-fill" /></a>
+                    <div class="list-group-item p-4">
+                        <div class="mb-3">
+                            <form @submit.prevent="editSubtitulo()" name="editSubtituloForm">
+                                <label for="subtitulo" class="form-label">Título:</label>
+                                <input type="text" :value="seccion.subtitulo" class="form-control" name="subtitulo" id="subtitulo" placeholder="Escribe el nombre de la sección">
+                                <button type="submit" class="btn btn-secondary mt-2 float-end"><Icon name="pencil" /> Actualizar</button>
+                            </form>
+                        </div>
                     </div>
+                    <div class="list-group-item p-4">
+                        <div class="mb-3">
+                            <form @submit.prevent="editDescripcion()" name="editDescripcionForm">
+                                <label for="descripcion" class="form-label">Descripción: (Opcional)</label>
+                                <textarea name="descripcion" id="descripcion" class="form-control">{{ seccion.descripcion }}</textarea>
+                                <button type="submit" class="btn btn-secondary mt-2 float-end"><Icon name="pencil" /> Actualizar</button>
+                            </form>
+                        </div>
+                    </div>
+<<<<<<< HEAD
                 </form>
                 <DeleteSeccionModal
                     :id="modulo.seccion.id"
@@ -143,12 +151,61 @@ const reorderFile = async (actUID, to, fileID) => {
                                     </button>
                                 </div>
                                 <EditarDocumentoModal
+=======
+                    
+                </div>
+                <DeleteSeccionModal
+                    :id="route.params.secID"
+                    :modID="route.params.modID"
+                    :subtitulo="seccion.subtitulo"
+                ></DeleteSeccionModal>
+            </div>
+        </div>
+    
+        <div class="row my-5">
+            <div class="col-12 text-center">
+                <h4>
+                    <Icon name="paperclip" />
+                    Documentos adjuntos:
+                </h4>
+                <p>
+                    <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" :data-bs-target="`#uploadModal_${seccion.id}`"><Icon name="upload" Class="mx-2" /> Subir</button>
+                </p>
+            </div>
+            <div v-if="seccion.documentos.length == 0" class="col-12 text-center">
+                <Info>NO HAY DOCUMENTOS ADJUNTOS EN ESTA SECCIÓN</Info>
+            </div>
+            <div v-else class="col-12 mt-3 mb-5">
+                <div class="list-group">
+                    
+                    <div v-for="doc, i in seccion.documentos" class="list-group-item d-flex justify-content-between align-items-center">
+                        <a :href="doc.url" target="_blank" style="text-decoration:none; color:black" class="col-11">
+                            {{ doc.nombre }}
+                        </a>
+                        <div class="col-1">
+                            <div class="btn-group btn-group-sm float-end shadow-sm" role="group" aria-label="Basic example">
+                                <button v-if="i > 0" @click="reorderFile(doc.uid,1, doc.id)" type="button" class="btn btn-light">
+                                    <Icon name="chevron-up" />
+                                </button>
+                                <button v-if="i < (seccion.documentos.length -1)" @click="reorderFile(doc.uid,0, doc.id)" type="button" class="btn btn-light">
+                                    <Icon name="chevron-down" />
+                                </button>
+                                <button class="btn btn-light" data-bs-toggle="modal" :data-bs-target="`#updateFileData_${doc.id}`">
+                                    <Icon name="pencil" />
+                                </button>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${seccion.id}`">
+                                    <Icon name="x" />
+                                </button>
+                            </div>
+                            <EditarDocumentoModal
+>>>>>>> Version2
                                 :id="`updateFileData_${doc.id}`"
                                 :archivo="doc"
                                 :modID="route.params.modID"
                                 :secID="route.params.secID"
                                 
                             ></EditarDocumentoModal>
+<<<<<<< HEAD
                             <ModalDeleteFile 
                                 :id="`deleteModal${modulo.seccion.id}-${doc.id}`"
                                 :archivo="{  
@@ -171,6 +228,19 @@ const reorderFile = async (actUID, to, fileID) => {
     </CardBody>    
     
     </Card>
+=======
+                        </div>
+                    </div>
+    
+                </div>
+            </div>
+            <UploadFileModal
+                :id="`uploadModal_${seccion.id}`"
+                :seccion="{ modID:route.params.modID, secID:route.params.secID }"
+            ></UploadFileModal>
+        </div>
+    </div>
+>>>>>>> Version2
 
 </DefaultPage>
 

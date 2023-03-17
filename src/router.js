@@ -34,6 +34,10 @@ const router = createRouter({
         { path:'/usuarios', name: 'Usuarios', component: () => import('./views/usuarios/Listado.vue'), beforeEnter:isAdmin },
         { path:'/usuario/:id', name: 'DetalleUsuario', component: () => import('./views/usuarios/Detalle.vue'), beforeEnter:isAdmin },
         { path:'/usuario/nuevo', name: 'NuevoUsuario', component: () => import('./views/usuarios/NuevoUsuario.vue'), beforeEnter:isAdmin },
+        { path:'/boletines', name: 'Boletines', component: () => import('./views/boletines/Listado.vue'), beforeEnter:isAuth },
+        { path:'/boletin/:id', name: 'DetalleBoletin', component: () => import('./views/boletines/Detalle.vue'), beforeEnter:isAuth },
+        { path:'/boletin/nuevo', name: 'NuevoBoletin', component: () => import('./views/boletines/Nuevo.vue'), beforeEnter:isAuth },
+
         
         //Error 404
         {

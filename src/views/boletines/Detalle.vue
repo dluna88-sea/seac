@@ -3,6 +3,6 @@
 
 <template>
     <div>
-        Listado de publicaciones
+        Detalle de publicación
     </div>
 </template>

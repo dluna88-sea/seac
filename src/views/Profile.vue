@@ -3,6 +3,11 @@ import { useCurrentUserStore } from '../stores/currentUser';
 
 const currentUser = useCurrentUserStore();
 
+const bread = [
+    { text:'Panel', href:'/', class:'' },
+    { text:'Perfil de usuario', href:'', class:'active' }
+];
+
 async function getDatos(){
     if(currentUser.id == null){ await currentUser.getDatos(); }
     if(currentUser.modulos.length == 0){ await currentUser.getModulos(); }
@@ -64,7 +69,7 @@ const updatePwd = async () => {
             </Success>
         </div>
 
-        <PageTitle>
+        <PageTitle :bread="bread">
             <Icon name="person-fill" /> &nbsp;Perfil de usuario
         </PageTitle>
 
@@ -118,6 +123,7 @@ const updatePwd = async () => {
                         </div>
                     </form>
                 </div>
+                
                 
                 <div class="col-md-12 mt-5 px-lg-5 mb-5">
                     <Card>

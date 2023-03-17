@@ -1,6 +1,6 @@
 <script setup>
-import { useModuloStore } from '../../stores/modulo';
-const modulos = useModuloStore();
+import { useSeccionStore } from '../../stores/seccion';
+const seccion = useSeccionStore();
 
 const props = defineProps({
     seccion:{
@@ -23,7 +23,7 @@ const subirArchivo = async () => {
         descripcion:descripcion, 
         nombre:nombre 
     }
-    await modulos.uploadFile(file, datos)
+    await seccion.uploadFile(file, datos).then(() => { location.reload() })
 }
 
 </script>
@@ -42,7 +42,7 @@ const subirArchivo = async () => {
 
                 <div class="modal-body">
                     <form :name="`uploadFileForm_${id}`">
-                        <input type="file" class="form-control mb-3" accept="application/pdf" id="uploadFile" name="filepdf" aria-describedby="uploadFileAddon" aria-label="Upload">
+                        <input type="file" class="form-control mb-3" accept="application/pdf, .xlsx, .xls" id="uploadFile" name="filepdf" aria-describedby="uploadFileAddon" aria-label="Upload">
                         <div class="mb-3">
                             <label for="nombre" class="form-label">Nombre: </label>
                             <input type="text" required class="form-control" name="nombre" placeholder="Escribe el nombre del archivo">

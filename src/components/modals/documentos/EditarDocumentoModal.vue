@@ -1,5 +1,6 @@
 <script setup>
-import { useModuloStore } from '../../../stores/modulo';
+import { useSeccionStore } from '../../../stores/seccion';
+const seccion = useSeccionStore();
 
     const props = defineProps({
         id:{
@@ -43,8 +44,8 @@ import { useModuloStore } from '../../../stores/modulo';
             console.log('no hago cambios')
         }else{
             nuevosDatos = { modID:props.modID, secID:props.secID, docID:props.archivo.id, ...nuevosDatos }
-            const modulos = useModuloStore();
-            await modulos.updateDatosFile(nuevosDatos);
+            
+            await seccion.updateDatosFile(nuevosDatos).then(() => { location.reload() })
         }
     }
 </script>
