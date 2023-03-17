@@ -37,12 +37,6 @@ const reorderFile = async (actUID, to, fileID) => {
     await seccion.reorderFile(actUID,nuevoUID,route.params.modID, route.params.secID, fileID).then(() => { getDatos() });
 }
 
-const reorderFile = async (actUID, to, fileID) => {
-    let nuevoUID = 0;
-    if(to == 0) nuevoUID = parseInt(actUID) + 1; else nuevoUID = parseInt(actUID) - 1;
-    await modulo.reorderFile(actUID,nuevoUID,route.params.modID, route.params.secID, fileID).then(() => { getDatos() });
-}
-
 </script>
 <template>
 
@@ -82,76 +76,6 @@ const reorderFile = async (actUID, to, fileID) => {
                             </form>
                         </div>
                     </div>
-<<<<<<< HEAD
-                </form>
-                <DeleteSeccionModal
-                    :id="modulo.seccion.id"
-                    :modID="route.params.modID"
-                    :subtitulo="modulo.seccion.subtitulo"
-                ></DeleteSeccionModal> 
-            </div>
-        </div>
-    </CardHeader>
-    <CardBody Class="p-4">
-
-        <div class="row mb-3">
-            <label for="descripcion" class="col-sm-3 col-form-label text-sm-end">Descripción</label>
-            <div class="col-sm-9">
-                <form name="secDescripcion" @submit.prevent="updDescripcion()">
-                    <textarea placeholder="Opcional" class="form-control" id="descripcion" name="descripcion">{{ modulo.seccion.descripcion }}</textarea>
-                    <button type="submit" class="btn btn-secondary mt-2">Actualizar descripción</button>
-                </form>
-            </div>
-        </div>
-
-        <hr>
-
-        <div class="row mb-4">
-            <div class="col text-center">
-
-                <h4>
-                    <Icon name="paperclip" /> Documentos adjuntos:
-                </h4>
-                <a class="btn btn-secondary mt-3" data-bs-toggle="modal" :data-bs-target="`#uploadModal_${modulo.seccion.id}`" ><Icon name="upload" /> Subir archivo</a>
-                
-            </div>
-            <UploadFileModal
-                    :id="`uploadModal_${modulo.seccion.id}`"
-                    :seccion="{ modID:route.params.modID, secID:route.params.secID }"
-                ></UploadFileModal>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col">
-
-                <Loading v-if="modulo.loading"></Loading>
-                
-                <Info v-else-if="modulo.documentos.length == 0">No hay documentos adjuntos</Info>
-                
-                <ul v-else class="list-group shadow" >
-                    <li v-for="(doc, i) in modulo.documentos" class="list-group-item ">
-                        <div class="row">
-                            <a :href="doc.url" target="_blank" style="text-decoration:none; color:black" class="col-9">
-                                <Icon name="file-pdf" />
-                                <span class="mx-2">{{ doc.nombre }}</span>
-                            </a>
-                            <div class="col-3">
-                                <div class="btn-group btn-group-sm float-end shadow-sm" role="group" >
-                                    <button v-if="i > 0" @click="reorderFile(doc.uid,1,doc.id)" class="btn btn-light">
-                                        <Icon name="chevron-up" />
-                                    </button>
-                                    <button v-if="i < (modulo.documentos.length - 1)" @click="reorderFile(doc.uid,0,doc.id)" class="btn btn-light">
-                                        <Icon name="chevron-down" />
-                                    </button>
-                                    <button class="btn btn-light" data-bs-toggle="modal" :data-bs-target="`#updateFileData_${doc.id}`">
-                                        <Icon name="pencil" />
-                                    </button>
-                                    <button class="btn btn-danger" data-bs-toggle="modal" :data-bs-target="`#deleteModal${modulo.seccion.id}-${doc.id}`">
-                                        <Icon name="x" />
-                                    </button>
-                                </div>
-                                <EditarDocumentoModal
-=======
                     
                 </div>
                 <DeleteSeccionModal
@@ -198,37 +122,12 @@ const reorderFile = async (actUID, to, fileID) => {
                                 </button>
                             </div>
                             <EditarDocumentoModal
->>>>>>> Version2
                                 :id="`updateFileData_${doc.id}`"
                                 :archivo="doc"
                                 :modID="route.params.modID"
                                 :secID="route.params.secID"
                                 
                             ></EditarDocumentoModal>
-<<<<<<< HEAD
-                            <ModalDeleteFile 
-                                :id="`deleteModal${modulo.seccion.id}-${doc.id}`"
-                                :archivo="{  
-                                    docID: doc.id,
-                                    seccion: modulo.seccion.id, 
-                                    nombre: doc.nombre,
-                                    filename: doc.filename, 
-                                    modulo:route.params.modID,
-                                    url: doc.url 
-                                }"></ModalDeleteFile>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-
-            </div>
-        </div>
-
-
-    </CardBody>    
-    
-    </Card>
-=======
                         </div>
                     </div>
     
@@ -240,7 +139,6 @@ const reorderFile = async (actUID, to, fileID) => {
             ></UploadFileModal>
         </div>
     </div>
->>>>>>> Version2
 
 </DefaultPage>
 
