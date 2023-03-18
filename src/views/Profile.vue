@@ -10,7 +10,6 @@ const bread = [
 
 async function getDatos(){
     if(currentUser.id == null){ await currentUser.getDatos(); }
-    if(currentUser.modulos.length == 0){ await currentUser.getModulos(); }
 }
 getDatos();
 
@@ -23,14 +22,6 @@ const updateNombre = async () => {
     }
 }
 
-const updateCargo = async () => {
-    currentUser.message.place = 'cargo'
-    const cargo = document.forms['updateCargo']['cargo'].value.trim();
-    if(cargo != currentUser.cargo){
-        await currentUser.update({cargo:cargo})
-        location.reload()
-    }
-}
 
 const updateEmail = async () => {
     currentUser.message.place = 'email'
@@ -162,32 +153,6 @@ const updatePwd = async () => {
                     </Card>
                 </div>
 
-            </div>
-            
-            
-            
-            <div class="row">
-                <div class="col text-center py-4">
-                    <h3>Módulos de transparencia asignados:</h3>
-                </div>
-            </div>
-            <div class="row mb-5">
-                <div class="col px-lg-5">
-                    <BigCard>
-                        <p>ID Único: {{ currentUser.uid }}</p>
-                        <p>Módulos asignados:</p>
-                        <Info v-if="currentUser.modulos.length == 0">
-                            No tienes módulos de transparencia asignados
-                        </Info>
-                        <div v-else class="continer">
-                            <ul class="list-group">
-                                <li class="list-group-item" v-for="mod in currentUser.modulos">
-                                    {{ mod.titulo }}
-                                </li>
-                            </ul>
-                        </div>
-                    </BigCard>
-                </div>
             </div>
 
         </div>
