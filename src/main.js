@@ -19,6 +19,16 @@ import Icon from './components/Icon.vue';
 import DefaultPage from './components/DefaultPage.vue';
 import ModalDeleteFile from './components/modals/ModalDeleteFile.vue';
 
+//QUILL:
+import { QuillEditor } from '@vueup/vue-quill';
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
+import '@vueup/vue-quill/dist/vue-quill.bubble.css';
+const globalOptions = {
+    placeholder: 'Escribe algo aquí'
+  }
+// set default globalOptions prop
+QuillEditor.props.globalOptions.default = () => globalOptions;
+
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -41,6 +51,7 @@ app.component("BigCard", BigCard);
 app.component("Icon", Icon);
 app.component("DefaultPage", DefaultPage);
 app.component("ModalDeleteFile", ModalDeleteFile);
+app.component("QuillEditor", QuillEditor);
 
 app.mount("#app");
 

@@ -27,3 +27,15 @@ fw-200{ font-weight: 200; }
 .cursorHand{
     cursor: pointer;
 }
+
+/* Quill editor styles: */
+.ql-editor > p, .ql-editor blockquote{
+    font-family: 'Poppins', sans-serif;
+    font-size:15px;
+}
+.quillTitle{
+    font-size: 30px !important;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    border:none;
+}

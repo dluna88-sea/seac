@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueup/vue-quill": "^1.0.0-alpha.40",
     "firebase": "^9.17.1",
     "pinia": "^2.0.30",
     "vue": "^3.2.45",
