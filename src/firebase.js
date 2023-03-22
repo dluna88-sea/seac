@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-const { initializeAppCheck, ReCaptchaV3Provider } = require("firebase/app-check");
+// import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { getFirestore } from "firebase/firestore/lite";
 import { getAuth } from "firebase/auth";
 
@@ -16,13 +16,13 @@ const firebaseConfig = {
   appId: "1:640440931494:web:81e2d4d8a42d3422a0d067"
 };
 
-const appCheck = initializeAppCheck(app, {
-  provider: new ReCaptchaV3Provider('6LciEyIlAAAAAMSwAfx7rmUaR-gkt3YFhPuCOxiegit'),
+// const appCheck = initializeAppCheck(app, {
+//   provider: new ReCaptchaV3Provider('6LciEyIlAAAAAMSwAfx7rmUaR-gkt3YFhPuCOxiegit'),
 
-  // Optional argument. If true, the SDK automatically refreshes App Check
-  // tokens as needed.
-  isTokenAutoRefreshEnabled: true
-});
+//   // Optional argument. If true, the SDK automatically refreshes App Check
+//   // tokens as needed.
+//   isTokenAutoRefreshEnabled: true
+// });
 
 
 /**
