@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { auth, db } from '../firebase.js'
-import { query, collection, where, getDocs, setDoc, doc, orderBy, addDoc } from "firebase/firestore/lite";
+import { query, collection, where, getDocs, setDoc, getDoc, doc, orderBy, addDoc } from "firebase/firestore/lite";
 
 export const useBoletinesStore = defineStore('BoletinesStore',{
 
@@ -12,7 +12,12 @@ export const useBoletinesStore = defineStore('BoletinesStore',{
             text:'',
             place:null
         },
-        all:[]
+        all:[],
+        delta:'',
+        titulo:'',
+        autor:null,
+        fecha:'',
+        status:'',
     }),
     actions:{
 
@@ -24,6 +29,23 @@ export const useBoletinesStore = defineStore('BoletinesStore',{
                     {...obj, createdAt:this.fecha() }
                 ).catch((e) => { console.log(e.message) })
             } catch (e) { console.log(e.message) }
+            finally { this.loading = false; }
+        },
+
+        async get(id){
+            try{
+                this.loading = true;
+                await getDoc(query(
+                    doc(db,'boletines',id)
+                )).then(async (result) => {
+                    this.delta = JSON.parse(result.data().content);
+                    this.fecha = result.data().createdAt;
+                    this.titulo = result.data().titulo;
+                    await getDoc(doc(db,'usuarios',result.data().autor)).then((a) => {
+                        this.autor = a.data().nombre;
+                    });
+                }).catch((e) => { this.setError(e); console.log(e); });
+            } catch(e) { this.setError(e); console.log(e); }
             finally { this.loading = false; }
         },
 

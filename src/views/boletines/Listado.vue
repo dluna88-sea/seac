@@ -35,7 +35,7 @@ getBoletines();
                         <hr>
                         <Info v-if="boletines.all.length == 0"></Info>
                         <div v-else class="list-group">
-                            <router-link class="list-group-item" v-for="b in boletines.all" :to="`/boletines/boletin/${b.id}`" >
+                            <router-link class="list-group-item" v-for="b in boletines.all" :to="`/boletin/${b.id}`" >
                             {{ b.titulo }} - Autor: {{ b.autor }}
                             </router-link>
                         </div>

@@ -12,36 +12,24 @@ const bread = [
     { text:'Nuevo', href:'', class:'active' },
 ];
 
-let mainQuill = null;
 
-const saveQuill = async () => {
-    var delta = mainQuill.getContents();
-    let datos = {
-        content: JSON.stringify(delta), 
-        autor: currentUser.id, 
-        titulo:document.querySelector('#titulo').value.trim(),
-        status:0 
-    }
-    await boletines.guardar(datos);
+const addQuill = () => {
+    var counter = countElements();
+    var div = document.createElement('div');
+    div.setAttribute('class','border position-relative my-2')
+    div.innerHTML = '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cursor-pointer">x</span><div id="quill-'+counter+'"></div>';
+    document.getElementById('postContainer').append(div);
+    setTimeout(createQuill('quill-'+counter), 2000);
 }
 
-const publishQuill = async () => {
-    var delta = mainQuill.getContents();
-    await boletines.guardar({
-        content: delta, 
-        autor: currentUser.id, 
-        titulo:document.querySelector('#titulo').ariaValueMax.trim(),
-        status:1 
-    });
+function createQuill(id){
+    new Quill('#'+id, { theme:'bubble' }).focus();
 }
 
-const createQuill = async () => {
-    if(currentUser.id == null){ await currentUser.getDatos(); }
-    mainQuill = new Quill('#MainContentQuill',{ theme:'bubble', placeholder:'Escribe aquí' });
-    mainQuill.focus();
-
+function countElements(){
+    return document.getElementById('postContainer').childNodes.length;
 }
-setTimeout(createQuill,2500);
+
 </script>
 
 <template>
@@ -56,8 +44,9 @@ setTimeout(createQuill,2500);
             </PageTitle>
 
             <div class="row">
-                <div class="col-6">
-                    <BigCard>
+                <div class="col">
+                    <Card>
+                        <CardBody>
                         <div class="row">
                             <div class="col-12">
                                 
@@ -68,8 +57,16 @@ setTimeout(createQuill,2500);
 
 
                         <div class="row mb-3">
-                            <div class="col-12">
-                                <div id="MainContentQuill"></div>
+                            <div class="col" id="postContainer"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 text-center p-4 shadow-sm my-3 bg-light">
+                                <div class="btn-group">
+                                    <button @click="addQuill()" class="btn btn-secondary btn-sm"><Icon name="plus-circle" /> Párrafo</button>
+                                    <button @click="" class="btn btn-secondary btn-sm"><Icon name="image" /> Imágen</button>
+                                    <button @click="" class="btn btn-secondary btn-sm"><Icon name="paperclip" /> Documento</button>
+                                </div>
                             </div>
                         </div>
 
@@ -83,14 +80,9 @@ setTimeout(createQuill,2500);
                                 </div>
                             </div>
                         </div>
-                        
-                    </BigCard>
-                </div>
 
-                <div class="col-6">
-                    <BigCard>
-                        <div id="result"></div>
-                    </BigCard>
+                        </CardBody>
+                    </Card>
                 </div>
             </div>
 
