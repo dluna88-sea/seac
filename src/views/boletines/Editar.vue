@@ -7,6 +7,8 @@ import {useBoletinesStore} from '../../stores/boletines';
 const boletines = useBoletinesStore();
 const currentUser = useCurrentUserStore();
 const route = useRoute();
+let isError = false;
+let errorText = '';
 
 const bread = [
     { text:'Panel', href:'/', class:'' },
@@ -14,36 +16,39 @@ const bread = [
     { text:'Nuevo', href:'', class:'active' },
 ];
 
-function createQuill(id){
-    var toolbarOptions = [
-        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-        ['blockquote', 'code-block'],
+var toolbarOptions = [
+    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+    ['blockquote', 'code-block'],
 
-        [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-        [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-        [{ 'direction': 'rtl' }],                         // text direction
+    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+    [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+    [{ 'direction': 'rtl' }],                         // text direction
 
-        [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
 
-        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-        [{ 'font': [] }],
-        [{ 'align': [] }],
+    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+    [{ 'font': [] }],
+    [{ 'align': [] }],
 
-        ['clean']                                         // remove formatting button
-    ];
-    new Quill('#'+id, { theme:'bubble', modules: { toolbar: toolbarOptions }, }).focus();
-}
+    ['clean']                                         // remove formatting button
+];
 
+let quill = null;
 async function cargarDatos(){
     await boletines.get(route.params.id);
-    createQuill("postContainer");
+    quill = new Quill('#postContainer', { theme:'snow', modules: { toolbar: toolbarOptions }, }).focus();
+
 }
 
 cargarDatos();
 
+const guardar = async (status) => {
+    
+    console.log(quill);
+}
 
 </script>
 
@@ -57,10 +62,8 @@ cargarDatos();
             <PageTitle :bread="bread"></PageTitle>
 
             <div class="row">
-                <div class="col-10">
-                    <Card>
-                        <CardBody>
-                        
+                <div class="col">
+                    <BigCard>
                         <div class="row">
                             <div class="col-12 mb-3">
                                 <input type="text" :value="boletines.titulo" class="form-control quillTitle" name="titulo" id="titulo" placeholder="Escribe aquí el título">
@@ -69,25 +72,24 @@ cargarDatos();
                         <div class="row mb-3">
                             <div class="col" id="postContainer"></div>
                         </div>
-
-                        </CardBody>
-                    </Card>
-                </div>
-                <div class="col-2">
-                    sidebar buttons
-                </div>
-
-                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-                    <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasRightLabel">Offcanvas right</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                    </div>
-                    <div class="offcanvas-body">
-                        
-                    </div>
+                        <div class="row">
+                            <div class="col">
+                                <Error v-if="isError">{{ errorText }}</Error>
+                                <div class="btn-group float-end mt-2">
+                                    <button @click="guardar(0)" class="btn btn-outline-secondary">
+                                        <Icon Class="mx-2" name="eraser" />Guardar borrador
+                                    </button>
+                                    <button @click="guardar(1)" class="btn btn-outline-success">
+                                        <Icon Class="mx-2" name="globe" />Publicar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </BigCard>
                 </div>
             </div>
 
+            
         </div>
 
     </DefaultPage>
