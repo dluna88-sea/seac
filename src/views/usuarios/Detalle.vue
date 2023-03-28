@@ -13,18 +13,7 @@ const bread = [
 ];
 
 async function getUsuario(){
-
-    if(currentUser.id == null){ await currentUser.getDatos().then(() => { bread.push({ text:currentUser.nombre, href:'', class:'active' }) }); }
-    if(currentUser.rol != 'admin'){
-        currentUser.setError('No tienes permiso para acceder a esta página')
-        router.push('/');
-    }
-    
-    if(user.datos.valueOf.length == 0){ 
-        await user.get(route.params.id);
-        await user.getModulos(user.datos.modulos);
-    }
-
+    await user.get(route.params.id);
 }
 
 getUsuario();
@@ -39,9 +28,8 @@ getUsuario();
             <div class="col">
                 <p>
                     Correo electrónico: {{ user.datos.email }}
-                </p>
-                <p>
-                    Cargo: {{ user.datos.cargo }}
+                <br>
+                    Cargo: {{ user.datos.cargo }} de {{ user.datos.departamento }}
                 </p>
             </div>
         </div>
