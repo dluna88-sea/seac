@@ -50,13 +50,12 @@ export const useUsuariosStore = defineStore('UsuariosStore',{
                 this.loading = true;
 
                 this.datos = {};
-
                 const usuario = await getDoc(
                     doc(db, '/usuarios', uid)
                 )
-
                 if(usuario.exists()){
-                    this.datos = { id:usuario.id, ...usuario.data() }
+                    let dpto = await getDoc(doc(db,'departamentos',usuario.data().departamento))
+                    this.datos = { id:usuario.id, ...usuario.data(), departamento:dpto.data().nombre }
                 }else{
                     this.setError('El usuario no existe')
                 }
@@ -98,24 +97,11 @@ export const useUsuariosStore = defineStore('UsuariosStore',{
             }
         },
 
-        async getModulos(mods){
+        async getModulos(uid){
             try {
                 this.loading = true;
 
-                const userMods = [];
-
-                mods.forEach(async(m) => {
-                    await getDocs(
-                        query(
-                            collection(db, "modulos"),
-                            where("articulo","==",m)
-                        )
-                    ).then((result) => {
-                        userMods.push({...result.docs[0].data()});
-                    }).catch((e) => {
-                        console.log(e);
-                    })
-                })
+                
 
             } catch (error) {
                 this.setError(error.message);
