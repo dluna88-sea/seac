@@ -74,8 +74,8 @@ export const useModuloStore = defineStore('SingleModulo',{
                 const datos = { ...data, actualizacion:this.fecha() }
                 
                 if(! await this.modExists(data.articulo,data.fraccion)){
-                    
-                    await addDoc(collection(db,'modulos'),datos).then(
+                    const nid = await this.getLastModID();
+                    await addDoc(collection(db,'modulos'),{ uid: nid, ...datos }).then(
                         this.setSuccess('Creado correctamente')).catch((e) => { this.setError(e.message) })
                         setTimeout(location.reload(),2000);
                 }else{
@@ -201,6 +201,22 @@ export const useModuloStore = defineStore('SingleModulo',{
             } finally {
                 this.loading = false;
             }
+        },
+
+        async getLastModID(){
+            const defaultFirst = (new Date(Date.now()).getFullYear())+"00001";
+            let modulo = await getDocs(
+                query(
+                    collection(db,'modulos'),
+                    orderBy('uid','desc'),
+                    limit(1)
+                )
+            )
+            
+            if(modulo.docs.length > 0){
+                let modID = parseInt(modulo.docs[0].data().uid,10)+1;
+                return modID.toString();
+            }else return defaultFirst;
         },
 
         async reorderSection(actOrder, newOrder, modID, secID){
