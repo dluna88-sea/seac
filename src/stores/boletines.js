@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import { auth, db } from '../firebase.js'
-import { query, collection, where, getDocs, setDoc, getDoc, doc, orderBy, addDoc } from "firebase/firestore/lite";
+import { useRoute } from "vue-router";
+import { query, collection, serverTimestamp, where, getDocs, setDoc, getDoc, doc, orderBy, addDoc } from "firebase/firestore/lite";
+import { getDownloadURL, getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
 
 export const useBoletinesStore = defineStore('BoletinesStore',{
 
@@ -13,21 +15,45 @@ export const useBoletinesStore = defineStore('BoletinesStore',{
             place:null
         },
         all:[],
-        delta:'',
+        content:[],
         titulo:'',
         autor:null,
         fecha:'',
         status:'',
+        lastFileURL:'',
     }),
     actions:{
 
-        async guardar(obj){
+        async guardar(id, obj){
+            try {
+                this.loading = true;
+                await setDoc(doc(db,'boletines',id),{ ...obj, updatedAt:this.getFecha() },{merge:true})
+                .then((result) => {
+                    location.href='/boletin/'+result.id;
+                })
+                .catch((e) => { console.log(e.message) });
+            } catch (e) { console.log(e.message) }
+            finally { this.loading = false; }
+        },
+
+        async crear(titulo, autor){
             try {
                 this.loading = true;
                 await addDoc(
                     collection(db,'boletines'),
-                    {...obj, createdAt:this.fecha() }
-                ).catch((e) => { console.log(e.message) })
+                    { 
+                        titulo:titulo, 
+                        publishTimestamp:serverTimestamp(), 
+                        createdAt:this.getFecha(), 
+                        autor:autor, 
+                        content:[], 
+                        status:0
+                    }
+                )
+                .then((result) => {
+                    location.href='/boletin/'+result.id;
+                })
+                .catch((e) => { console.log(e.message) })
             } catch (e) { console.log(e.message) }
             finally { this.loading = false; }
         },
@@ -38,12 +64,12 @@ export const useBoletinesStore = defineStore('BoletinesStore',{
                 await getDoc(query(
                     doc(db,'boletines',id)
                 )).then(async (result) => {
-                    this.delta = JSON.parse(result.data().content);
+                    this.content = result.data().content;
                     this.fecha = result.data().createdAt;
                     this.titulo = result.data().titulo;
                     await getDoc(doc(db,'usuarios',result.data().autor)).then((a) => {
                         this.autor = a.data().nombre;
-                    });
+                    }).catch(() => { this.autor = result.data().autor });
                 }).catch((e) => { this.setError(e); console.log(e); });
             } catch(e) { this.setError(e); console.log(e); }
             finally { this.loading = false; }
@@ -62,6 +88,16 @@ export const useBoletinesStore = defineStore('BoletinesStore',{
             finally { this.loading = false; }
         },
 
+        async uploadFile(file, btID){
+            try{
+                // this.loading = true;
+                const docRef = ref( getStorage(), '/boletines/'+btID+'/'+file.name );
+                await uploadBytes(docRef, file );
+                this.lastFileURL = await getDownloadURL(docRef);
+            }catch(e) { console.log(e) }
+            // finally { this.loading = false; }
+        },
+
         setError(msg = ''){
             this.message.error = true;
             this.message.success = false;
@@ -76,7 +112,7 @@ export const useBoletinesStore = defineStore('BoletinesStore',{
             setTimeout(() => { this.message.success = false; this.message.text = ''; }, 6000);
         },
 
-        fecha(){
+        getFecha(){
             const d = new Date(Date.now());
             const mes = getMes();
             function getMes(){

@@ -1,4 +1,5 @@
 <script setup>
+import NuevoBoletinModal from '../../components/modals/boletines/NuevoBoletinModal.vue';
 import {useBoletinesStore} from '../../stores/boletines';
 const boletines = useBoletinesStore();
 
@@ -23,17 +24,16 @@ getBoletines();
 
             <PageTitle :bread="bread">
                 <Icon name="file-earmark-richtext" Class="mx-2" />Boletines
-                <router-link to="/boletin/nuevo" class="btn btn-primary float-end">
+                <a href="#" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#nuevoBoletinModal">
                     <Icon name="pencil" Class="mx-2"/>Crear Boletín
-                </router-link>
+                </a>
             </PageTitle>
+            <NuevoBoletinModal></NuevoBoletinModal>
 
             <div class="row">
                 <div class="col">
                     <BigCard>
-                        <h4>Boletines: </h4>
-                        <hr>
-                        <Info v-if="boletines.all.length == 0"></Info>
+                        <Info v-if="boletines.all.length == 0">No hay publicaciones creadas</Info>
                         <div v-else class="list-group">
                             <router-link class="list-group-item" v-for="b in boletines.all" :to="`/boletin/${b.id}`" >
                             {{ b.titulo }} - Autor: {{ b.autor }}
