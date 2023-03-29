@@ -164,16 +164,22 @@ export const useCurrentUserStore = defineStore('CurrentUser',{
         //Actualizar datos de usuario:
         //Recibe dos strings
         // pwd y pwdConfirm
-        async updatePwd(pwd, pwdConfirm){
-            if(pwd == pwdConfirm){
-                await updatePassword(auth.currentUser,pwd).then(
-                    () => {
-                        this.setSuccess("Contraseña actualizada correctamente.");
-                        return true;
+        async updatePwd(pwd, pwdConfirm, currentPwd){
+            try {
+                await signInWithEmailAndPassword(auth, this.email, currentPwd).then(async () => {
+                    if(pwd == pwdConfirm){
+                        await updatePassword(auth.currentUser,pwd).then(
+                            () => {
+                                this.setSuccess("Contraseña actualizada correctamente.");
+                                return true;
+                            }
+                        ).catch((e) => { this.setError(e.message); console.log(e.message); return false; })
+                    }else{
+                        this.setError('Las contraseñas no coinciden')
                     }
-                ).catch((e) => { this.setError(e.message); console.log(e.message); return false; })
-            }else{
-                this.setError('Las contraseñas no coinciden')
+                })
+            } catch (e) {
+                this.setError('La contraseña actual es incorrecta.');
             }
         },
 
@@ -181,7 +187,7 @@ export const useCurrentUserStore = defineStore('CurrentUser',{
         async login(email, pwd){
             try { this.loading = true;
                 const { user } = await signInWithEmailAndPassword( auth, email, pwd ); 
-            } catch (error) { this.setError(error.message); } 
+            } catch (error) { console.log(error.message); this.setError('Datos incorrectos'); } 
             finally { this.loading = false; }
         },
         

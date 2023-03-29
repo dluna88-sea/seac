@@ -37,11 +37,13 @@ const updatePwd = async () => {
 
     const pwd = document.forms['updatePwd']['password'].value.trim();
     const pwdConfirm = document.forms['updatePwd']['password2'].value.trim();
+    const currentPwd = document.forms['updatePwd']['current_password'].value.trim();
+
     
-    await currentUser.updatePwd(pwd, pwdConfirm)
+    await currentUser.updatePwd(pwd, pwdConfirm, currentPwd)
     document.forms['updatePwd']['password'].value = "";
     document.forms['updatePwd']['password2'].value = "";
-    location.reload()
+    setTimeout(location.reload(),1500);
 }
 
 </script>
@@ -135,19 +137,35 @@ const updatePwd = async () => {
                                 <li>La contraseña debe tener mínimo 6 caractéres y máximo 8</li>
                             </ul>
                             <form @submit.prevent="updatePwd()" name="updatePwd" class="my-3">
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="form-floating mb-3">
+                                            <input required type="password" class="form-control" id="password" name="password" placeholder="Escribe una contraseña">
+                                            <label for="password">Nueva contraseña</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="form-floating">
+                                            <input required type="password" class="form-control" id="password2" name="password2" placeholder="Confirma la contraseña">
+                                            <label for="password2">Confirma tu nueva contraseña</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="form-floating">
+                                            <input required type="password" class="form-control" id="current_password" name="current_password" placeholder="Escribe tu contraseña actual">
+                                            <label for="password2">Contraseña actual</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="d-grid mt-2">
+                                            <button class="btn btn-secondary block">Actualizar</button>
+                                        </div>
+                                    </div>
+                                </div>
                                 
-                                <div class="form-floating mb-3">
-                                    <input required type="password" class="form-control" id="password" name="password" placeholder="Escribe una contraseña">
-                                    <label for="password">Contraseña</label>
-                                </div>
-                                <div class="form-floating">
-                                    <input required type="password" class="form-control" id="password2" name="password2" placeholder="Confirma la contraseña">
-                                    <label for="password2">Confirmación de contraseña</label>
-                                </div>
+                                
 
-                                <div class="d-grid mt-2">
-                                    <button class="btn btn-secondary block">Actualizar</button>
-                                </div>
+                                
                             </form>
                         </CardBody>
                     </Card>
