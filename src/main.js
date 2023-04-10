@@ -17,6 +17,7 @@ import MainNavbar from './components/MainNavbar.vue';
 import BigCard from './components/Cards/BigCard.vue';
 import Icon from './components/Icon.vue';
 import DefaultPage from './components/DefaultPage.vue';
+import FWPage from './components/FWPage.vue';
 import ModalDeleteFile from './components/modals/ModalDeleteFile.vue';
 
 //QUILL:
@@ -50,6 +51,7 @@ app.component("MainNavbar", MainNavbar);
 app.component("BigCard", BigCard);
 app.component("Icon", Icon);
 app.component("DefaultPage", DefaultPage);
+app.component("FWPage", FWPage);
 app.component("ModalDeleteFile", ModalDeleteFile);
 app.component("QuillEditor", QuillEditor);
 
