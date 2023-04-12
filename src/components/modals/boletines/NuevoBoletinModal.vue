@@ -1,18 +1,23 @@
 <script setup>
 import { useBoletinesStore } from '../../../stores/boletines';
 import { useCurrentUserStore } from '../../../stores/currentUser';
+import { useAutoresStore } from '../../../stores/autores';
+const autores = useAutoresStore();
 const currentUser = useCurrentUserStore();
-
 const boletin = useBoletinesStore();
 
 const crearBoletin = async () => {
     const titulo = document.forms['nuevoBoletinForm']['titulo'].value.trim();
-    if(currentUser.id == null){ await currentUser.getDatos(); }
-    const autor = currentUser.id;
+    const autor = document.forms['nuevoBoletinForm']['autor'].value.trim();
     if(titulo != ''){
         await boletin.crear(titulo, autor);
     }
 }
+async function cargarDatos(){
+    await autores.getAll();
+    console.log(autores.listado)
+}
+cargarDatos()
 </script>
 
 <template>
@@ -32,6 +37,12 @@ const crearBoletin = async () => {
                         <div class="mb-3">
                             <label for="titulo" class="form-label">Título:</label>
                             <input type="text" class="form-control" id="titulo" placeholder="Escriba un título para la publicación">
+                        </div>
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label">Autor:</label>
+                            <select class="form-control" name="autor" id="autor">
+                                <option v-for="aut in autores.listado" :value="aut.id">{{ aut.nombre }}</option>
+                            </select>
                         </div>
                     </form>
 

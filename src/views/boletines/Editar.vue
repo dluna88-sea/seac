@@ -1,10 +1,14 @@
 <script setup>
 
 import { useRoute } from "vue-router";
+import { serverTimestamp } from "firebase/firestore/lite";
 import { useCurrentUserStore } from "../../stores/currentUser";
 import Quill from "quill";
-import { auth } from "../../firebase";
 import {useBoletinesStore} from '../../stores/boletines';
+import {useUsuariosStore} from '../../stores/usuarios';
+import {useAutoresStore} from '../../stores/autores';
+const autores = useAutoresStore();
+const usuarios = useUsuariosStore();
 const boletines = useBoletinesStore();
 const currentUser = useCurrentUserStore();
 const route = useRoute();
@@ -32,10 +36,24 @@ var toolbarOptions = [
 ];
 
 let quill = null;
+let laFecha = new Date();
 async function cargarDatos(){
     await boletines.get(route.params.id);
     quill = new Quill('#postContainer', { theme:'snow', modules: { toolbar: toolbarOptions }, }).focus();
-    imgDestacada = 'https://as01.epimg.net/epik/imagenes/2020/05/13/portada/1589364125_491181_1589365301_noticia_normal.jpg'
+    await usuarios.getAll();
+    await autores.getAll();
+    await autores.get(boletines.autor);
+    laFecha = new Date(boletines.publishTimestamp.seconds * 1000 + boletines.publishTimestamp.nanoseconds/1000000);
+    document.querySelector("#fecha").setAttribute("value", getFormattedDate(laFecha));
+}
+
+function getFormattedDate(date) {
+    var year = date.getFullYear();
+    var month = (1 + date.getMonth()).toString();
+    month = month.length > 1 ? month : '0' + month;
+    var day = date.getDate().toString();
+    day = day.length > 1 ? day : '0' + day;
+    return year + '-' + month + '-' + day;
 }
 
 cargarDatos();
@@ -44,10 +62,22 @@ const guardar = async (status) => {
     quill = new Quill("#postContainer").getContents();
     let stat = "borrador";
     let imagen = document.querySelector("#imagenDestacada").value;
+    let autor = document.querySelector("#autor").value;
+    let titulo = document.querySelector("#titulo").value;
+    let publishTimestamp = document.querySelector("#fecha").value;
     if(status == 1){
         stat = "publicado";
     }
-    console.log(quill);
+    let data = {
+        content: JSON.stringify(quill),
+        autor:autor,
+        imagen:imagen,
+        status:status,
+        titulo:titulo,
+        fecha:fecha
+    }
+
+    console.log(data);
 }
 
 </script>
@@ -87,15 +117,25 @@ const guardar = async (status) => {
                                 <label for="fecha">
                                     Fecha de publicación: 
                                 </label>
-                                <input type="date" name="fecha" class="form-control">
+                                <input type="date" id="fecha" class="form-control" >
+                                
+                            </div>
+                            <hr>
+                            <div class="my-3">
+                                <label for="fecha">
+                                    Autor: 
+                                </label>
+                                <select name="autor" id="autor" class="form-control">
+                                    <option selected :value="autores.datos.id">{{ autores.datos.nombre }}</option>
+                                    <optgroup label="Todos:">
+                                        <option v-for="autor in autores.listado" :value="autor.id">{{ autor.nombre }}</option>
+                                    </optgroup>
+                                </select>
                             </div>
                             <hr>
                             <div class="my-3">
                                 <label>
-                                    Autor: John Camaney
-                                </label>
-                                <label>
-                                    Creado el: 10 de abril de 2023
+                                    Creado el: {{ boletines.fecha }}
                                 </label>
                                 <label>
                                     Status: Borrador

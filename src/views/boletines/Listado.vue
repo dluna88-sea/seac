@@ -24,9 +24,17 @@ getBoletines();
 
             <PageTitle :bread="bread">
                 <Icon name="file-earmark-richtext" Class="mx-2" />Boletines
-                <a href="#" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#nuevoBoletinModal">
-                    <Icon name="pencil" Class="mx-2"/>Crear Boletín
-                </a>
+
+                <div class="btn-group float-end">
+                    <RouterLink to="boletines/autores" class="btn btn-secondary">
+                        <Icon name="people" Class="mx-2"/>Autores
+                    </RouterLink>
+                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoBoletinModal">
+                        <Icon name="pencil" Class="mx-2"/>Crear Boletín
+                    </a>
+                    
+                </div>
+                
             </PageTitle>
             <NuevoBoletinModal></NuevoBoletinModal>
 

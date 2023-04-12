@@ -21,6 +21,7 @@ export const useBoletinesStore = defineStore('BoletinesStore',{
         fecha:'',
         status:'',
         lastFileURL:'',
+        publishTimestamp:null
     }),
     actions:{
 
@@ -67,6 +68,7 @@ export const useBoletinesStore = defineStore('BoletinesStore',{
                     this.content = result.data().content;
                     this.fecha = result.data().createdAt;
                     this.titulo = result.data().titulo;
+                    this.publishTimestamp = result.data().publishTimestamp;
                     await getDoc(doc(db,'usuarios',result.data().autor)).then((a) => {
                         this.autor = a.data().nombre;
                     }).catch(() => { this.autor = result.data().autor });
