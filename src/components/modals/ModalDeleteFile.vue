@@ -10,12 +10,19 @@ import { useModuloStore } from '../../stores/modulo';
             type:String,
             required:true
         },
+        modID:{
+            type:String,
+            required:true
+        },
+        secID:{
+            type:String,
+            required:true
+        }
     });
 
     const eliminarArchivo = async() => {
         const modulo = useModuloStore();
-        console.log(props.archivo.nombre)
-        await modulo.deleteFile( props.archivo )
+        await modulo.deleteFile( props );
     }
 </script>
 

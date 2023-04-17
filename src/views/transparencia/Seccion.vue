@@ -3,6 +3,7 @@ import { useRoute } from 'vue-router';
 import { useSeccionStore } from '../../stores/seccion';
 import DeleteSeccionModal from '../../components/modals/DeleteSeccionModal.vue';
 import EditarDocumentoModal from '../../components/modals/documentos/EditarDocumentoModal.vue';
+import ModalDeleteFile from '../../components/modals/ModalDeleteFile.vue';
 import UploadFileModal from '../../components/modals/UploadFileModal.vue';
 
 const seccion = useSeccionStore();
@@ -117,7 +118,7 @@ const reorderFile = async (actUID, to, fileID) => {
                                 <button class="btn btn-light" data-bs-toggle="modal" :data-bs-target="`#updateFileData_${doc.id}`">
                                     <Icon name="pencil" />
                                 </button>
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" :data-bs-target="`#deleteSeccionModal-${seccion.id}`">
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" :data-bs-target="`#deleteFileModal-${doc.id}`">
                                     <Icon name="x" />
                                 </button>
                             </div>
@@ -126,8 +127,14 @@ const reorderFile = async (actUID, to, fileID) => {
                                 :archivo="doc"
                                 :modID="route.params.modID"
                                 :secID="route.params.secID"
-                                
                             ></EditarDocumentoModal>
+                            <ModalDeleteFile
+                                :id="`deleteFileModal-${doc.id}`"
+                                :archivo="doc"
+                                :modID="route.params.modID"
+                                :secID="route.params.secID"
+                            ></ModalDeleteFile>
+                            
                         </div>
                     </div>
     

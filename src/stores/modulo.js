@@ -172,6 +172,21 @@ export const useModuloStore = defineStore('SingleModulo',{
             }
         },
 
+        async deleteFile(props){
+            try{
+                this.loading = true;
+                const ruta = ref(getStorage(), props.modID+"/"+props.secID+"/"+props.archivo.filename);
+                const rutaFB = "modulos/"+props.modID+"/secciones/"+props.secID+"/documentos";
+                await deleteObject(ruta).then(async() => { 
+                    await deleteDoc(doc(db,rutaFB,props.archivo.id)).then(location.reload())
+                })
+            }catch(e){
+                this.setError(e.message);
+            }finally{
+                this.loading = false;
+            }
+        },
+
         async crearSeccion(datos){
             try {
                 
