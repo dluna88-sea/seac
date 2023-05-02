@@ -26,9 +26,10 @@ export const useBoletinesStore = defineStore('BoletinesStore',{
         publishTimestamp:null,
         publicarEl: '',
         fechaFormateada: '',
-        totalPages:0,
         pageList:[],
-        nextStart:0,
+        primero:null,
+        ultimo:null,
+        pageLimit:5,
     }),
     actions:{
 
@@ -157,12 +158,19 @@ export const useBoletinesStore = defineStore('BoletinesStore',{
             finally { this.loading = false; }
         },
 
-        async getList(start = 1, limite = 5, currentPage = 0){
+        async getList(order = "desc"){
             try{   
                 this.loading = true;
                 this.pageList = [];
                 
-                
+                await getDocs(query(
+                    collection(db, "boletines"),
+                    orderBy("createdTimestamp", order),
+                    limit(this.pageLimit),
+                    startAfter(ultimo)
+                )).then((documentos) => {
+
+                })
 
 
             }catch(e){ console.log(e); }
