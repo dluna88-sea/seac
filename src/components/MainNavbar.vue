@@ -39,7 +39,7 @@ traerDatos();
                             </a>
                             <ul class="dropdown-menu">
                                 <li><RouterLink class="dropdown-item" to="/perfil">Perfil de usuario</RouterLink></li>
-                                <li><RouterLink class="dropdown-item" to="/ayuda">Ayuda</RouterLink></li>
+                                <!-- <li><RouterLink class="dropdown-item" to="/ayuda">Ayuda</RouterLink></li> -->
                             </ul>
                         </li>
                         <li class="nav-item">
