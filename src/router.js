@@ -35,9 +35,10 @@ const router = createRouter({
         { path:'/usuario/:id', name: 'DetalleUsuario', component: () => import('./views/usuarios/Detalle.vue'), beforeEnter:isAdmin },
         { path:'/usuario/nuevo', name: 'NuevoUsuario', component: () => import('./views/usuarios/NuevoUsuario.vue'), beforeEnter:isAdmin },
         { path:'/boletines', name: 'Boletines', component: () => import('./views/boletines/Listado.vue'), beforeEnter:isAuth },
-        { path:'/boletin/:id', name: 'DetalleBoletin', component: () => import('./views/boletines/Editar.vue'), beforeEnter:isAuth },
         { path:'/boletines/autores', name: 'AutoresListado', component: () => import('./views/boletines/Autores.vue'), beforeEnter:isAuth },
+        { path:'/boletines/:page', name: 'BoletinesPag', component: () => import('./views/boletines/Listado.vue'), beforeEnter:isAuth },
         { path:'/boletines/autor/:id', name: 'Autor', component: () => import('./views/boletines/Autor.vue'), beforeEnter:isAuth },
+        { path:'/boletin/:id', name: 'DetalleBoletin', component: () => import('./views/boletines/Editar.vue'), beforeEnter:isAuth },
         
         //Error 404
         {

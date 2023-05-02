@@ -15,7 +15,6 @@ const crearBoletin = async () => {
 }
 async function cargarDatos(){
     await autores.getAll();
-    console.log(autores.listado)
 }
 cargarDatos()
 </script>
@@ -33,6 +32,7 @@ cargarDatos()
                 </div>
                 <div class="modal-body">
                     <Loading v-if="boletin.loading"></Loading>
+                    <Error v-else-if="autores.listado.length == 0"> DEBE REGISTRAR PRIMERO UN AUTOR </Error>
                     <form v-else name="nuevoBoletinForm">
                         <div class="mb-3">
                             <label for="titulo" class="form-label">Título:</label>

@@ -1,7 +1,9 @@
 import { defineStore } from "pinia";
 import { auth, db, firebaseConfig } from '../firebase.js'
-import { query, collection, where, getDocs, setDoc, doc, getDoc, deleteDoc } from "firebase/firestore/lite";
+import { query, collection, where, getDocs, setDoc, addDoc, doc, getDoc, deleteDoc } from "firebase/firestore/lite";
 import { createUserWithEmailAndPassword, initializeAuth } from "firebase/auth";
+import { getDownloadURL, getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
+
 
 export const useAutoresStore = defineStore('AutoresStore',{
     state: () => ({
@@ -48,15 +50,21 @@ export const useAutoresStore = defineStore('AutoresStore',{
                 this.loading = true;
 
                 this.datos = {};
-                const usuario = await getDoc(
+                const autor = await getDoc(
                     doc(db, '/autores', uid)
                 )
-                if(usuario.exists()){
-                    let boletines = await getDocs(
+                if(autor.exists()){
+                    
+                    await getDocs(
                         query(collection(db,'boletines'), 
-                        where('autor','==',usuario.id))
-                    );
-                    this.datos = { id:usuario.id, ...usuario.data(), boletines:boletines.docs[0].data() }
+                        where('autor','==',autor.id))
+                    ).then((result) =>{
+                        this.publicaciones = [];
+                        result.docs.forEach((publicacion) => {
+                            this.publicaciones.push({ id:publicacion.id, ...publicacion.data() })
+                        })                    
+                    })
+                    this.datos = { id:autor.id, ...autor.data() }
                 }else{
                     this.setError('El autor no existe')
                 }
@@ -100,6 +108,11 @@ export const useAutoresStore = defineStore('AutoresStore',{
         async nuevo(datos){
             try {
                 this.loading = true;
+                if(datos.profilepic != '/default-profile.jpg'){
+                    const docRef = ref( getStorage(), 'boletines/autores/pics/'+this.julDatePlusSecs() );
+                    await uploadBytes(docRef, datos.profilepic);
+                    datos.profilepic = await getDownloadURL(docRef)
+                }
                 await addDoc(collection(db,'autores'), datos).then((autor) => {
                     this.setSuccess("Autor registrado correctamente");
                     console.log(autor.id);
@@ -126,5 +139,14 @@ export const useAutoresStore = defineStore('AutoresStore',{
             setTimeout(() => { this.message.success = false; this.message.text = ''; }, 6000);
         },
 
+        julDatePlusSecs(){
+            var d = new Date();
+            var j=parseInt((d.getTime()-new Date('Dec 30,'+(d.getFullYear()-1)+' 23:00:00').getTime())/86400000).toString(),
+            i=3-j.length;
+            while(i-->0)j=0+j;
+            var secs = d.getSeconds() + (60 * (d.getMinutes() + (60 * d.getHours())));
+            j = j+secs;
+            return j
+        },
     }
 })
