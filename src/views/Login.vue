@@ -29,7 +29,7 @@ const handleSubmit = async () => {
     <Loading v-if="currentUser.loading"></Loading>
     <div v-else class="container text-center mainwrapper">
         <main class="form-signin w-100 m-auto">
-            <form @submit.prevent="handleSubmit">
+            <form @submit.prevent="handleSubmit" autocomplete="off">
                 <img class="mb-4" src="/seac.png" width="180" height="180" alt="SEAC">
                 <h1 class="h3 mb-3">Iniciar Sesión</h1>
 
