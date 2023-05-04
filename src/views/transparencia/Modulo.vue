@@ -137,8 +137,10 @@ const reorder = async (uid, to, secID) => {
             <Error v-if="modulo.message.error && modulo.message.place == null">{{ modulo.message.text }}</Error>
             <Success v-if="modulo.message.success && modulo.message.place == null">{{ modulo.message.text }}</Success>
 
-            <PageTitle :bread="bread">
+            <PageTitle :subtitulo="`Artículo ${modulo.data.articulo} - fracción: ${modulo.data.fraccion}`" :bread="bread">
+                
                 {{ modulo.data.titulo }}
+                
                 <button 
                     v-if="currentUser.rol == 'admin'" 
                     class="btn btn-outline-primary"

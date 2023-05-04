@@ -5,6 +5,10 @@ const props = defineProps({
         type:Array,
         required:false,
         default:[]
+    },
+    subtitulo:{
+        type:String,
+        required:false,
     }
 })
 
@@ -24,6 +28,7 @@ const props = defineProps({
                 </nav>
             </div>
         </div>
+        <span style="text-transform: uppercase; font-size:16px;">{{ subtitulo }}</span>
         <h2><slot></slot></h2>
         <hr class="mt-4"/>
     </div>
