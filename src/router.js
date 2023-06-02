@@ -34,9 +34,12 @@ const router = createRouter({
         { path:'/usuarios', name: 'Usuarios', component: () => import('./views/usuarios/Listado.vue'), beforeEnter:isAdmin },
         { path:'/usuario/:id', name: 'DetalleUsuario', component: () => import('./views/usuarios/Detalle.vue'), beforeEnter:isAdmin },
         { path:'/usuario/nuevo', name: 'NuevoUsuario', component: () => import('./views/usuarios/NuevoUsuario.vue'), beforeEnter:isAdmin },
-        { path:'/boletines', name: 'Boletines', component: () => import('./views/boletines/Listado.vue'), beforeEnter:isAuth },
-        { path:'/boletin/:id', name: 'DetalleBoletin', component: () => import('./views/boletines/Detalle.vue'), beforeEnter:isAuth },
-        { path:'/boletin/nuevo', name: 'NuevoBoletin', component: () => import('./views/boletines/Nuevo.vue'), beforeEnter:isAuth },
+        { path:'/publicaciones', name: 'publicaciones', component: () => import('./views/publicaciones/Listado.vue'), beforeEnter:isAuth },
+        { path:'/publicacion/:id', name: 'DetallePublicacion', component: () => import('./views/publicaciones/Detalle.vue'), beforeEnter:isAuth },
+        { path:'/publicacion/nueva', name: 'NuevoPublicacion', component: () => import('./views/publicaciones/Nuevo.vue'), beforeEnter:isAuth },
+        { path:'/publicaciones/autores', name: 'ListadoAutores', component: () => import('./views/autores/listado.vue'), beforeEnter:isAuth },
+        { path:'/publicaciones/autores/nuevo', name: 'NuevoAutor', component: () => import('./views/autores/nuevo.vue'), beforeEnter:isAuth },
+        { path:'/publicaciones/autor/:id', name: 'DetalleAutor', component: () => import('./views/autores/detalle.vue'), beforeEnter:isAuth },
 
         
         //Error 404

@@ -26,7 +26,7 @@ traerDatos();
                         <RouterLink class="nav-link" to="/transparencia">Transparencia</RouterLink>
                     </li>
                     <li v-if="currentUser.rol == 'admin'" class="nav-item">
-                        <RouterLink class="nav-link" to="/boletines">Boletines</RouterLink>
+                        <RouterLink class="nav-link" to="/publicaciones">Publicaciones</RouterLink>
                     </li>
                     <li v-if="currentUser.rol=='admin'" class="nav-item">
                         <RouterLink class="nav-link" to="/usuarios">Usuarios</RouterLink>

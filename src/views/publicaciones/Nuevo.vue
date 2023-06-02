@@ -1,8 +1,9 @@
 <script setup>
+
 </script>
 
 <template>
-    <div>
-        Listado de publicaciones
+    <div id="editor">
+        
     </div>
 </template>
