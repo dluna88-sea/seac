@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tinymce/tinymce-vue": "^4.0.7",
     "firebase": "^9.17.1",
     "pinia": "^2.0.30",
     "vue": "^3.2.45",

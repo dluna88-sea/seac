@@ -18,18 +18,16 @@ const bread = [
 <template>
     <DefaultPage>
         <PageTitle :bread="bread">
-            <Icon name="newspaper" /> &nbsp;Publicaciones 
-            <RouterLink class="btn btn-secondary mx-2" to="publicaciones/nueva">
-                <Icon name="file-plus" />
-            </RouterLink>
+            <Icon name="newspaper" /> &nbsp;Publicaciones
         </PageTitle>
         
         <div class="container">
             <div class="row">
                 <div class="col">
                     <nav class="nav">
+                        <a class="nav-link" href="publicacion/nueva"><Icon name="file-plus" Class="mx-2" />Nueva</a>
                         <a class="nav-link" href="publicaciones/autores"><Icon name="people-fill" Class="mx-2" />Autores</a>
-                        <a class="nav-link" href="#"><Icon name="tag-fill" Class="mx-2" />Etiquetas</a>
+                        <!-- <a class="nav-link" href="#"><Icon name="tag-fill" Class="mx-2" />Etiquetas</a> -->
                     </nav>
                 </div>
             </div>
@@ -37,13 +35,13 @@ const bread = [
 
         <hr>
 
-        <div class="container">
+        <div class="container mb-5">
             <div class="row g-4">
                 
                 <div v-for="pub in publicaciones.allPubs" class="col-12 col-md-6 col-lg-4 col-xl-3" >
                     <a :href="`publicacion/${pub.id}`" style="text-decoration:none; color:black">
                         <div class="card h-100 shadow">
-                            <div :style="`height: 200px; backround-position:center; background-size: cover; background-image: url(${pub.imagen});`"></div>
+                            <div class="card-imageprofile" :style="`background-image: url(${pub.imagen});`"></div>
                             <div class="card-body">
                                 <h5 class="card-title">{{ pub.titulo }}</h5>
                                 <p class="text-muted">Creado el {{ pub.fecha }}</p>
@@ -63,3 +61,16 @@ const bread = [
         
     </DefaultPage>
 </template>
+
+<style scoped>
+.card-imageprofile{
+    height: 200px; 
+    background-position:center; 
+    background-size: cover; 
+}
+@media(min-width:992px){
+    .card-imageprofile{
+        height: 150px;
+    }
+}
+</style>

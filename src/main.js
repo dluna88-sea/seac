@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from './router';
 import { createPinia } from 'pinia';
 
+import Editor from '@tinymce/tinymce-vue';
+
 //Importar componentes globales:
 import Loading from './components/Alerts/Loading.vue';
 import Success from './components/Alerts/Success.vue';
@@ -41,6 +43,7 @@ app.component("BigCard", BigCard);
 app.component("Icon", Icon);
 app.component("DefaultPage", DefaultPage);
 app.component("ModalDeleteFile", ModalDeleteFile);
+app.component("Editor", Editor);
 
 app.mount("#app");
 

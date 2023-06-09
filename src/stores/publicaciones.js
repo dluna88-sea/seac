@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { db } from '../firebase.js';
 import router from '../router';
-import { query, collection, where, getDocs, getDoc, addDoc, setDoc, doc, deleteDoc, orderBy, limit, FieldPath, serverTimestamp } from "firebase/firestore/lite";
+import { query, collection, where, getDocs, getDoc, addDoc, setDoc, doc, deleteDoc, orderBy, limit, FieldPath, serverTimestamp, Timestamp } from "firebase/firestore/lite";
 import { orderByChild } from 'firebase/database'
 import { getDownloadURL, getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
 
@@ -16,6 +16,8 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
         },
         allPubs:[],
         singlePub:null,
+        etiquetas:"",
+        autores:[]
     }),
 
     actions: {
@@ -35,9 +37,40 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
         async actualizar(id, datos){
             try {
                 this.loading = true;
+                
+                await getDoc(doc(db, '/publicaciones', id)).then(async (pub) => {
+                    let etiquetas = datos.etiquetas.split(", ");
+                    let imgUrl = pub.data().imagen;
+                    let publishAt = new Date(datos.publishAt);
+                        
+
+                    if(datos.imagen != undefined){
+                        let imgName = "imagen_"+id+"."+datos.imagen.type.split("/")[1];
+                        let upldRef = ref(getStorage(), '/publicaciones/'+id+'/'+imgName);
+                        await uploadBytes(upldRef, datos.imagen );
+                        imgUrl = await getDownloadURL(upldRef);
+                    }
+                    await setDoc(doc(db, '/publicaciones', id),
+                        {
+                            titulo: datos.titulo,
+                            excerpt: datos.excerpt,
+                            etiquetas: etiquetas,
+                            imagen:imgUrl,
+                            contenido:datos.contenido,
+                            updatedAt:serverTimestamp(),
+                            autor:datos.autor,
+                            publishAt:publishAt
+                        }, 
+                        { merge:true }
+                    ).then(() => { console.log("Ok") })
+                    .catch((e) => { console.log(e.message) });
+                    
+                })
+
 
                 
             } catch (e) {
+                console.log(e.message)
                 this.setError(e.message);
             } finally {
                 this.loading = false;
@@ -69,16 +102,26 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                 
                 if (docSnap.exists()) {
                     await getDoc(doc(db,'/autores', docSnap.data().autor)).then((autorData) => {
+                        this.etiquetas = "";
+                        docSnap.data().etiquetas.forEach((tag) => {
+                            if(this.etiquetas == ""){ this.etiquetas = tag; }else{
+                                this.etiquetas = this.etiquetas + ", " + tag;
+                            }
+                        })
+                        let publicadoEn = this.formatDateToInput(docSnap.data().publishAt);
                         this.singlePub = { 
                             id:docSnap.id,
                             contenido:docSnap.data().contenido,
                             titulo:docSnap.data().titulo,
                             imagen:docSnap.data().imagen,
+                            etiquetas:docSnap.data().etiquetas,
                             autor:{
                                 id:docSnap.data().autor,
                                 nombre:autorData.data().nombre,
                                 imagen:autorData.data().profilepic
                             },
+                            excerpt:docSnap.data().excerpt,
+                            publishAt:publicadoEn,
                             fecha:this.fechaFormateada(docSnap.data().createdAt),
                             publicada:this.fechaFormateada(docSnap.data().publishAt),
                         };
@@ -92,6 +135,21 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
             } finally {
                 this.loading = false;
             }
+        },
+
+        formatDateToInput(fbtimestamp){
+            let pDate = fbtimestamp.toDate();
+            let ano = pDate.getFullYear();
+            let mes = pDate.getMonth() + 1;
+            let dia = pDate.getDate();
+            let hora = pDate.getHours();
+            let minutos = pDate.getMinutes();
+            if(mes < 10){ mes = "0"+mes }
+            if(dia < 10){ dia = "0"+pDate.getDate() }
+            if(hora < 10){ hora = "0"+pDate.getHours() }
+            if(minutos < 10){ minutos = "0"+pDate.getMinutes() }
+
+            return  ano+"-"+mes+"-"+dia+"T"+hora+":"+minutos;
         },
 
         async all(){
