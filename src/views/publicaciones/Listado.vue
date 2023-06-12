@@ -66,7 +66,8 @@ const bread = [
 .card-imageprofile{
     height: 200px; 
     background-position:center; 
-    background-size: cover; 
+    background-size: cover;
+    border-radius: 5px 5px 0 0;
 }
 @media(min-width:992px){
     .card-imageprofile{

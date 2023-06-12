@@ -25,6 +25,9 @@ getDetail()
                         <a style="background-color:#8f979d !important" :href="`${pub.singlePub.id}/editar/`" class="btn btn-secondary">
                             <Icon name="pencil"/><small style="margin-left: 5px;">Editar</small>
                         </a>
+                        <a href="#" class="btn btn-danger">
+                            <Icon name="x" /><small style="margin-left:5px">Eliminar</small>
+                        </a>
                     </div>
                 </div>
             </div>

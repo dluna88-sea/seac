@@ -25,9 +25,52 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
         async crear(datos){
             try {
                 this.loading = true;
+                let id;
+                //getting last id:
+                await getDocs(
+                    query(
+                        collection(db, '/publicaciones')
+                    )
+                ).then((pubs) => {
+    
+                    if(pubs.docs.length > 0){
+                        id = (eval(pubs.docs[pubs.docs.length-1].id) + 1).toString()
+                        if(id.slice(0,4) != new Date().getFullYear()){
+                            id = (new Date().getFullYear() + "0001").toString();
+                        }
+                    }else{
+                        id = (new Date().getFullYear() + "0001").toString();
+                    }
+                })
+                let img = 'https://firebasestorage.googleapis.com/v0/b/transparenciaseac.appspot.com/o/publicaciones%2Fstatic%2Fdefault-img.gif?alt=media&token=08f789f9-4bfc-44a9-9533-a2933847ece5&_gl=1*19trn8a*_ga*MTE3MjQ1NzAyOC4xNjg1OTgxNDcw*_ga_CW55HF8NVT*MTY4NjU5MzE2OS4xNi4xLjE2ODY1OTMyOTQuMC4wLjA.'
+                
+                if(datos.imagen != undefined){
+                    let imgName = "imagen_"+id+"."+datos.imagen.type.split("/")[1];
+                    let upldRef = ref(getStorage(), '/publicaciones/'+id+'/'+imgName);
+                    await uploadBytes(upldRef, datos.imagen );
+                    img = await getDownloadURL(upldRef);
+                }
+                
+                let data = {
+                    titulo: datos.titulo,
+                    excerpt: datos.excerpt,
+                    autor: datos.autor,
+                    contenido: "",
+                    etiquetas: [],
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp(),
+                    publishAt: serverTimestamp(),
+                    imagen: img
+                }
 
+                console.log(data);
+
+                await setDoc(doc(db, '/publicaciones', id), data).then(() => {
+                    location.href = "/publicacion/"+id+"/editar";
+                })
                 
             } catch (e) {
+                console.log(e)
                 this.setError(e.message);
             } finally {
                 this.loading = false;
