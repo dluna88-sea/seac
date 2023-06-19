@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { db } from '../firebase.js';
 import router from '../router';
-import { query, collection, where, getDocs, getDoc, addDoc, setDoc, doc, deleteDoc, orderBy, limit, FieldPath, serverTimestamp, Timestamp } from "firebase/firestore/lite";
+import { query, collection, startAt, where, getDocs, getDoc, addDoc, setDoc, doc, deleteDoc, orderBy, limit, FieldPath, serverTimestamp, Timestamp } from "firebase/firestore/lite";
 import { orderByChild } from 'firebase/database'
 import { getDownloadURL, getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
 
@@ -52,6 +52,7 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                 }
                 
                 let data = {
+                    id:id,
                     titulo: datos.titulo,
                     excerpt: datos.excerpt,
                     autor: datos.autor,
@@ -124,13 +125,16 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
 
         },
 
-        async eliminar(id){
+        async delete(id){
             try {
                 this.loading = true;
-                
+                console.log(id);
+                await deleteDoc(doc(db,'/publicaciones', id)).then(() => {
+                    location.href = "/publicaciones";
+                })
                 
             } catch (e) {
-                this.setError(e.message);
+                this.setError(e);
             } finally {
                 this.loading = false;
             }
@@ -169,7 +173,7 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                             publicada:this.fechaFormateada(docSnap.data().publishAt),
                         };
                     }).catch(() => { this.setError("no se puso encontrar los datos del autor ") });
-                    } else {
+                } else {
                     this.setError("No se encontró la publicación")
                 }
 
@@ -200,7 +204,8 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                 this.loading = true;
                 this.allPubs = [];
                  await getDocs(
-                    query(collection(db, '/publicaciones'))
+                    query(collection(db, '/publicaciones'), orderBy('createdAt') ),
+                    
                  ).then(async (pubs) => {
                     pubs.docs.forEach(async(pub) => {
 

@@ -41,6 +41,7 @@ const router = createRouter({
         { path:'/publicaciones/autores', name: 'ListadoAutores', component: () => import('./views/autores/listado.vue'), beforeEnter:isAuth },
         { path:'/publicaciones/autores/nuevo', name: 'NuevoAutor', component: () => import('./views/autores/nuevo.vue'), beforeEnter:isAuth },
         { path:'/publicaciones/autor/:id', name: 'DetalleAutor', component: () => import('./views/autores/detalle.vue'), beforeEnter:isAuth },
+        { path:'/publicaciones/autor/:id/editar', name: 'EditarAutor', component: () => import('./views/autores/editar.vue'), beforeEnter:isAuth },
 
         
         //Error 404

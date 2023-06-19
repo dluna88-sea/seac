@@ -1,10 +1,22 @@
 <script setup>
 import { useAutoresStore } from '../../stores/autores';
+import { useRoute } from 'vue-router';
+let route = useRoute();
 let autores = useAutoresStore();
 
-let registrarAutor = async () => {
+async function datosActuales(){
+    await autores.get(route.params.id)
+    let divPrevisualizacion = document.querySelector(".profile-pic");
+    divPrevisualizacion.style.backgroundImage = `url(${autores.autor.profilepic})`;
+    
+}
+
+datosActuales();
+
+let editarDatos = async () => {
 
     let imagen = document.querySelector("#profilepic").files[0];
+    if(imagen == undefined){ imagen = autores.autor.profilepic; }
     let links = {};
 
     let email = document.querySelector("#email").value.trim();
@@ -92,7 +104,7 @@ let registrarAutor = async () => {
         links:links
     }
 
-    await autores.nuevo(datos)
+    await autores.update(route.params.id, datos)
 }
 
 function selectImage(){
@@ -108,18 +120,17 @@ function updatePreview(){
     }
 }
 
-const bread = [
+let bread = [
     { text:'Panel', href:'/', class:'' },
     { text:'Publicaciones', href:'/publicaciones', class:'' },
     { text:'Autores', href:'/publicaciones/autores', class:'' },
-    { text:'Nuevo', href:'', class:'active' }
 ]
 </script>
 
 <template>
     <DefaultPage>
         <PageTitle :bread="bread">
-            <Icon name="person-plus-fill" /> Nuevo Autor
+            <Icon name="person-bounding-box" /> Editar Autor
         </PageTitle>
         <div class="container" v-if="autores.message.success">
             <div class="row">
@@ -128,7 +139,8 @@ const bread = [
                 </div>
             </div>
         </div>
-        <form @submit.prevent="registrarAutor()">
+        <Loading v-if="autores.loading"></Loading>
+        <form v-else @submit.prevent="editarDatos()">
             <div class="container mb-5">
                 <div class="row">
                     <div class="col-md-6 col-sm-12">
@@ -136,9 +148,9 @@ const bread = [
                         <div @click="selectImage()" class="profile-pic my-3 mx-auto d-block shadow"></div>
                         <input type="file" @change="updatePreview()" name="profilepic" id="profilepic" class="d-none">
                         <label>Nombre:</label>
-                        <input required autocomplete="off" id="nombre" name="nombre" type="text" class="form-control mb-2" />
+                        <input required autocomplete="off" :value="autores.autor.nombre" id="nombre" name="nombre" type="text" class="form-control mb-2" />
                         <label>Biografía:</label>
-                        <textarea class="form-control mb-2" id="biografia" name="biografia"></textarea>
+                        <textarea class="form-control mb-2" id="biografia" name="biografia">{{ autores.autor.biografia }}</textarea>
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <label>Enlaces:</label>
@@ -146,43 +158,49 @@ const bread = [
                             <span class="input-group-text">
                                 <Icon name="envelope-fill" />
                             </span>
-                            <input type="text" name="email" id="email" class="form-control" placeholder="Dirección de Correo Electrónico">
+                            <input v-if="autores.autor.links.email != undefined" :value="autores.autor.links.email.username" type="text" name="email" id="email" class="form-control" placeholder="Dirección de Correo Electrónico">
+                            <input v-else type="text" name="email" id="email" class="form-control" placeholder="Dirección de Correo Electrónico">
                         </div>
                         <div class="input-group mb-3 mt-2">
                             <span class="input-group-text">
                                 <Icon name="facebook" />
                             </span>
-                            <input type="text" name="facebook" id="facebook" class="form-control" placeholder="Enlace de Facebook">
+                            <input v-if="autores.autor.links.facebook != undefined" :value="autores.autor.links.facebook.link" type="text" name="facebook" id="facebook" class="form-control" placeholder="Enlace de Facebook">
+                            <input v-else type="text" name="facebook" id="facebook" class="form-control" placeholder="Enlace de Facebook">
                         </div>
                         <div class="input-group mb-3 mt-2">
                             <span class="input-group-text">
                                 <Icon name="twitter" />
                             </span>
-                            <input type="text" name="twitter" id="twitter" class="form-control" placeholder="Enlace de Twitter">
+                            <input v-if="autores.autor.links.twitter != undefined" :value="autores.autor.links.twitter.link" type="text" name="twitter" id="twitter" class="form-control" placeholder="Enlace de Twitter">
+                            <input v-else type="text" name="twitter" id="twitter" class="form-control" placeholder="Enlace de Twitter">
                         </div>
                         <div class="input-group mb-3 mt-2">
                             <span class="input-group-text">
                                 <Icon name="youtube" />
                             </span>
-                            <input type="text" name="youtube" id="youtube" class="form-control" placeholder="Enlace de YouTube">
+                            <input v-if="autores.autor.links.youtube != undefined" :value="autores.autor.links.youtube.link" type="text" name="youtube" id="youtube" class="form-control" placeholder="Enlace de YouTube">
+                            <input v-else type="text" name="youtube" id="youtube" class="form-control" placeholder="Enlace de YouTube">
                         </div>
                         <div class="input-group mb-3 mt-2">
                             <span class="input-group-text">
                                 <Icon name="instagram" />
                             </span>
-                            <input type="text" name="instagram" id="instagram" class="form-control" placeholder="Enlace de Instagram">
+                            <input v-if="autores.autor.links.instagram != undefined" :value="autores.autor.links.instagram.link" type="text" name="instagram" id="instagram" class="form-control" placeholder="Enlace de Instagram">
+                            <input v-else type="text" name="instagram" id="instagram" class="form-control" placeholder="Enlace de Instagram">
                         </div>
                         <div class="input-group mb-3 mt-2">
                             <span class="input-group-text">
                                 <Icon name="github" />
                             </span>
-                            <input type="text" name="github" id="github" class="form-control" placeholder="Enlace de GitHub">
+                            <input v-if="autores.autor.links.github != undefined" :value="autores.autor.links.github.link" type="text" name="github" id="github" class="form-control" placeholder="Enlace de GitHub">
+                            <input v-else type="text" name="github" id="github" class="form-control" placeholder="Enlace de GitHub">
                         </div>
                     </div>
                 </div>
                 <div class="row mb-5">
                     <div class="col">
-                        <button class="btn btn-secondary mt-3">Registrar</button>
+                        <button class="btn btn-secondary mt-3">Actualizar datos</button>
                     </div>
                 </div>
             </div>

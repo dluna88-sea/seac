@@ -10,7 +10,7 @@ let autores = useAutoresStore();
 async function getDetail(){
     await pub.get(route.params.id);
     document.querySelector(".imagenPortada").style.backgroundImage = `url(${pub.singlePub.imagen})`
-    await autores.getAll();    
+    await autores.getExcept(pub.singlePub.autor.id);
 }
 getDetail()
 
@@ -58,6 +58,17 @@ function clearPicture(){
         <Loading v-if="pub.loading"></Loading>
         <div class="container" v-else>
             
+            <div class="row">
+                <div class="col">
+                    <div class="btn-group">
+                        <a :href="`/publicacion/${route.params.id}`" class="btn btn-secondary">
+                            <Icon name="chevron-left" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <hr>
+
             <div class="row my-3">
                 <div class="col">
                     <label>Título:</label>
@@ -102,7 +113,7 @@ function clearPicture(){
                     <select id="autores" class="form-control">
                         <option :value="pub.singlePub.autor.id">{{ pub.singlePub.autor.nombre }}</option>
                         <optgroup label="Cambiar autor:">
-                            <option v-for="autor in autores.all" :value="autor.id">{{ autor.nombre }}</option>
+                            <option v-for="aut in autores.allBut" :value="aut.id">{{ aut.nombre }}</option>
                         </optgroup>
                     </select>
                     <label class="mt-2">Fecha de publicación: </label>

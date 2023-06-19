@@ -6,6 +6,10 @@ async function getAllAutores(){
     await autores.getAll();
 }
 
+function eliminarUsuario(id){
+    console.log("eliminar ID: "+ id);
+}
+
 getAllAutores();
 const bread = [
     { text:'Panel', href:'/', class:'' },
@@ -28,8 +32,7 @@ const bread = [
                 <div class="ms-3">
                     <p class="fw-bold mb-1">{{ autor.nombre }}</p>
                 </div>
-                </div>
-                <span class="badge rounded-pill badge-success">Active</span>
+            </div>
             </router-link>
         </div>
 

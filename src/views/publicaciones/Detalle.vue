@@ -1,4 +1,5 @@
 <script setup>
+import EliminarPublicacion from '../../components/modals/publicaciones/EliminarPublicacion.vue';
 import { useRoute } from 'vue-router';
 import { usePublicacionesStore } from '../../stores/publicaciones';
 
@@ -16,48 +17,56 @@ getDetail()
     <DefaultPage>
         <Loading v-if="pub.loading"></Loading>
         <div v-else class="container py-3 mb-5" >
-            <div class="row">
+            <div class="row" v-if="pub.message.error">
                 <div class="col">
-                    <div class="btn-group">
-                        <a href="/publicaciones" class="btn btn-secondary">
-                            <Icon name="chevron-left" />
-                        </a>
-                        <a style="background-color:#8f979d !important" :href="`${pub.singlePub.id}/editar/`" class="btn btn-secondary">
-                            <Icon name="pencil"/><small style="margin-left: 5px;">Editar</small>
-                        </a>
-                        <a href="#" class="btn btn-danger">
-                            <Icon name="x" /><small style="margin-left:5px">Eliminar</small>
-                        </a>
+                    <Error>{{ pub.message.text }}</Error>
+                </div>
+            </div>
+            <div v-else>
+                <div class="row">
+                    <div class="col">
+                        <div class="btn-group">
+                            <a href="/publicaciones" class="btn btn-secondary">
+                                <Icon name="chevron-left" />
+                            </a>
+                            <a style="background-color:#8f979d !important" :href="`${pub.singlePub.id}/editar/`" class="btn btn-secondary">
+                                <Icon name="pencil"/><small style="margin-left: 5px;">Editar</small>
+                            </a>
+                            <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deletePub">
+                                <Icon name="x" /><small style="margin-left:5px">Eliminar</small>
+                            </a>
+                        </div>
+                        <EliminarPublicacion :pubID="route.params.id"></EliminarPublicacion>
                     </div>
                 </div>
-            </div>
-            <hr>
-            <div class="row">
-                <div class="col">
-                    <h3>{{ pub.singlePub.titulo }}</h3>
-                    <p>
-                        {{ pub.singlePub.excerpt }}
-                    </p>
-                    <div class="imagenDestacada picshadow" :style="`background-image: url(${pub.singlePub.imagen});`"></div>
-                    <hr>
-                    <p class="fechaPublicacion">{{ pub.singlePub.publicada }}</p>
-                    <a style="text-decoration:none; color:black" :href="`/publicaciones/autor/${pub.singlePub.autor.id}`" class="d-flex align-items-center mb-3">
-                        <div class="rounded-circle" :style="`width: 35px; margin-right:10px; height: 35px; background-size:cover; background-image:url(${pub.singlePub.autor.imagen})`"></div>
-                        {{ pub.singlePub.autor.nombre }}
-                        <br>
-                    </a>
-                    <hr>
+                <hr>
+                <div class="row">
+                    <div class="col">
+                        <h3>{{ pub.singlePub.titulo }}</h3>
+                        <p>
+                            {{ pub.singlePub.excerpt }}
+                        </p>
+                        <div class="imagenDestacada picshadow" :style="`background-image: url(${pub.singlePub.imagen});`"></div>
+                        <hr>
+                        <p class="fechaPublicacion">{{ pub.singlePub.publicada }}</p>
+                        <a style="text-decoration:none; color:black" :href="`/publicaciones/autor/${pub.singlePub.autor.id}`" class="d-flex align-items-center mb-3">
+                            <div class="rounded-circle" :style="`width: 35px; margin-right:10px; height: 35px; background-size:cover; background-image:url(${pub.singlePub.autor.imagen})`"></div>
+                            {{ pub.singlePub.autor.nombre }}
+                            <br>
+                        </a>
+                        <hr>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div id="vueEditor" class="col" v-html="pub.singlePub.contenido"></div>
-            </div>
-            
-            <div class="row">
-                <div class="col">
-                    <hr>
-                    Etiquetas: <span v-for="tag in pub.singlePub.etiquetas" class="badge text-bg-primary mx-1">{{ tag }}</span>
-                    <hr>
+                <div class="row">
+                    <div id="vueEditor" class="col" v-html="pub.singlePub.contenido"></div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                        <hr>
+                        Etiquetas: <span v-for="tag in pub.singlePub.etiquetas" class="badge text-bg-primary mx-1">{{ tag }}</span>
+                        <hr>
+                    </div>
                 </div>
             </div>
         </div>
