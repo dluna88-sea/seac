@@ -35,16 +35,28 @@ const bread = [
 
         <hr>
 
-        <div class="container mb-5">
+        <div v-if="publicaciones.allPubs.length == 0" class="container mb-5 pt-5 mt-5">
+            <h1 style="color:#00000028" class="text-center">NO HAY PUBLICACIONES</h1>
+        </div>
+
+        <div v-else class="container mb-5">
             <div class="row g-4">
                 
                 <div v-for="pub in publicaciones.allPubs" class="col-12 col-md-6 col-lg-4 col-xl-3" >
                     <a :href="`publicacion/${pub.id}`" style="text-decoration:none; color:black">
                         <div class="card h-100 shadow">
-                            <div class="card-imageprofile" :style="`background-image: url(${pub.imagen});`"></div>
+                            <div class="card-imageprofile" :style="`background-image: url(${pub.imagen});`">
+                                <div class="float-end" style="font-size:15px; padding:5px 5px 0 0">
+                                    <span v-if="pub.status == 0" style="font-weight: 400; border:solid 1px #ffffff49;" class="badge text-bg-success"><Icon name="globe-americas" /> Público</span>
+                                    <span v-if="pub.status == 1" style="font-weight: 400; border:solid 1px #ffffff49;" class="badge text-bg-danger"><Icon name="eraser" /> Borrador</span>
+                                </div>
+                            </div>
                             <div class="card-body">
+                                
                                 <h5 class="card-title">{{ pub.titulo }}</h5>
-                                <p class="text-muted">Creado el {{ pub.fecha }}</p>
+                                <!-- <div style="font-size:12px">Creado el {{ pub.fecha }}</div> -->
+                                <div v-if="pub.programada" style="font-size:12px">Programada al {{ pub.publicarEn }}</div>
+                                <div v-else style="font-size:12px">Publicado el {{ pub.publicarEn }}</div>
                                 
                             </div>
                             <div class="card-footer">

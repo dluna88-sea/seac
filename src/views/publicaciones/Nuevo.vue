@@ -51,6 +51,7 @@ let crearPublicacion = async () => {
         imagen: imgn,
         etiquetas:"",
         autor:document.querySelector("#autores").value,
+        status:1
     }
 
     await publicaciones.crear(datos).then(() => {

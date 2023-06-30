@@ -100,7 +100,7 @@ let editarDatos = async () => {
     let datos = {
         nombre: document.querySelector("#nombre").value,
         biografia: document.querySelector("#biografia").value,
-        imagen:imagen,
+        profilepic:imagen,
         links:links
     }
 

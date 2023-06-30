@@ -25,7 +25,8 @@ let savePublication = async() => {
         imagen: imagen,
         etiquetas:document.querySelector("#etiquetas").value,
         autor:document.querySelector("#autores").value,
-        publishAt:document.querySelector("#publishAt").value
+        publishAt:document.querySelector("#publishAt").value,
+        status:document.querySelector("#status").value
     }
 
     await pub.actualizar(route.params.id,datos).then(() => {
@@ -118,6 +119,13 @@ function clearPicture(){
                     </select>
                     <label class="mt-2">Fecha de publicación: </label>
                     <input class="form-control" type="datetime-local" id="publishAt" :value="pub.singlePub.publishAt">
+                    <label class="mt-2">Estado: </label>
+                    <select id="status" name="status" class="form-control">
+                        <option v-if="pub.singlePub.status == 1" selected :value="1">Borrador</option>
+                        <option v-else :value="1">Borrador</option>
+                        <option v-if="pub.singlePub.status == 0" selected :value="0">Publico</option>
+                        <option v-else :value="0">Publico</option>
+                    </select>
                 </div>
                 <div class="col-sm-12 col-md-6 mt-3">
                     <label>Imágen de portada:</label>

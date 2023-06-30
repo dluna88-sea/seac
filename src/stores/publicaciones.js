@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { db } from '../firebase.js';
 import router from '../router';
-import { query, collection, startAt, where, getDocs, getDoc, addDoc, setDoc, doc, deleteDoc, orderBy, limit, FieldPath, serverTimestamp, Timestamp } from "firebase/firestore/lite";
+import { query, collection, startAt, where, getDocs, getDoc, addDoc, setDoc, doc, documentId, deleteDoc, orderBy, limit, FieldPath, serverTimestamp, Timestamp } from "firebase/firestore/lite";
 import { orderByChild } from 'firebase/database'
 import { getDownloadURL, getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
 
@@ -17,10 +17,40 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
         allPubs:[],
         singlePub:null,
         etiquetas:"",
-        autores:[]
+        autores:[],
+        count:0,
     }),
 
     actions: {
+
+        async counter(action = "add"){
+            try{
+                this.loading = true;
+
+                await getDoc(doc(db,'/countPublicaciones','counter')).then( async (counter) => {
+
+                    let total = 0;
+                    if(counter.data().total == undefined){ total = 0; }else{ total = counter.data().total; }
+
+                    if(action == "get"){
+                        this.count = total;
+                    }else{
+                        
+                        if(action == "add"){ total = total + 1; }else{ if(total > 0){ total = total - 1; } }
+                        await setDoc(doc(db,'/countPublicaciones','counter'),{ total:total },{ merge:true });
+                    
+                    }
+
+
+                }).catch((e) => { console.log(e); });
+
+            }catch(e){
+                console.log(e);
+                this.setError(e.message);
+            }finally{
+                this.loading = false;
+            }
+        },
 
         async crear(datos){
             try {
@@ -52,7 +82,7 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                 }
                 
                 let data = {
-                    id:id,
+                    id:parseInt(id),
                     titulo: datos.titulo,
                     excerpt: datos.excerpt,
                     autor: datos.autor,
@@ -61,12 +91,12 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp(),
                     publishAt: serverTimestamp(),
-                    imagen: img
+                    imagen: img,
+                    status: datos.status
                 }
 
-                console.log(data);
-
-                await setDoc(doc(db, '/publicaciones', id), data).then(() => {
+                await setDoc(doc(db, '/publicaciones', id), data).then( async () => {
+                    await this.counter();
                     location.href = "/publicacion/"+id+"/editar";
                 })
                 
@@ -103,11 +133,11 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                             contenido:datos.contenido,
                             updatedAt:serverTimestamp(),
                             autor:datos.autor,
-                            publishAt:publishAt
+                            publishAt:publishAt,
+                            status:datos.status
                         }, 
                         { merge:true }
-                    ).then(() => { console.log("Ok") })
-                    .catch((e) => { console.log(e.message) });
+                    ).catch((e) => { console.log(e.message) });
                     
                 })
 
@@ -121,15 +151,14 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
             }
         },
 
-        async saveTags(tags){
-
-        },
-
         async delete(id){
             try {
                 this.loading = true;
-                console.log(id);
-                await deleteDoc(doc(db,'/publicaciones', id)).then(() => {
+                await deleteDoc(doc(db,'/publicaciones', id)).then(async() => {
+                    await deleteObject(ref(getStorage(), '/publicaciones/'+id)).catch((e) => {
+                        console.log(e.message);
+                    });
+                    await this.counter("-1");
                     location.href = "/publicaciones";
                 })
                 
@@ -171,6 +200,7 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                             publishAt:publicadoEn,
                             fecha:this.fechaFormateada(docSnap.data().createdAt),
                             publicada:this.fechaFormateada(docSnap.data().publishAt),
+                            status:docSnap.data().status,
                         };
                     }).catch(() => { this.setError("no se puso encontrar los datos del autor ") });
                 } else {
@@ -203,11 +233,15 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
             try {
                 this.loading = true;
                 this.allPubs = [];
-                 await getDocs(
-                    query(collection(db, '/publicaciones'), orderBy('createdAt') ),
-                    
-                 ).then(async (pubs) => {
+                await this.counter("get");
+                await getDocs(
+                    query(collection(db, '/publicaciones'), orderBy( "id", "asc" ) ),
+                ).then(async (pubs) => {
                     pubs.docs.forEach(async(pub) => {
+                        
+                        let pubAt = pub.data().publishAt.toDate();
+                        let programada = false;
+                        if(pubAt < new Date()){ programada = false; }else{ programada = true; }
 
                         await getDoc(doc(db,'/autores', pub.data().autor)).then((autorData) => {
                             this.allPubs.push({ 
@@ -220,6 +254,9 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                                     imagen:autorData.data().profilepic
                                 },
                                 fecha:this.fechaFormateada(pub.data().createdAt),
+                                publicarEn:this.fechaFormateada(pub.data().publishAt),
+                                status:pub.data().status,
+                                programada:programada,
                             });
                         }).catch(()=> { this.setError("El autor relacionado a esta nota no existe."); })
 
