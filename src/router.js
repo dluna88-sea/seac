@@ -34,14 +34,14 @@ const router = createRouter({
         { path:'/usuarios', name: 'Usuarios', component: () => import('./views/usuarios/Listado.vue'), beforeEnter:isAdmin },
         { path:'/usuario/:id', name: 'DetalleUsuario', component: () => import('./views/usuarios/Detalle.vue'), beforeEnter:isAdmin },
         { path:'/usuario/nuevo', name: 'NuevoUsuario', component: () => import('./views/usuarios/NuevoUsuario.vue'), beforeEnter:isAdmin },
-        { path:'/publicaciones', name: 'publicaciones', component: () => import('./views/publicaciones/Listado.vue'), beforeEnter:isAuth },
-        { path:'/publicacion/:id', name: 'DetallePublicacion', component: () => import('./views/publicaciones/Detalle.vue'), beforeEnter:isAuth },
-        { path:'/publicacion/nueva', name: 'NuevoPublicacion', component: () => import('./views/publicaciones/Nuevo.vue'), beforeEnter:isAuth },
-        { path:'/publicacion/:id/editar', name: 'EditarPublicacion', component: () => import('./views/publicaciones/Editar.vue'), beforeEnter:isAuth },
-        { path:'/publicaciones/autores', name: 'ListadoAutores', component: () => import('./views/autores/listado.vue'), beforeEnter:isAuth },
-        { path:'/publicaciones/autores/nuevo', name: 'NuevoAutor', component: () => import('./views/autores/nuevo.vue'), beforeEnter:isAuth },
-        { path:'/publicaciones/autor/:id', name: 'DetalleAutor', component: () => import('./views/autores/detalle.vue'), beforeEnter:isAuth },
-        { path:'/publicaciones/autor/:id/editar', name: 'EditarAutor', component: () => import('./views/autores/editar.vue'), beforeEnter:isAuth },
+        { path:'/publicaciones', name: 'publicaciones', component: () => import('./views/publicaciones/Listado.vue'), beforeEnter:isAdmin },
+        { path:'/publicacion/:id', name: 'DetallePublicacion', component: () => import('./views/publicaciones/Detalle.vue'), beforeEnter:isAdmin },
+        { path:'/publicacion/nueva', name: 'NuevoPublicacion', component: () => import('./views/publicaciones/Nuevo.vue'), beforeEnter:isAdmin },
+        { path:'/publicacion/:id/editar', name: 'EditarPublicacion', component: () => import('./views/publicaciones/Editar.vue'), beforeEnter:isAdmin },
+        { path:'/publicaciones/autores', name: 'ListadoAutores', component: () => import('./views/autores/listado.vue'), beforeEnter:isAdmin },
+        { path:'/publicaciones/autores/nuevo', name: 'NuevoAutor', component: () => import('./views/autores/nuevo.vue'), beforeEnter:isAdmin },
+        { path:'/publicaciones/autor/:id', name: 'DetalleAutor', component: () => import('./views/autores/detalle.vue'), beforeEnter:isAdmin },
+        { path:'/publicaciones/autor/:id/editar', name: 'EditarAutor', component: () => import('./views/autores/editar.vue'), beforeEnter:isAdmin },
 
         
         //Error 404
