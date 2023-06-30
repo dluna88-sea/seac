@@ -19,6 +19,7 @@ let bread = [
     { href:"/", class:"", text:"Panel" },
     { href:"/transparencia", class:"", text:"Transparencia" },
 ]
+let enlace = "#";
 
 async function getMod(){ 
     
@@ -139,7 +140,7 @@ const reorder = async (uid, to, secID) => {
 
             <PageTitle 
                 :subtLink="true" 
-                :link="`https://www.seacoahuila.org.mx/transparencia/${modulo.data.articulo}-${modulo.data.fraccion}`" 
+                :link="modulo.enlace" 
                 :subtitulo="`Artículo ${modulo.data.articulo} - fracción: ${modulo.data.fraccion}`" 
                 :bread="bread">
                 

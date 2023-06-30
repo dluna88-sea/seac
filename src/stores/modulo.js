@@ -31,6 +31,11 @@ export const useModuloStore = defineStore('SingleModulo',{
                 this.loading = true;
                 await getDoc(doc(db,'modulos',id)).then( async (mod) => { 
                     this.data = mod.data();
+                    if(mod.data().articulo == 'CPC'){
+                        this.enlace = 'https://cpccoahuila.org.mx/transparencia/'+mod.data().articulo+'-'+mod.data().fraccion;
+                    }else{
+                        this.enlace = 'https://seacoahuila.org.mx/transparencia/'+mod.data().articulo+'-'+mod.data().fraccion;
+                    }
                     this.id = mod.id;
                     this.descripcion = mod.data().descripcion;
                     this.nota = mod.data().nota;
