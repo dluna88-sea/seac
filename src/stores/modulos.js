@@ -45,6 +45,23 @@ export const useModulosStore = defineStore('pluralModulos',{
                 )).then(async(user) => {
                     
                     let rol = user.docs[0].data().rol;
+    
+                    let dpts = [];
+                    
+                    await getDocs(query(
+                        collection(db, 'departamentos'), 
+                        where('titular', "==", user.docs[0].id),
+                    )).then((r) => {
+
+                        if(r.docs.length == 0){
+                            this.setError('NO TIENES MODULOS ASIGNADOS')
+                        }else{
+                            r.docs.forEach((d) => {
+                                dpts.push(d.id);
+                            });
+                        }
+
+                    })
 
                     await getDocs(query(
                         collection(db,'modulos'),
@@ -53,7 +70,9 @@ export const useModulosStore = defineStore('pluralModulos',{
                         
                         modulos.docs.forEach((m) => {
                             
-                            if(m.data().canEdit != 0 || rol == "admin"){
+                            
+
+                            if(m.data().canEdit != 0 || rol == "admin" || dpts.includes(m.data().encargado)){
                                 this.listado.push({ id:m.id, ...m.data() });
                                 switch(m.data().articulo){
                                     case "20": this.art20.push({ id:m.id, ...m.data() }); break;
@@ -78,7 +97,7 @@ export const useModulosStore = defineStore('pluralModulos',{
                 this.loading = false;
             }
         },
-        
+
         setError(msg = ''){
             this.message.error = true;
             this.message.success = false;
