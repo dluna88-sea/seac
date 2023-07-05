@@ -10,7 +10,7 @@ const dptos = useDepartamentosStore();
 const modulos = useModulosStore();
 
 async function getDatos(){
-    await modulos.get();
+    await modulos.all();
     await dptos.getAll();
     await modulos.getArticulos();
 }

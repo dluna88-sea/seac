@@ -6,6 +6,7 @@ import UpdateModTituloModal from '../../components/modals/secciones/UpdateModTit
 import DeleteModuloModal from '../../components/modals/DeleteModuloModal.vue';
 import DeletePDescripcionModal from '../../components/modals/DeletePDescripcionModal.vue';
 import AsignarEncargado from '../../components/modals/AsignarEncargado.vue';
+import AsignarPermisos from '../../components/modals/AsignarPermisos.vue';
 import { useCurrentUserStore } from '../../stores/currentUser';
 import { useModuloStore } from '../../stores/modulo';
 import { useDepartamentosStore } from '../../stores/departamentos';
@@ -176,6 +177,10 @@ const reorder = async (uid, to, secID) => {
                             <Icon name="calendar2-check" Class="mx-1" /> Última actualización: {{ modulo.data.actualizacion }} &nbsp;
                             <span class="badge float-end shadow-sm text-bg-primary cursorHand" style="font-weight:400" @click="updateFecha()" > <Icon name="clock" /> &nbsp;Marcar actualización</span>
                         </div>
+                        <div v-if="currentUser.rol == 'admin'" class="list-group-item bg-light">
+                            <Icon name="people-fill" Class="mx-1" /> Usuarios con permiso de edición ({{ modulo.canEdit.length }}): &nbsp;
+                            <span class="badge float-end shadow-sm text-bg-primary cursorHand" style="font-weight:400" data-bs-toggle="modal" data-bs-target="#asignarPermisos" > <Icon name="key-fill" /> &nbsp;Editar permisos</span>
+                        </div>
                     </div>
 
                 </div>
@@ -187,6 +192,11 @@ const reorder = async (uid, to, secID) => {
                 :titulo="`${modulo.data.titulo}`"
                 :encargado="`${modulo.encargado} ${modulo.cargo}`"
             ></AsignarEncargado>
+            <AsignarPermisos
+                :modID="route.params.id"
+                :canEdit="modulo.canEdit"
+                :encargado="{ nombre:modulo.encargado, uid:modulo.encargadoID }"
+            ></AsignarPermisos>
             </div>
 
 

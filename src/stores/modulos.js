@@ -26,7 +26,7 @@ export const useModulosStore = defineStore('pluralModulos',{
     }),
     actions:{
 
-        async get(){
+        async all(){
             try{
                 this.loading = true;
 
@@ -37,57 +37,23 @@ export const useModulosStore = defineStore('pluralModulos',{
                 this.art70 = [];
                 this.artLGCG = [];
                 this.artCPC = [];
+                
 
-                const user = await getDocs(query(collection(db,'usuarios'), where( 'uid', "==", auth.currentUser.uid ))).catch((e) => {
-                    console.log(e.message);
-                })
-                if(user.docs[0].data().rol == "admin"){
-
-                    await getDocs(
-                        query( collection(db,'modulos'), orderBy('uid', 'asc') ) 
-                    ).then((r) => {
-
-                        r.docs.forEach((m) => {
-                            this.listado.push({ id:m.id, ...m.data() });
-                            switch(m.data().articulo){
-                                case "20": this.art20.push({ id:m.id, ...m.data() }); break;
-                                case "21": this.art21.push({ id:m.id, ...m.data() }); break;
-                                case "25": this.art25.push({ id:m.id, ...m.data() }); break;
-                                case "70": this.art70.push({ id:m.id, ...m.data() }); break;
-                                case "LGCG": this.artLGCG.push({ id:m.id, ...m.data() }); break;
-                                case "CPC": this.artCPC.push({ id:m.id, ...m.data() }); break;
-                            }
-                        })
-
-                    }).catch((e) => { this.setError(e.message); })
-
-                }else if(user.docs.length == 1){
-                    const rol = user.docs[0].data().rol;
-                    const dpts = [];
-                    await getDocs(query(
-                        collection(db, 'departamentos'), 
-                        where('titular', "==", user.docs[0].id)
-                    )).then((r) => {
-
-                        if(r.docs.length == 0){
-                            this.setError('NO TIENES MODULOS ASIGNADOS')
-                        }else{
-                            r.docs.forEach((d) => {
-                                dpts.push(d.id)
-                            });
-                        }
-
-                    }).catch((e) => {
-                        console.log(e.message);
-                    })
+                await getDocs(query(
+                    collection(db,'usuarios'),
+                    where('uid','==',auth.currentUser.uid)
+                )).then(async(user) => {
                     
+                    let rol = user.docs[0].data().rol;
 
-                    await getDocs(
-                        query( collection(db,'modulos'), orderBy('uid', 'asc') ) 
-                    ).then((r) => {
-
-                        r.docs.forEach((m) => {
-                            if(dpts.includes(m.data().encargado)){
+                    await getDocs(query(
+                        collection(db,'modulos'),
+                        orderBy('uid', 'asc'),
+                    )).then((modulos) => {
+                        
+                        modulos.docs.forEach((m) => {
+                            
+                            if(m.data().canEdit != 0 || rol == "admin"){
                                 this.listado.push({ id:m.id, ...m.data() });
                                 switch(m.data().articulo){
                                     case "20": this.art20.push({ id:m.id, ...m.data() }); break;
@@ -100,14 +66,17 @@ export const useModulosStore = defineStore('pluralModulos',{
                             }
 
                         })
+                        
+                    })
 
-                    }).catch((e) => { this.setError(e.message); })
-                }else{
-                    this.setError('No se pudo obtener el rol de usuario. Inicia Sesión nuevamente');
-                }
+                })
+                
 
-            }catch(e) { this.setError(e.message) }
-            finally{ this.loading=false; }
+            }catch(e){ 
+                this.setError(e);
+            } finally{ 
+                this.loading = false;
+            }
         },
         
         setError(msg = ''){

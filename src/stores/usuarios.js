@@ -12,7 +12,9 @@ export const useUsuariosStore = defineStore('UsuariosStore',{
             text:'',
             place:null
         },
+        listFromArray:[],
         listado:[],
+        listExcept:[],
         datos:{},
         modulos:[]
     }),
@@ -41,6 +43,51 @@ export const useUsuariosStore = defineStore('UsuariosStore',{
             } catch (error) {
                 this.setError(error.message);
             } finally {
+                this.loading = false;
+            }
+        },
+
+        async getAllExcept(list = []){
+            try{
+                this.loading = true;
+                this.listExcept = [];
+                
+                await getDocs(collection(db,'usuarios')).then((users) => {
+                    users.docs.forEach((user) => { 
+                        if(!list.includes(user.data().uid)){
+                            this.listExcept.push({ id:user.id, ...user.data() });
+                        }
+                    })
+                })
+
+            }catch(e){
+                this.setError(e);
+                console.log(e)
+            }finally{
+                this.loading = false;
+            }
+        },
+
+        async getFromList(list = []){
+            try{
+                this.loading = true;
+                this.listFromArray = [];
+
+                list.forEach(async(uid) => {
+                    await getDocs(query(
+                        collection(db,'usuarios'),
+                        where('uid','==',uid)
+                    )).then((datos) => {
+                        datos.docs.forEach((doc) => {
+                            this.listFromArray.push({ id: doc.id, ...doc.data() })
+                        });
+                    })
+                })
+
+            }catch(e){
+                this.setError(e);
+                console.log(e)
+            }finally{
                 this.loading = false;
             }
         },

@@ -7,7 +7,7 @@ const modulos = useModulosStore();
 async function traerDatos(){
     if(currentUser.id == null){ await currentUser.getDatos(); }
     
-    modulos.get()
+    modulos.all()
 
 }
 

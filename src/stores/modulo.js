@@ -17,12 +17,14 @@ export const useModuloStore = defineStore('SingleModulo',{
         },
         data:{},
         encargado:null,
+        encargadoID:null,
         cargo:null,
         id:null,
         nota:'',
         descripcion:[],
         secciones:[],
-        articulos:[]
+        articulos:[],
+        canEdit:[],
     }),
     actions:{
 
@@ -40,7 +42,10 @@ export const useModuloStore = defineStore('SingleModulo',{
                     this.descripcion = mod.data().descripcion;
                     this.nota = mod.data().nota;
                     const dptID = mod.data().encargado;
-
+                    
+                    this.canEdit = []
+                    if(mod.data().canEdit != undefined){ this.canEdit = mod.data().canEdit; }
+                    
                     this.secciones = [];
                     await getDocs(
                         query(
@@ -59,6 +64,7 @@ export const useModuloStore = defineStore('SingleModulo',{
                         const titular = await getDoc(doc(db,'usuarios',dpto.data().titular));
                         if(titular.exists){
                             this.encargado = titular.data().nombre;
+                            this.encargadoID = titular.data().uid;
                             this.cargo = titular.data().cargo + " de " + dpto.data().nombre
                         }else{
                             this.setError('No se encontró al usuario con id: '+dpto.data().titular)
