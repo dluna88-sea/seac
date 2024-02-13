@@ -116,6 +116,18 @@ const bread = [
                     </div>
                 </div>
 
+                <div class="row mb-2" v-if="modulos.monitoreo.length > 0">
+                    <div class="col" >
+                        <h3>Monitoreo Legislativo</h3>
+                        <div class="list-group shadow-sm mb-4 mt-3">
+                            <div class="list-group-item cursorHand" v-for="mod in modulos.monitoreo" :onclick="`javascript:location.href='/transparencia/${mod.id}'`">
+                                {{ mod.fraccion }} - {{ mod.titulo }}
+                            </div>
+                        </div>
+                        <hr class="my-2">
+                    </div>
+                </div>
+
             </div>
 
         </div>

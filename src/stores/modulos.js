@@ -37,6 +37,7 @@ export const useModulosStore = defineStore('pluralModulos',{
                 this.art70 = [];
                 this.artLGCG = [];
                 this.artCPC = [];
+                this.monitoreo = [];
                 
 
                 await getDocs(query(
@@ -69,8 +70,6 @@ export const useModulosStore = defineStore('pluralModulos',{
                     )).then((modulos) => {
                         
                         modulos.docs.forEach((m) => {
-                            
-                            
 
                             if(m.data().canEdit != 0 || rol == "admin" || dpts.includes(m.data().encargado)){
                                 this.listado.push({ id:m.id, ...m.data() });
@@ -81,6 +80,7 @@ export const useModulosStore = defineStore('pluralModulos',{
                                     case "70": this.art70.push({ id:m.id, ...m.data() }); break;
                                     case "LGCG": this.artLGCG.push({ id:m.id, ...m.data() }); break;
                                     case "CPC": this.artCPC.push({ id:m.id, ...m.data() }); break;
+                                    case "monitoreo-legislativo": this.monitoreo.push({ id:m.id, ...m.data() }); break;
                                 }
                             }
 
