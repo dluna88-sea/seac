@@ -71,7 +71,7 @@ export const useModulosStore = defineStore('pluralModulos',{
                         
                         modulos.docs.forEach((m) => {
 
-                            if(m.data().canEdit != 0 || rol == "admin" || dpts.includes(m.data().encargado)){
+                            if(m.data().canEdit.includes(auth.currentUser.uid) || rol == "admin" || dpts.includes(m.data().encargado)){
                                 this.listado.push({ id:m.id, ...m.data() });
                                 switch(m.data().articulo){
                                     case "20": this.art20.push({ id:m.id, ...m.data() }); break;
