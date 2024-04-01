@@ -103,7 +103,7 @@ let editarDatos = async () => {
         profilepic:imagen,
         links:links
     }
-
+    
     await autores.update(route.params.id, datos)
 }
 

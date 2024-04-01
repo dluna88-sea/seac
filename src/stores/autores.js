@@ -108,7 +108,19 @@ export const useAutoresStore = defineStore('autoresStore',{
             try {
                 
                 this.loading = true;
+                let data;
+                await getDoc(doc(db, '/autores', id)).then(async (currentData) => {
+                    data = currentData.data();
+                })
                 
+                if(typeof newData.profilepic !== "string"){
+
+                    let imgName = "imagen_"+id+"."+newData.profilepic.type.split("/")[1];
+                    let upldRef = ref(getStorage(), '/publicaciones/autores/'+imgName);
+                    await uploadBytes(upldRef, newData.profilepic );
+                    newData.profilepic = await getDownloadURL(upldRef);
+                }
+
                 await setDoc(doc(db,'/autores',id),newData,{ merge:true }).then(() => {
                     this.setSuccess("Datos actualizados correctamente");
                     location.href = "/publicaciones/autor/"+id;
