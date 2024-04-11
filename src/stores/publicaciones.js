@@ -73,12 +73,25 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                     }
                 })
                 let img = 'https://firebasestorage.googleapis.com/v0/b/transparenciaseac.appspot.com/o/publicaciones%2Fstatic%2Fdefault-img.gif?alt=media&token=08f789f9-4bfc-44a9-9533-a2933847ece5&_gl=1*19trn8a*_ga*MTE3MjQ1NzAyOC4xNjg1OTgxNDcw*_ga_CW55HF8NVT*MTY4NjU5MzE2OS4xNi4xLjE2ODY1OTMyOTQuMC4wLjA.'
-                
+                let imgName = '';
+
                 if(datos.imagen != undefined){
-                    let imgName = "imagen_"+id+"."+datos.imagen.type.split("/")[1];
+                    imgName = "imagen_"+id+"."+datos.imagen.type.split("/")[1];
                     let upldRef = ref(getStorage(), '/publicaciones/'+id+'/'+imgName);
                     await uploadBytes(upldRef, datos.imagen );
                     img = await getDownloadURL(upldRef);
+                }
+
+                let contenido = "";
+                let docu = false;
+                let docName = "";
+                console.log(datos.documento);
+                if(datos.documento != undefined){
+                    docName = 'documento_'+id+'.'+datos.documento.type.split('/')[1];
+                    let docRef = ref(getStorage(), 'publicaciones/'+id+'/documento/'+docName);
+                    await uploadBytes(docRef, datos.documento);
+                    contenido = await getDownloadURL(docRef);
+                    docu = true;
                 }
                 
                 let data = {
@@ -86,7 +99,10 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                     titulo: datos.titulo,
                     excerpt: datos.excerpt,
                     autor: datos.autor,
-                    contenido: "",
+                    contenido: contenido,
+                    documento: docu,
+                    docName:docName,
+                    imgName:imgName,
                     etiquetas: [],
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp(),
@@ -115,6 +131,8 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                 await getDoc(doc(db, '/publicaciones', id)).then(async (pub) => {
                     let etiquetas = datos.etiquetas.split(", ");
                     let imgUrl = pub.data().imagen;
+                    let docu = pub.data().documento;
+                    let docName = pub.data().docName;
                     let publishAt = new Date(datos.publishAt);
                         
 
@@ -124,11 +142,22 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                         await uploadBytes(upldRef, datos.imagen );
                         imgUrl = await getDownloadURL(upldRef);
                     }
+
+                    if(datos.documento != undefined){
+                        docName = 'documento_'+id+'.'+datos.documento.type.split('/')[1];
+                        let docRef = ref(getStorage(), 'publicaciones/'+id+'/documento/'+docName);
+                        await uploadBytes(docRef, datos.documento);
+                        contenido = await getDownloadURL(docRef);
+                        docu = true;
+                    }
+                    console.log(datos.contenido);
                     await setDoc(doc(db, '/publicaciones', id),
                         {
                             titulo: datos.titulo,
                             excerpt: datos.excerpt,
                             etiquetas: etiquetas,
+                            documento: docu,
+                            docName:docName,
                             imagen:imgUrl,
                             contenido:datos.contenido,
                             updatedAt:serverTimestamp(),
@@ -151,13 +180,22 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
             }
         },
 
-        async delete(id){
+        async delete(id,docName){
             try {
                 this.loading = true;
                 await deleteDoc(doc(db,'/publicaciones', id)).then(async() => {
-                    await deleteObject(ref(getStorage(), '/publicaciones/'+id)).catch((e) => {
+
+                    await deleteObject(ref(getStorage(), '/publicaciones/'+id+'/imagen_'+id+'.jpeg')).catch((e) => {
                         console.log(e.message);
                     });
+
+                    if(docName != ''){
+                        console.log('/publicaciones/'+id+'/documento/'+docName);
+                        // await deleteObject(ref(getStorage()), '/publicaciones/'+id+'/documento/'+docName).catch((e) => {
+                        //     console.log(e.message);
+                        // });
+                    }
+
                     await this.counter("-1");
                     location.href = "/publicaciones";
                 })
@@ -190,6 +228,9 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                             contenido:docSnap.data().contenido,
                             titulo:docSnap.data().titulo,
                             imagen:docSnap.data().imagen,
+                            documento:docSnap.data().documento,
+                            docRoute:docSnap.data().docRoute,
+                            docName:docSnap.data().docName,
                             etiquetas:docSnap.data().etiquetas,
                             autor:{
                                 id:docSnap.data().autor,

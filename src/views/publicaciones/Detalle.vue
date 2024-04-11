@@ -36,7 +36,7 @@ getDetail()
                                 <Icon name="x" /><small style="margin-left:5px">Eliminar</small>
                             </a>
                         </div>
-                        <EliminarPublicacion :pubID="route.params.id"></EliminarPublicacion>
+                        <EliminarPublicacion :pubID="route.params.id" :docName="pub.singlePub.docName"></EliminarPublicacion>
                     </div>
                 </div>
                 <hr>
@@ -57,10 +57,14 @@ getDetail()
                         <hr>
                     </div>
                 </div>
-                <div class="row">
+                <div v-if="pub.singlePub.documento == false" class="row">
                     <div id="vueEditor" class="col" v-html="pub.singlePub.contenido"></div>
                 </div>
-                
+                <div v-else class="row">
+                    <a target="_blank" :href="pub.singlePub.contenido" class="btn btn-primary">
+                        <Icon name="file-earmark-richtext"></Icon> Abrir documento
+                    </a>
+                </div>
                 <div class="row">
                     <div class="col">
                         <hr>

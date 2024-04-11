@@ -37,6 +37,7 @@ const router = createRouter({
         { path:'/publicaciones', name: 'publicaciones', component: () => import('./views/publicaciones/Listado.vue'), beforeEnter:isAdmin },
         { path:'/publicacion/:id', name: 'DetallePublicacion', component: () => import('./views/publicaciones/Detalle.vue'), beforeEnter:isAdmin },
         { path:'/publicacion/nueva', name: 'NuevoPublicacion', component: () => import('./views/publicaciones/Nuevo.vue'), beforeEnter:isAdmin },
+        { path:'/publicacion/subir', name: 'SubirPublicacion', component: () => import('./views/publicaciones/Subir.vue'), beforeEnter:isAdmin },
         { path:'/publicacion/:id/editar', name: 'EditarPublicacion', component: () => import('./views/publicaciones/Editar.vue'), beforeEnter:isAdmin },
         { path:'/publicaciones/autores', name: 'ListadoAutores', component: () => import('./views/autores/listado.vue'), beforeEnter:isAdmin },
         { path:'/publicaciones/autores/nuevo', name: 'NuevoAutor', component: () => import('./views/autores/nuevo.vue'), beforeEnter:isAdmin },

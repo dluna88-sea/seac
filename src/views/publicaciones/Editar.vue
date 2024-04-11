@@ -17,12 +17,18 @@ getDetail()
 let savePublication = async() => {
 
     let imagen = document.querySelector("#imagen").files[0];
-
+    let newDoc = document.querySelector("#uploadFile").files[0];
+    let content = pub.singlePub.contenido;
+    
+    if(pub.singlePub.documento == false){
+        content = tinymce.get("contenido").getContent();
+    }
     let datos = {
-        contenido: tinymce.get("contenido").getContent(),
+        contenido: content,
         excerpt: document.querySelector("#excerpt").value,
         titulo: document.querySelector("#titulo").value,
         imagen: imagen,
+        documento:newDoc,
         etiquetas:document.querySelector("#etiquetas").value,
         autor:document.querySelector("#autores").value,
         publishAt:document.querySelector("#publishAt").value,
@@ -84,7 +90,7 @@ function clearPicture(){
                 </div>
             </div>
 
-            <div class="row ">
+            <div v-if="pub.singlePub.documento == false" class="row ">
                 <div class="col">
                     <label>Contenido:</label>
                     <editor api-key="6dbty1ge6o3ygx3nafzaz6cv5qeersdb4nfphoimlyba0mp2"
@@ -105,9 +111,17 @@ function clearPicture(){
                     
                 </div>
             </div>
+            
 
             <div class="row">
                 <div class="col-sm-12 col-md-6 mt-3">
+                    <div v-if="pub.singlePub.documento == true">
+                        <label><Icon name="file-earmark-richtext" /> Ver documento:</label> <a  target="_blank" :href="pub.singlePub.contenido">{{ pub.singlePub.titulo }}</a>
+                        <br><br><label><Icon name="shuffle" /> Reemplazar documento:</label> 
+                        <input type="file" class="form-control mb-3" accept="application/pdf" id="uploadFile" name="documento" aria-describedby="uploadFileAddon" aria-label="Upload">
+                        
+                        <hr>
+                    </div>
                     <label>Etiquetas (separadas por coma):</label>
                     <textarea name="tags" id="etiquetas" class="form-control" rows="2">{{ pub.etiquetas  }}</textarea>
                     <label class="mt-2">Autor: </label>

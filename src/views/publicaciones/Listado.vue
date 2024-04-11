@@ -22,24 +22,31 @@ const bread = [
         </PageTitle>
         
         <div class="container">
-            <div class="row">
+            <div class="row mb-4">
                 <div class="col">
-                    <nav class="nav">
-                        <a class="nav-link" href="publicacion/nueva"><Icon name="file-plus" Class="mx-2" />Nueva</a>
-                        <a class="nav-link" href="publicaciones/autores"><Icon name="people-fill" Class="mx-2" />Autores</a>
-                        <!-- <a class="nav-link" href="#"><Icon name="tag-fill" Class="mx-2" />Etiquetas</a> -->
-                    </nav>
+                    
+                    <ul class="nav">
+                        <li class="nav-item dropdown">
+                            <a class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <Icon name="file-plus" Class="mx-2" />Nueva
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="publicacion/nueva"><Icon name="pencil-square" Class="mx-2" />Escribir</a></li>
+                                <li><a class="dropdown-item" href="publicacion/subir"><Icon name="file-earmark-arrow-up" Class="mx-2" />Subir documento</a></li>
+                            </ul>
+                        </li>
+                        <a class="btn nav-item" href="publicaciones/autores"><Icon name="people-fill" Class="mx-2" />Autores</a>
+                        
+                    </ul>
                 </div>
             </div>
         </div>
-
-        <hr>
 
         <div v-if="publicaciones.allPubs.length == 0" class="container mb-5 pt-5 mt-5">
             <h1 style="color:#00000028" class="text-center">NO HAY PUBLICACIONES</h1>
         </div>
 
-        <div v-else class="container mb-5">
+        <div v-else class="container pb-5 mb-5">
             <div class="row g-4">
                 
                 <div v-for="pub in publicaciones.allPubs" class="col-12 col-md-6 col-lg-4 col-xl-3" >
@@ -76,7 +83,7 @@ const bread = [
 
 <style scoped>
 .card-imageprofile{
-    height: 200px; 
+    height: 180px; 
     background-position:center; 
     background-size: cover;
     border-radius: 5px 5px 0 0;

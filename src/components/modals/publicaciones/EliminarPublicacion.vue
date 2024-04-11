@@ -5,12 +5,17 @@ import { usePublicacionesStore } from '../../../stores/publicaciones';
         pubID:{
             type:String,
             required:true
+        },
+        docName:{
+            type:String,
+            required:false,
+            default:""
         }
     });
 
     const deletePub = async() => {
         const pubs = usePublicacionesStore()
-        await pubs.delete(props.pubID);
+        await pubs.delete(props.pubID, props.docName);
     }
 </script>
 
