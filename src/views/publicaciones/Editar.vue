@@ -17,7 +17,10 @@ getDetail()
 let savePublication = async() => {
 
     let imagen = document.querySelector("#imagen").files[0];
-    let newDoc = document.querySelector("#uploadFile").files[0];
+    let newDoc = null;
+    if(pub.singlePub.documento){
+        newDoc = document.querySelector("#uploadFile").files[0];
+    }
     let content = pub.singlePub.contenido;
     
     if(pub.singlePub.documento == false){
