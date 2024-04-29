@@ -1,176 +1,128 @@
 <script setup>
-import { useCurrentUserStore } from '../stores/currentUser';
+import { ref } from 'vue';
+import { useAuthUserStore } from '../stores/authUser';
+import { auth } from '../firebase';
 
-const currentUser = useCurrentUserStore();
+const authUser = useAuthUserStore();
+
+let displayName = ref(authUser.nombre);
+let userEmail = ref(authUser.email);
+let messageType = "error";
+let message = "";
+let showMessage = false;
+let dismiss = false;
 
 const bread = [
     { text:'Panel', href:'/', class:'' },
     { text:'Perfil de usuario', href:'', class:'active' }
 ];
 
-async function getDatos(){
-    if(currentUser.id == null){ await currentUser.getDatos(); }
-}
-getDatos();
 
-const updateNombre = async () => {
-    currentUser.message.place = 'nombre';
-    const name = document.forms['updateNombre']['nombre'].value.trim();
-    if(name != currentUser.nombre){
-        await currentUser.update({nombre:name})
-        location.reload()
+const updateName = async () => {
+    let nombre = displayName.value.trim()
+    if (nombre === '') {
+        message = 'El nombre no puede estar vacío.';
+        showMessage = true;
+        dismiss = true;
+        return;
     }
-}
 
+    await authUser.updateName(nombre);
+    
+    message = authUser.message.text;
+    authUser.message.error ? messageType = "error" : messageType = "success";
+    showMessage = true;
+    dismiss = true;
+    
+};
 
 const updateEmail = async () => {
-    currentUser.message.place = 'email'
-    const mail = document.forms['updateEmail']['email'].value.trim();
-    if(mail != currentUser.email){
-        await currentUser.updateEmail({email:mail})
-        location.reload()
+    let correo = userEmail.value.trim()
+    if (correo === '') {
+        message = 'El nombre no puede estar vacío.';
+        showMessage = true;
+        dismiss = true;
+        return;
     }
-}
 
-const updatePwd = async () => {
-    currentUser.message.place = 'password'
-
-    const pwd = document.forms['updatePwd']['password'].value.trim();
-    const pwdConfirm = document.forms['updatePwd']['password2'].value.trim();
-    const currentPwd = document.forms['updatePwd']['current_password'].value.trim();
-
+    await authUser.updateEmail(correo);
     
-    await currentUser.updatePwd(pwd, pwdConfirm, currentPwd)
-    document.forms['updatePwd']['password'].value = "";
-    document.forms['updatePwd']['password2'].value = "";
-    setTimeout(location.reload(),1500);
-}
-
+    message = authUser.message.text;
+    authUser.message.error ? messageType = "error" : messageType = "success";
+    showMessage = true;
+    dismiss = true;
+    
+};
 </script>
 
 <template>
-    <DefaultPage>
+    <DefaultPage :nav="false">
 
-        <div class="row">
-            <Error v-if="currentUser.message.error && currentUser.message.place == null">
-                {{ currentUser.message.text }}
-            </Error>
-        </div>
-        <div class="row">
-            <Success v-if="currentUser.message.success && currentUser.message.place == null">
-                {{ currentUser.message.text }}
-            </Success>
-        </div>
+        <Message v-if="showMessage" :dismiss="dismiss" :type="messageType">{{ message }}</Message>
 
         <PageTitle :bread="bread">
             <Icon name="person-fill" /> &nbsp;Perfil de usuario
         </PageTitle>
 
-        <Loading v-if="currentUser.loading" />
+        <Loading v-if="authUser.loading" />
         <div v-else class="mb-5">
             
+
             <div class="row">
-                <div class="col text-center py-4">
-                    <h3>Actualizar datos personales</h3>
+                
+
+                <div class="col">
+                    <form name="updateName" @submit.prevent="updateName" >
+
+                        <label for="displayName">Nombre: <span style="color:red">*</span></label>
+                        <div class="input-group mb-3">
+                            <input type="text" name="displayName" required v-model="displayName" ref="displayNameInput" class="form-control" >
+                            <button 
+                                class="btn btn-outline-secondary" 
+                                type="submit" id="updateName">
+                                Actualizar
+                            </button>
+                        </div>
+                        
+                    </form>
                 </div>
+
             </div>
+
+            <hr>
+
             <div class="row">
+                <div class="col-12 my-4">
 
-                <div class="col-md-6 mt-3 px-lg-5">
-                    <div class="my-3">
-                        <Error v-if="currentUser.message.error && currentUser.message.place == 'nombre'">
-                            {{ currentUser.message.text }}
-                        </Error>
-
-                        <Success v-if="currentUser.message.success && currentUser.message.place == 'nombre'">
-                            {{ currentUser.message.text }}
-                        </Success>
-                    </div>
-                    <form @submit.prevent="updateNombre()" name="updateNombre" class="form-floating">
-
-                        <input type="text" class="form-control shadow-sm" name="nombre" id="nombre" placeholder="Escribe tu nombre completo" :value="currentUser.nombre">
-                        <label for="nombre">Nombre</label>
-                        <div class="d-grid mt-2">
-                            <button class="btn btn-secondary block">Actualizar</button>
+                    <div class="card" style="border-radius: 6px; border:solid 1px #ccc; background-color: rgb(237 237 237);">
+                        <div class="card-header">
+                            Cambiar contraseña:
                         </div>
-
-                    </form>
-                </div>
-                <div class="col-md-6 mt-3 px-lg-5">
-                    <div class="my-3">
-                        <Error v-if="currentUser.message.error && currentUser.message.place == 'email'">
-                            {{ currentUser.message.text }}
-                        </Error>
-
-                        <Success v-if="currentUser.message.success && currentUser.message.place == 'email'">
-                            {{ currentUser.message.text }}
-                        </Success>
-                    </div>
-                    <form @submit.prevent="updateEmail()" name="updateEmail" class="form-floating">
-
-
-                        <input name="email" type="email" class="form-control shadow-sm" id="email" placeholder="Escribe tu dirección correo electrónico" :value="currentUser.email">
-                        <label for="email">Correo electrónico</label>
-                        <div class="d-grid mt-2">
-                            <button class="btn btn-secondary block">Actualizar</button>
-                        </div>
-                    </form>
-                </div>
-                
-                
-                <div class="col-md-12 mt-5 px-lg-5 mb-5">
-                    <Card>
-                        <CardHeader>Actualizar contraseña</CardHeader>
-                        <CardBody>
-                            
-                            <div class="my-3">
-                                <Error v-if="currentUser.message.error && currentUser.message.place == 'password'">
-                                    {{ currentUser.message.text }}
-                                </Error>
-
-                                <Success v-if="currentUser.message.success && currentUser.message.place == 'password'">
-                                    {{ currentUser.message.text }}
-                                </Success>
-                            </div>
-                            
-                            <ul>
-                                <li>La contraseña debe tener mínimo 6 caractéres y máximo 8</li>
-                            </ul>
-                            <form @submit.prevent="updatePwd()" name="updatePwd" class="my-3">
-                                <div class="row">
-                                    <div class="col-md-6 col-sm-12">
-                                        <div class="form-floating mb-3">
-                                            <input required type="password" class="form-control" id="password" name="password" placeholder="Escribe una contraseña">
-                                            <label for="password">Nueva contraseña</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-sm-12">
-                                        <div class="form-floating">
-                                            <input required type="password" class="form-control" id="password2" name="password2" placeholder="Confirma la contraseña">
-                                            <label for="password2">Confirma tu nueva contraseña</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-sm-12">
-                                        <div class="form-floating">
-                                            <input required type="password" class="form-control" id="current_password" name="current_password" placeholder="Escribe tu contraseña actual">
-                                            <label for="password2">Contraseña actual</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-sm-12">
-                                        <div class="d-grid mt-2">
-                                            <button class="btn btn-secondary block">Actualizar</button>
-                                        </div>
-                                    </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <label for="new_password">Nueva contraseña:</label>
+                                    <input type="password" required class="form-control my-2" name="new_password" id="new_password">
                                 </div>
-                                
-                                
+                                <div class="col-12 col-md-6">
+                                    <label for="password_confirm">Confirmar contraseña:</label>
+                                    <input type="password" required class="form-control my-2" name="password_confirm" id="password_confirm">
+                                </div>
+                            </div>
 
-                                
-                            </form>
-                        </CardBody>
-                    </Card>
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <label for="password">Nueva contraseña:</label>
+                                    <input type="password" required class="form-control my-2" name="password" id="password">
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <button class="btn btn-outline-secondary float-end">Actualizar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                 </div>
-
             </div>
 
         </div>

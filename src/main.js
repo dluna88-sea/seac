@@ -7,9 +7,7 @@ import Editor from '@tinymce/tinymce-vue';
 
 //Importar componentes globales:
 import Loading from './components/Alerts/Loading.vue';
-import Success from './components/Alerts/Success.vue';
-import Error from './components/Alerts/Error.vue';
-import Info from './components/Alerts/Info.vue';
+import Message from './components/Alerts/Message.vue';
 import Card from './components/Cards/Card.vue';
 import CardHeader from './components/Cards/CardHeader.vue';
 import CardBody from './components/Cards/CardBody.vue';
@@ -19,7 +17,6 @@ import MainNavbar from './components/MainNavbar.vue';
 import BigCard from './components/Cards/BigCard.vue';
 import Icon from './components/Icon.vue';
 import DefaultPage from './components/DefaultPage.vue';
-import ModalDeleteFile from './components/modals/ModalDeleteFile.vue';
 
 
 const app = createApp(App);
@@ -30,9 +27,7 @@ app.use(router);
 
 //Registrar componentes
 app.component("Loading", Loading);
-app.component("Success", Success);
-app.component("Error", Error);
-app.component("Info", Info);
+app.component("Message", Message);
 app.component("Card", Card);
 app.component("CardHeader", CardHeader);
 app.component("CardBody", CardBody);
@@ -42,7 +37,6 @@ app.component("MainNavbar", MainNavbar);
 app.component("BigCard", BigCard);
 app.component("Icon", Icon);
 app.component("DefaultPage", DefaultPage);
-app.component("ModalDeleteFile", ModalDeleteFile);
 app.component("Editor", Editor);
 
 app.mount("#app");

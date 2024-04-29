@@ -1,18 +1,13 @@
 <script setup>
-import router from '../router'
-import { useCurrentUserStore } from '../stores/currentUser';
-const currentUser = useCurrentUserStore();
+import { auth } from '../firebase';
+import { signOut } from 'firebase/auth';
 
 async function salir(){
     try{
 
-        if(currentUser.id != undefined){
-            await currentUser.logout();
-            setTimeout(() => { location.href="/" },2000)
-        }else{
-            location.href='/';
-        }
-
+        await signOut(auth);
+        location.href="/";
+        
     } catch(e){ console.log(e); }
 }
 
@@ -20,5 +15,5 @@ salir();
 
 </script>
 <template>
-    <Loading />
+    <Loading text="Cerando Sesión..." />
 </template>

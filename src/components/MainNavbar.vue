@@ -1,16 +1,17 @@
 <script setup>
-import { useCurrentUserStore } from '../stores/currentUser';
-const currentUser = useCurrentUserStore();
-async function traerDatos(){
-    if(currentUser.id == null){
-        await currentUser.getDatos();
-    }
+import router from '../router';
+import { useAuthUserStore } from '../stores/authUser';
+const authUser = useAuthUserStore();
+
+const checkData = async () => { 
+    await authUser.datos();
 }
-traerDatos();
+checkData();
+
 </script>
 
 <template>
-    <Loading v-if="currentUser.loading"></Loading>
+    <Loading v-if="authUser.loading"></Loading>
     <nav v-else class="navbar navbar-expand-lg bg-body-tertiary mb-3 shadow-sm">
         <div class="container">
             <RouterLink class="navbar-brand" to="/" >
@@ -22,7 +23,7 @@ traerDatos();
             </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <RouterLink class="nav-link" to="/transparencia">Transparencia</RouterLink>
                     </li>
                     <li v-if="currentUser.rol == 'admin'" class="nav-item">
@@ -30,12 +31,12 @@ traerDatos();
                     </li>
                     <li v-if="currentUser.rol=='admin'" class="nav-item">
                         <RouterLink class="nav-link" to="/usuarios">Usuarios</RouterLink>
-                    </li>
+                    </li> -->
                 </ul>
                 <ul class="navbar-nav flex-wrap ms-md-auto">
                     <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <Icon name="person-circle" /> &nbsp;{{ currentUser.nombre }}
+                                <Icon name="person-circle" /> &nbsp;{{ authUser.nombre }}
                             </a>
                             <ul class="dropdown-menu">
                                 <li><RouterLink class="dropdown-item" to="/perfil">Perfil de usuario</RouterLink></li>

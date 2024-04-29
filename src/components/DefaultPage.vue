@@ -1,5 +1,14 @@
+<script setup>
+    const props = defineProps({
+        nav:{
+            type:Boolean,
+            required:false,
+            default:true
+        },
+    })
+</script>
 <template>
-<MainNavbar></MainNavbar>
+<MainNavbar v-if="nav" ></MainNavbar>
 <div class="container">
 
     <slot></slot>
