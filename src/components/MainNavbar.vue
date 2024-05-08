@@ -22,10 +22,10 @@ traerDatos();
             </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
+                    <li v-if="currentUser.uid != 'IWti7Rud3AZjnCNzacrJldyKSf53'" class="nav-item">
                         <RouterLink class="nav-link" to="/transparencia">Transparencia</RouterLink>
                     </li>
-                    <li v-if="currentUser.rol == 'admin'" class="nav-item">
+                    <li v-if="currentUser.rol == 'admin' || currentUser.uid == 'IWti7Rud3AZjnCNzacrJldyKSf53'" class="nav-item">
                         <RouterLink class="nav-link" to="/publicaciones">Publicaciones</RouterLink>
                     </li>
                     <li v-if="currentUser.rol=='admin'" class="nav-item">

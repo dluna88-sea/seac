@@ -2,13 +2,25 @@
 import { useCurrentUserStore } from '../stores/currentUser';
 import { auth } from '../firebase';
 import { useModulosStore } from '../stores/modulos';
+import {usePublicacionesStore } from '../stores/publicaciones';
+
 const currentUser = useCurrentUserStore();
 const modulos = useModulosStore();
+const publicaciones = usePublicacionesStore();
+
 async function traerDatos(){
     if(currentUser.id == null){ await currentUser.getDatos(); }
     
-    modulos.all()
-
+    if(currentUser.rol == "admin"){
+        modulos.all();
+        await publicaciones.all();
+    }
+    
+    if(currentUser.uid == 'IWti7Rud3AZjnCNzacrJldyKSf53'){
+        await publicaciones.all();
+    }else{
+        modulos.all();
+    }
 }
 
 
@@ -35,7 +47,8 @@ traerDatos();
         <div class="row mb-5">
 
             <!-- CARD MÓDULOS DE TRANSPARENCIA -->
-            <div class="col-md-6 col-xl-4 my-3">
+            <Loading v-if="currentUser.loading"></Loading>
+            <div v-else v-if="currentUser.uid != 'IWti7Rud3AZjnCNzacrJldyKSf53'" class="col-md-6 col-xl-4 my-3">
                 <BigCard>
                     <Loading v-if="modulos.loading"></Loading>
                     <div v-else>
@@ -54,16 +67,20 @@ traerDatos();
             </div>
 
             <!-- CARD BOLETINES DE PRENSA -->
-            <!-- <div class="col-md-6 col-xl-4 my-3">
+            <Loading v-if="publicaciones.loading"></Loading>
+            <div v-else v-if="currentUser.rol == 'admin' || currentUser.uid == 'IWti7Rud3AZjnCNzacrJldyKSf53'" class="col-md-6 col-xl-4 my-3">
                 <BigCard>
-                    <h2><Icon name="file-text" /> Boletines</h2>
-                    <p>Publica un nuevo boletín o administra los existentes.</p>
-                    <div class="btn-group d-flex" role="group">
-                        <button class="btn btn-outline-secondary" type="button"><Icon name="pencil" /> Crear nuevo</button>
-                        <button class="btn btn-outline-secondary" type="button"><Icon name="files" /> Ver todos</button>
-                    </div>
+                    <h2><Icon name="file-text" /> Publicaciones</h2>
+                    <p>Publicaciones recientes:</p>
+                    <ul class="list-group my-3">
+                        <router-link class="list-group-item" v-for="pub in publicaciones.allPubs.slice(0,4)" :to="`/publicacion/${pub.id}`">
+                            <Icon name="doc" /> {{ pub.titulo }}
+                        </router-link>
+                    </ul>
+                    <hr>
+                    <router-link to="/publicaciones">VER TODAS</router-link>
                 </BigCard>
-            </div> -->
+            </div>
 
             <!-- CARD PERFIL DE USUARIO -->
             <div class="col-md-6 col-xl-4 my-3">
@@ -95,3 +112,11 @@ traerDatos();
 
     </DefaultPage>
 </template>
+
+<style scoped>
+.list-group-item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+</style>

@@ -20,6 +20,19 @@ const isAdmin = async(to, from, next) => {
     });
 }
 
+const isSara = async(to, from, next) => {
+    const currentUser = useCurrentUserStore();
+    await currentUser.isAuth().then(async() => {
+        await currentUser.getDatos().then(() => {
+            if(currentUser.uid == "IWti7Rud3AZjnCNzacrJldyKSf53" || currentUser.rol == "admin"){
+                next();
+            }else{
+                next('/')
+            }
+        })
+    })
+}
+
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -34,15 +47,15 @@ const router = createRouter({
         { path:'/usuarios', name: 'Usuarios', component: () => import('./views/usuarios/Listado.vue'), beforeEnter:isAdmin },
         { path:'/usuario/:id', name: 'DetalleUsuario', component: () => import('./views/usuarios/Detalle.vue'), beforeEnter:isAdmin },
         { path:'/usuario/nuevo', name: 'NuevoUsuario', component: () => import('./views/usuarios/NuevoUsuario.vue'), beforeEnter:isAdmin },
-        { path:'/publicaciones', name: 'publicaciones', component: () => import('./views/publicaciones/Listado.vue'), beforeEnter:isAdmin },
-        { path:'/publicacion/:id', name: 'DetallePublicacion', component: () => import('./views/publicaciones/Detalle.vue'), beforeEnter:isAdmin },
-        { path:'/publicacion/nueva', name: 'NuevoPublicacion', component: () => import('./views/publicaciones/Nuevo.vue'), beforeEnter:isAdmin },
-        { path:'/publicacion/subir', name: 'SubirPublicacion', component: () => import('./views/publicaciones/Subir.vue'), beforeEnter:isAdmin },
-        { path:'/publicacion/:id/editar', name: 'EditarPublicacion', component: () => import('./views/publicaciones/Editar.vue'), beforeEnter:isAdmin },
-        { path:'/publicaciones/autores', name: 'ListadoAutores', component: () => import('./views/autores/listado.vue'), beforeEnter:isAdmin },
-        { path:'/publicaciones/autores/nuevo', name: 'NuevoAutor', component: () => import('./views/autores/nuevo.vue'), beforeEnter:isAdmin },
-        { path:'/publicaciones/autor/:id', name: 'DetalleAutor', component: () => import('./views/autores/detalle.vue'), beforeEnter:isAdmin },
-        { path:'/publicaciones/autor/:id/editar', name: 'EditarAutor', component: () => import('./views/autores/editar.vue'), beforeEnter:isAdmin },
+        { path:'/publicaciones', name: 'publicaciones', component: () => import('./views/publicaciones/Listado.vue'), beforeEnter:isSara },
+        { path:'/publicacion/:id', name: 'DetallePublicacion', component: () => import('./views/publicaciones/Detalle.vue'), beforeEnter:isSara },
+        { path:'/publicacion/nueva', name: 'NuevoPublicacion', component: () => import('./views/publicaciones/Nuevo.vue'), beforeEnter:isSara },
+        { path:'/publicacion/subir', name: 'SubirPublicacion', component: () => import('./views/publicaciones/Subir.vue'), beforeEnter:isSara },
+        { path:'/publicacion/:id/editar', name: 'EditarPublicacion', component: () => import('./views/publicaciones/Editar.vue'), beforeEnter:isSara },
+        { path:'/publicaciones/autores', name: 'ListadoAutores', component: () => import('./views/autores/listado.vue'), beforeEnter:isSara },
+        { path:'/publicaciones/autores/nuevo', name: 'NuevoAutor', component: () => import('./views/autores/nuevo.vue'), beforeEnter:isSara },
+        { path:'/publicaciones/autor/:id', name: 'DetalleAutor', component: () => import('./views/autores/detalle.vue'), beforeEnter:isSara },
+        { path:'/publicaciones/autor/:id/editar', name: 'EditarAutor', component: () => import('./views/autores/editar.vue'), beforeEnter:isSara },
 
         
         //Error 404
