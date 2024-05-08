@@ -91,6 +91,10 @@ function clearPicture(){
                     <label>Resumen:</label>
                     <textarea id="excerpt" style="font-size:15px;" class="form-control" name="excerpt" rows="2">{{ pub.singlePub.excerpt }}</textarea>
                 </div>
+                <div class="col-md-3">
+                    <label>Imágenes:</label>
+                    <div><button class="btn btn- btn-block">VER</button></div>
+                </div>
             </div>
 
             <div v-if="pub.singlePub.documento == false" class="row ">
