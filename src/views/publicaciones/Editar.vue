@@ -2,10 +2,31 @@
 import { useRoute } from 'vue-router';
 import { usePublicacionesStore } from '../../stores/publicaciones';
 import { useAutoresStore } from '../../stores/autores';
+import { useGaleriaStore } from '../../stores/galeria';
 
 let route = useRoute();
 let pub = usePublicacionesStore();
 let autores = useAutoresStore();
+let galeria = useGaleriaStore();
+
+let openGallery = async () => {
+    await galeria.loadGaleria(route.params.id);
+}
+
+const uploadImage = () => {
+    let uploadImageInput = document.querySelector("#nuevoGaleria");
+    uploadImageInput.click()
+}
+
+const uploadImageToGalery = async () => {
+    await galeria.subir(document.querySelector("#nuevoGaleria").files[0], route.params.id);
+    openGallery();
+}
+
+const deletePicture = async (imgName) => {
+    await galeria.borrar(imgName, route.params.id);
+    openGallery();
+}
 
 async function getDetail(){
     await pub.get(route.params.id);
@@ -44,6 +65,17 @@ let savePublication = async() => {
 
 }
 
+function selectURL(event){
+    event.target.select();
+    try {
+        const successful = document.execCommand('copy');
+        const msg = successful ? 'successful' : 'unsuccessful';
+        console.log('Copy command was ' + msg);
+    } catch (err) {
+        console.error('Oops, unable to copy', err);
+    }
+}
+
 function selectImage(){
     let fileInput = document.querySelector("#imagen");
     fileInput.click()
@@ -61,6 +93,7 @@ function clearPicture(){
     document.querySelector("#imagen").value = "";
     document.querySelector(".imagenPortada").style.backgroundImage = "";
 }
+
 </script>
 
 <template>
@@ -90,10 +123,6 @@ function clearPicture(){
                 <div class="col">
                     <label>Resumen:</label>
                     <textarea id="excerpt" style="font-size:15px;" class="form-control" name="excerpt" rows="2">{{ pub.singlePub.excerpt }}</textarea>
-                </div>
-                <div class="col-md-3">
-                    <label>Imágenes:</label>
-                    <div><button class="btn btn- btn-block">VER</button></div>
                 </div>
             </div>
 
@@ -128,6 +157,45 @@ function clearPicture(){
                         <input type="file" class="form-control mb-3" accept="application/pdf" id="uploadFile" name="documento" aria-describedby="uploadFileAddon" aria-label="Upload">
                         
                         <hr>
+                    </div>
+                    <div class="mb-4">
+                        <button @click="openGallery" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#galeriaModal">Ver galería de imágenes</button>
+                        <div class="modal modal-xl fade" id="galeriaModal" tabindex="-1" aria-labelledby="galeriaModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-scrollable">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="galeriaModalLabel">Imágenes</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <Loading v-if="galeria.loading == true"></Loading>
+                                    <div v-else class="container-fluid">
+                                        
+                                        <div class="row">
+                                            <div class="col text-center my-5" v-if="galeria.allPics.length == 0">
+                                            <h4 style="color: #ccc;">NO HAY IMAGENES EN ESTA GALERÍA</h4>
+                                            </div>
+                                            <div v-else v-for="img in galeria.allPics" class="col-md-6 col-sm-6 col-xs-12 col-lg-3">
+                                                <span style="margin-left:-5px" @click="deletePicture(img.nombre)" class="clearBtn float-end"><Icon name="trash3-fill" /></span>
+                                                <div class="card mb-3">
+                                                    <img :src="img.url" class="card-img-top">
+                                                    <div class="card-footer">
+                                                        <div class="text-center mb-2">{{ img.nombre }}</div>
+                                                        <input class="form-control" @focus="selectURL" type="text" :value="img.url">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <input @change="uploadImageToGalery()" type="file" multiple="false" accept=".png, .jpg, .jpeg" name="nuevoGaleria" id="nuevoGaleria" class="d-none">
+                                    <button type="button" @click="uploadImage()" class="btn btn-secondary"><Icon name="upload" /> &nbsp;Subir</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <label>Etiquetas (separadas por coma):</label>
                     <textarea name="tags" id="etiquetas" class="form-control" rows="2">{{ pub.etiquetas  }}</textarea>
@@ -182,6 +250,19 @@ function clearPicture(){
     background-size: cover;
     background-repeat: no-repeat;
     cursor: pointer;
+}
+.card-img-top {
+  width: 100%;   /* Asegura que la imagen siempre ocupe todo el ancho del card */
+  height: 200px; /* Define una altura fija para todas las imágenes */
+  object-fit: cover; /* Asegura que la imagen cubra completamente el área asignada, similar al background-size: cover; */
+  object-position: center; /* Centra la imagen dentro del área asignada */
+}
+
+/* Estilos para dispositivos menores que md */
+@media (max-width: 767.98px) {
+  .card-img-top {
+    height: 100px; /* Altura para móviles */
+  }
 }
 
 </style>

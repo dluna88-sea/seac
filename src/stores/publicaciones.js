@@ -129,7 +129,7 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                 this.loading = true;
                 
                 await getDoc(doc(db, '/publicaciones', id)).then(async (pub) => {
-                    let etiquetas = datos.etiquetas.split(", ");
+                    let etiquetas = datos.etiquetas.split(",").map(etiqueta => etiqueta.trim());
                     let imgUrl = pub.data().imagen;
                     let docu = pub.data().documento;
                     let docName = pub.data().docName;
@@ -150,7 +150,6 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                         contenido = await getDownloadURL(docRef);
                         docu = true;
                     }
-                    console.log(datos.contenido);
                     await setDoc(doc(db, '/publicaciones', id),
                         {
                             titulo: datos.titulo,
@@ -276,7 +275,7 @@ export const usePublicacionesStore = defineStore('publicacionesStore',{
                 this.allPubs = [];
                 await this.counter("get");
                 await getDocs(
-                    query(collection(db, '/publicaciones'), orderBy( "id", "asc" ) ),
+                    query(collection(db, '/publicaciones'), orderBy( "id", "desc" ) ),
                 ).then(async (pubs) => {
                     pubs.docs.forEach(async(pub) => {
                         
