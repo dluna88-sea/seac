@@ -21,7 +21,9 @@ export const useModulosStore = defineStore('pluralModulos',{
         art70:[],
         artLGCG:[],
         artCPC:[],
-        articulos:[]
+        articulos:[],
+        monitoreo:[],
+        indicadores_de_seguimiento:[],
 
     }),
     actions:{
@@ -38,6 +40,7 @@ export const useModulosStore = defineStore('pluralModulos',{
                 this.artLGCG = [];
                 this.artCPC = [];
                 this.monitoreo = [];
+                this.indicadores_de_seguimiento = [];
                 
 
                 await getDocs(query(
@@ -81,6 +84,7 @@ export const useModulosStore = defineStore('pluralModulos',{
                                     case "LGCG": this.artLGCG.push({ id:m.id, ...m.data() }); break;
                                     case "CPC": this.artCPC.push({ id:m.id, ...m.data() }); break;
                                     case "monitoreo-legislativo": this.monitoreo.push({ id:m.id, ...m.data() }); break;
+                                    case "indicadores-de-seguimiento": this.indicadores_de_seguimiento.push({ id:m.id, ...m.data() }); break;
                                 }
                             }
 
