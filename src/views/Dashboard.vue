@@ -43,7 +43,7 @@ traerDatos();
             </Success>
         </div>
 
-        <PageTitle>Bienvenido</PageTitle>
+        <PageTitle>Bienvenido {{ currentUser.nombre }}</PageTitle>
         <div class="row mb-5">
 
             <!-- CARD MÓDULOS DE TRANSPARENCIA -->
